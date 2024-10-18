@@ -1,0 +1,278 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[addons]
+
+resources_spreadsheet_view/array_color_tint=100.0
+resources_spreadsheet_view/color_rows=true
+resources_spreadsheet_view/array_min_width=128.0
+resources_spreadsheet_view/resource_preview_size=32.0
+resources_spreadsheet_view/clip_headers=false
+resources_spreadsheet_view/dupe_arrays=true
+resources_spreadsheet_view/context_menu_on_leftclick=false
+resources_spreadsheet_view/fold_docks=false
+
+[application]
+
+config/name="Flock"
+run/main_scene="res://_scenes/game_root.tscn"
+run/enable_alt_space_menu=true
+config/features=PackedStringArray("4.3", "GL Compatibility")
+run/max_fps=60
+config/icon="res://icon.svg"
+
+[autoload]
+
+SignalBus="*res://_scripts/signal_bus.gd"
+
+[debug]
+
+gdscript/warnings/unused_variable=0
+gdscript/warnings/unused_parameter=0
+gdscript/warnings/unused_signal=0
+shapes/navigation/agent_path_point_size=32.0
+
+[display]
+
+window/size/viewport_width=1000
+window/size/viewport_height=1000
+window/size/initial_position_type=3
+window/size/always_on_top=true
+window/size/extend_to_title=true
+window/stretch/aspect="keep_width"
+window/dpi/allow_hidpi=false
+display_server/driver="opengl3"
+window/handheld/orientation=1
+window/vsync/vsync_mode=0
+mouse_cursor/custom_image="res://addons/orchestrator/editor/icons/CircleValue.svg"
+
+[editor]
+
+version_control/plugin_name="GitPlugin"
+version_control/autoload_on_startup=true
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/thumbstick_plugin/plugin.cfg")
+
+[file_customization]
+
+folder_colors={
+"res://_animations/": "pink",
+"res://_assets/": "orange",
+"res://_materials/": "purple",
+"res://_meshes/": "orange",
+"res://_pfx/": "yellow",
+"res://_resources/": "green",
+"res://_scenes/": "teal",
+"res://_scripts/": "red",
+"res://_scripts/z_bkp/": "gray",
+"res://_shaders/": "purple",
+"res://_textures/": "pink",
+"res://addons/": "gray",
+"res://addons/pillz_table_editor/": "orange",
+"res://demo/": "gray",
+"res://example/": "gray",
+"res://examples/": "gray"
+}
+
+[global]
+
+_global_script_classes=[{
+"base": "Resource",
+"class": &"BaseBehavior",
+"language": "GDScript",
+"path": "res://_scripts/behaviors/BaseBehavior.gd"
+}, {
+"base": "BaseBehavior",
+"class": &"BehaviorOnEnterLerp",
+"language": "GDScript",
+"path": "res://_scripts/behaviors/BehaviorOnEnterLerp.gd"
+}]
+_global_script_class_icons={}
+
+[global_group]
+
+shield=""
+enemies=""
+player=""
+cameragame=""
+thumbstick=""
+
+[importer_defaults]
+
+texture={
+"compress/channel_pack": 1,
+"compress/mode": 2,
+"compress/normal_map": 2,
+"mipmaps/generate": true,
+"process/premult_alpha": true,
+"process/size_limit": 1024,
+"roughness/mode": 1
+}
+font_data_dynamic={
+"disable_embedded_bitmaps": false,
+"force_autohinter": true
+}
+animation_library={
+"animation/fps": 60.0
+}
+scene={
+"animation/fps": 60.0,
+"meshes/generate_lods": false,
+"meshes/light_baking": 0,
+"nodes/import_as_skeleton_bones": true,
+"nodes/root_name": "root",
+"nodes/root_type": "Node3D"
+}
+
+[input]
+
+move_forward={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_backward={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_left={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
+]
+}
+move_right={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
+]
+}
+jump={
+"deadzone": 0.5,
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"location":0,"echo":false,"script":null)
+]
+}
+touch={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
+fire={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
+shoot={
+"deadzone": 0.5,
+"events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
+}
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+pointing/emulate_mouse_from_touch=false
+
+[layer_names]
+
+3d_render/layer_1="actors"
+3d_render/layer_2="static"
+3d_render/layer_3="particles"
+3d_render/layer_4="ui"
+3d_render/layer_5="hud"
+3d_render/layer_6="pickables"
+3d_physics/layer_1="player"
+3d_navigation/layer_1="nav_player"
+3d_physics/layer_2="enemies"
+3d_navigation/layer_2="nav_enemies"
+3d_physics/layer_3="environment"
+3d_navigation/layer_3="nav_environment"
+3d_physics/layer_4="buddy"
+3d_navigation/layer_4="nav_npc"
+3d_physics/layer_5="player_projectiles"
+3d_physics/layer_6="player_shield"
+3d_physics/layer_7="player_melee"
+3d_physics/layer_8="player_explosive"
+3d_physics/layer_9="player_lvl_teleport"
+3d_physics/layer_10="enemy_melee"
+3d_physics/layer_11="enemy_explosive"
+3d_physics/layer_12="enemy_shield"
+3d_physics/layer_13="enemy_magic"
+3d_physics/layer_14="enemy_trap"
+3d_physics/layer_15="enemy_hive"
+3d_physics/layer_16="portal"
+3d_physics/layer_17="teleporter"
+3d_physics/layer_18="blocker"
+3d_physics/layer_19="blocker_brokeable"
+3d_physics/layer_20="pickables"
+3d_physics/layer_25="txt_msg"
+3d_physics/layer_30="resource0"
+3d_physics/layer_31="resource1"
+3d_physics/layer_32="resource2"
+avoidance/layer_1="avoid_foliage"
+avoidance/layer_2="avoid_trap"
+avoidance/layer_3="avoid_scary"
+avoidance/layer_4="avoid_hole"
+
+[navigation]
+
+3d/default_cell_height=0.5
+
+[orchestrator]
+
+settings/runtime/max_call_stack=256
+settings/runtime/max_loop_iterations=10000
+ui/graph/confirm_on_delete=false
+ui/graph/show_autowire_selection_dialog=false
+ui/graph/show_arrange_button=true
+ui/nodes/highlight_selected_connections=true
+ui/nodes/border_radius=2
+ui/nodes/border_width=1
+settings/action_favorites=PackedStringArray("Math/remap")
+
+[physics]
+
+3d/physics_engine="JoltPhysics3D"
+jolt_3d/limits/max_linear_velocity=100.0
+jolt_3d/limits/max_angular_velocity=1000.0
+jolt_3d/limits/max_bodies=2500
+
+[plugins]
+
+icon_explorer/load_on_startup=true
+icon_explorer/preview_size_exp=5
+
+[rendering]
+
+textures/canvas_textures/default_texture_repeat=1
+rendering_device/driver="opengl3"
+rendering_device/fallback_to_vulkan=false
+rendering_device/fallback_to_d3d12=false
+renderer/rendering_method="mobile"
+renderer/rendering_method.web="mobile"
+shading/overrides/force_lambert_over_burley=true
+textures/default_filters/anisotropic_filtering_level=1
+environment/ssao/quality=1
+environment/screen_space_reflection/roughness_quality=0
+environment/subsurface_scattering/subsurface_scattering_quality=0
+
+[resource_wrangler]
+
+automade_path="res://automade_resources"
+recent_boards=["res://addons/resource_wrangler/docs/demos/boards/SpacesAndPortals.tres", "res://addons/resource_wrangler/docs/demos/boards/Extending Resource Classes.tres", "res://addons/resource_wrangler/docs/demos/boards/Extending Node UI.tres"]
+minimap_enabled=true
+
+[shader_globals]
+
+player_position={
+"type": "vec3",
+"value": Vector3(0, 0, 0)
+}

@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://clcwdr5begw0g"]
+
+[node name="Main" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.414959, 0.859652, -0.298007, -0.303932, 0.439693, 0.84516, 0.857575, -0.260133, 0.44373, 10, 15, 14)
+light_bake_mode = 0
+shadow_enabled = true
+shadow_opacity = 0.49
+directional_shadow_mode = 1
+directional_shadow_split_1 = 0.31
+directional_shadow_fade_start = 1.0
+directional_shadow_max_distance = 120.0
+sky_mode = 1
