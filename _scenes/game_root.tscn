@@ -1,15 +1,9 @@
-[gd_scene load_steps=24 format=3 uid="uid://dr0ytgjthjbsx"]
+[gd_scene load_steps=19 format=3 uid="uid://dr0ytgjthjbsx"]
 
-[ext_resource type="Script" path="res://_scripts/game_root.gd" id="1_1826r"]
 [ext_resource type="PackedScene" uid="uid://clcwdr5begw0g" path="res://_scenes/main.tscn" id="2_3drmh"]
-[ext_resource type="Script" path="res://_scripts/main.gd" id="3_l2xr8"]
 [ext_resource type="PackedScene" uid="uid://cqhe3y3sj4vb3" path="res://_scenes/player.tscn" id="4_2xjta"]
-[ext_resource type="Script" path="res://_scripts/ai/AIDirector.gd" id="4_5jyth"]
-[ext_resource type="PackedScene" uid="uid://cw3xgyijrvuub" path="res://_scenes/enemy_types/imps/imp_berserker.tscn" id="6_4tiw5"]
-[ext_resource type="PackedScene" uid="uid://02l4fil5f7hb" path="res://_scenes/spawner.tscn" id="6_tgciq"]
-[ext_resource type="PackedScene" uid="uid://d04f1fywismba" path="res://_scenes/enemy_types/imps/imp_dummy.tscn" id="7_q02my"]
-[ext_resource type="Script" path="res://_scripts/ai/formation_manager.gd" id="9_7yfm7"]
 [ext_resource type="PackedScene" uid="uid://bwr26kclpyg6b" path="res://_scenes/buddy.tscn" id="9_428cj"]
+[ext_resource type="PackedScene" uid="uid://cw3xgyijrvuub" path="res://_scenes/enemy_types/imps/imp_berserker.tscn" id="10_aeud2"]
 [ext_resource type="Material" uid="uid://d58p32hgp45d" path="res://_materials/gr.tres" id="11_xwy4t"]
 [ext_resource type="FontVariation" uid="uid://cwxu07t5jip7t" path="res://_resources/fonts/font_health_overhead.tres" id="12_ihlwy"]
 [ext_resource type="Script" path="res://_scripts/UI/game_label_kills.gd" id="13_aid0c"]
@@ -22,6 +16,15 @@ bounce = 0.15
 [sub_resource type="BoxShape3D" id="BoxShape3D_ytlyv"]
 resource_local_to_scene = true
 size = Vector3(256, 10, 256)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_flfm5"]
+vertices = PackedVector3Array(-127.5, 4, -127.5, -127.5, 4, 127.5, 127.5, 4, 127.5, 127.5, 4, -127.5)
+polygons = [PackedInt32Array(3, 2, 0), PackedInt32Array(0, 2, 1)]
+sample_partition_type = 1
+geometry_source_geometry_mode = 2
+geometry_source_group_name = &"nav"
+cell_size = 0.5
+cell_height = 2.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_caqoe"]
 size = Vector2(256, 256)
@@ -72,43 +75,478 @@ shadow_color = Color(0.00569999, 0.0732767, 0.19, 0.490196)
 shadow_offset = Vector2(9, 7)
 
 [node name="GameRoot" type="Node3D"]
-script = ExtResource("1_1826r")
 
 [node name="Main" parent="." instance=ExtResource("2_3drmh")]
-script = ExtResource("3_l2xr8")
-
-[node name="AIDirector" type="Node3D" parent="Main"]
-script = ExtResource("4_5jyth")
-
-[node name="Spawner" parent="Main" instance=ExtResource("6_tgciq")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-enemy_scenes = {
-"imp_berserker": ExtResource("6_4tiw5"),
-"imp_dummy": ExtResource("7_q02my")
-}
-min_spawn_radius = 12.0
-max_spawn_radius = 32.0
-below_ground_offset = 2.0
-max_enemies = 3
-max_spawn_interval = 12.0
-max_cluster_points = 2
-min_enemies_per_cluster = 1
-max_enemies_per_cluster = 3
-
-[node name="FormationManager" type="Node3D" parent="Main/Spawner"]
-script = ExtResource("9_7yfm7")
 
 [node name="Buddy" parent="Main" instance=ExtResource("9_428cj")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.018342, 4.36571, 0.00228286)
-script = null
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 
 [node name="Player" parent="Main" instance=ExtResource("4_2xjta")]
-floor_constant_speed = true
-floor_snap_length = 0.8
-SPEED = 12.0
-SHOOTING_THRESHOLD = 0.325
 
-[node name="FloorStatic" type="StaticBody3D" parent="."]
+[node name="enemies" type="Node3D" parent="Main"]
+
+[node name="Enemy" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.6224, 1.322, 8.85468)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy6" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.6227, 1.322, 6.20718)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy10" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 37.6109, 1.322, 13.6775)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy9" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 45.3304, 1.322, 10.2708)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy2" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 42.6832, 1.322, -3.13407)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy11" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -45.4655, 1.322, -3.40748)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy13" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -50.5869, 1.322, -0.150534)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy15" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -31.8322, 1.322, -7.80637)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy17" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -37.4769, 1.322, 1.41533)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy18" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.7575, 1.322, -1.99138)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy20" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16.602, 1.322, -12.9316)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy22" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.52877, 1.322, -26.8648)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy24" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.4925, 1.322, -29.067)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy26" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 22.2477, 1.322, -34.1251)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy27" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 25.4807, 1.322, -21.5967)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy29" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.553, 1.322, -38.4082)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy30" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 46.3556, 1.322, -35.9436)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy3" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -41.7523, 1.322, 19.3915)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy7" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -37.6467, 1.322, 16.9114)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy12" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -49.5321, 1.322, 24.5442)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy14" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -49.7604, 1.322, 32.9789)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy4" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -36.5137, 1.322, 36.3288)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy16" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 1.49201, 1.322, -43.2063)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy19" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 0.742758, 1.322, -49.2292)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy21" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -0.372942, 1.322, -29.0028)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy23" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -6.28786, 1.322, -38.0536)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy25" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -6.51614, 1.322, -29.6189)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy28" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -2.26561, 1.322, -13.0452)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy31" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -0.0118542, 1.322, 14.7279)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy32" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -0.576494, 1.322, 21.0602)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy33" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 0.243761, 1.322, 31.1381)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy34" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -12.4619, 1.322, 28.6929)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy35" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 0.556433, 1.322, 40.4776)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy36" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, -8.43968, 1.322, 53.7013)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy5" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 23.053, 1.322, 21.8534)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy8" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 27.1586, 1.322, 19.3733)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy37" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 15.2732, 1.322, 27.0061)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy38" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 15.0448, 1.322, 35.4408)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy39" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 28.2916, 1.322, 38.7907)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy40" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 66.2973, 1.322, -40.7444)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy41" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 65.548, 1.322, -46.7673)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy42" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 64.4323, 1.322, -26.5409)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy43" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 58.5174, 1.322, -35.5916)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy44" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 58.2891, 1.322, -27.157)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy45" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 62.5397, 1.322, -10.5833)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy46" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 64.7934, 1.322, 17.1899)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy47" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 64.2288, 1.322, 23.5221)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy48" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 65.049, 1.322, 33.6)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy49" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 52.3434, 1.322, 31.1549)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy50" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 65.3617, 1.322, 42.9395)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Enemy51" parent="Main/enemies" instance=ExtResource("10_aeud2")]
+transform = Transform3D(-0.428352, 0, -0.903612, 0, 1, 0, 0.903612, 0, -0.428352, 56.3656, 1.322, 56.1632)
+axis_lock_linear_y = true
+death_effect_scene = null
+death_effect_duration = 2.0
+berserk_chance = 0.25
+berserk_speed_multiplier = 2.0
+wobble_damping = 0.98
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="FloorStatic" type="StaticBody3D" parent="Environment" groups=["nav"]]
 collision_layer = 4
 collision_mask = 27
 input_ray_pickable = false
@@ -117,15 +555,18 @@ axis_lock_linear_y = true
 axis_lock_linear_z = true
 physics_material_override = SubResource("PhysicsMaterial_w3p0d")
 
-[node name="CollisionPolygon3D" type="CollisionShape3D" parent="FloorStatic"]
+[node name="CollisionPolygon3D" type="CollisionShape3D" parent="Environment/FloorStatic" groups=["nav"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
 shape = SubResource("BoxShape3D_ytlyv")
 
-[node name="FloorMesh" type="MeshInstance3D" parent="."]
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Environment"]
+navigation_mesh = SubResource("NavigationMesh_flfm5")
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Environment" groups=["nav"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0597019, 0.140897, 0.0823631)
 material_override = ExtResource("11_xwy4t")
 mesh = SubResource("PlaneMesh_caqoe")
-skeleton = NodePath("../FloorStatic")
+skeleton = NodePath("../../../../../../../../../../../../../../../../../../../../../../Node3D/FloorStatic")
 
 [node name="MainHUD" type="Control" parent="."]
 layout_mode = 3
@@ -209,30 +650,26 @@ script = ExtResource("13_aid0c")
 
 [node name="ControllerCanvas" type="CanvasLayer" parent="MainHUD" groups=["thumbstick"]]
 
-[node name="MovementJoystick" parent="MainHUD/ControllerCanvas" node_paths=PackedStringArray("control_target_node") groups=["thumbstick"] instance=ExtResource("14_wgw40")]
+[node name="MovementJoystick" parent="MainHUD/ControllerCanvas" groups=["thumbstick"] instance=ExtResource("14_wgw40")]
 anchors_preset = -1
-anchor_top = 0.356667
+anchor_top = 0.236364
 grow_horizontal = 1
 grow_vertical = 0
 _mode = "Follow"
-_visibility_mode = "Touchscreen"
-follow_radius_tolerance = 32.0
-max_drag_radius = 94.415
-deadzone_radius_percentage = 0.629
-start_elapsed_on_trigger = true
-normalize_output = true
+follow_radius_tolerance = 10.0
+deadzone_radius_percentage = 0.4
 inverse_output = true
-_base_color = Color(0.74249, 0.770697, 0.855319, 1)
-_normal_bg_tint = Color(0.716795, 0.792712, 0.829787, 1)
-_normal_handle_tint = Color(0.96393, 1, 0.851064, 1)
-_pressed_bg_tint = Color(0.0170213, 1, 0.216689, 1)
-_pressed_handle_tint = Color(0.978723, 0.632249, 0.270711, 1)
+_base_color = Color(1, 1, 1, 0.513726)
+_normal_bg_tint = Color(1, 1, 1, 0.372549)
+_normal_handle_tint = Color(1, 1, 1, 0.513726)
+_pressed_bg_tint = Color(1, 1, 1, 0.32549)
+_pressed_handle_tint = Color(0.329412, 0.709804, 0.909804, 0.658824)
 _disabled_bg_tint = Color(0.6, 0.6, 0.6, 0)
 _disabled_handle_tint = Color(0.6, 0.6, 0.6, 0)
-_transparent_bg_tint = Color(1, 1, 1, 0)
-_transparent_handle_tint = Color(1, 1, 1, 0)
-control_target_node = NodePath("../../../Main/Player")
 _on_trigger_method_name = "_on_trigger"
 _on_pressed_method_name = "_on_pressed"
 _on_released_method_name = "_on_released"
 metadata/_edit_use_anchors_ = true
+
+[node name="FormationManager" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)

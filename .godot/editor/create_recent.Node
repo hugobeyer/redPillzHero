@@ -1,0 +1,7 @@
+RigidBody3D
+NavigationAgent3D
+Node3D
+NavigationRegion3D
+TextureRect
+SubViewport
+Node

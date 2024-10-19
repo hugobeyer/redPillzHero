@@ -28,7 +28,7 @@ func set_flash_intensity(value: float):
 func set_flash_color(color: Color):
     mesh_instance.set_instance_shader_parameter("lerp_color", color)
 
-func apply_damage_effect(damage: Vector3):
+func apply_damage_effect(_damage: Vector3):
     flash_red()
 
 func _on_property_changed():

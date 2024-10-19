@@ -1,4 +1,4 @@
-[gd_resource type="VisualShader" load_steps=15 format=3 uid="uid://dek6cu2ngrju1"]
+[gd_resource type="VisualShader" load_steps=15 format=3 uid="uid://46e3ws2jkueb"]
 
 [sub_resource type="VisualShaderNodeFloatConstant" id="VisualShaderNodeFloatConstant_4jbfj"]
 constant = 0.5

@@ -21,11 +21,12 @@ resources_spreadsheet_view/fold_docks=false
 
 [application]
 
-config/name="Flock"
+config/name="redPillz"
 run/main_scene="res://_scenes/game_root.tscn"
 run/enable_alt_space_menu=true
-config/features=PackedStringArray("4.3", "GL Compatibility")
+config/features=PackedStringArray("4.4", "GL Compatibility")
 run/max_fps=60
+run/low_processor_mode=true
 config/icon="res://icon.svg"
 
 [autoload]
@@ -34,21 +35,23 @@ SignalBus="*res://_scripts/signal_bus.gd"
 
 [debug]
 
+settings/gdscript/max_call_stack=512
 gdscript/warnings/unused_variable=0
-gdscript/warnings/unused_parameter=0
-gdscript/warnings/unused_signal=0
 shapes/navigation/agent_path_point_size=32.0
 
 [display]
 
-window/size/viewport_width=1000
-window/size/viewport_height=1000
+window/size/viewport_width=700
+window/size/viewport_height=1100
 window/size/initial_position_type=3
 window/size/always_on_top=true
 window/size/extend_to_title=true
 window/stretch/aspect="keep_width"
-window/dpi/allow_hidpi=false
 display_server/driver="opengl3"
+display_server/driver.windows="windows"
+display_server/driver.android="android"
+display_server/driver.ios="iOS"
+display_server/driver.macos="macos"
 window/handheld/orientation=1
 window/vsync/vsync_mode=0
 mouse_cursor/custom_image="res://addons/orchestrator/editor/icons/CircleValue.svg"
@@ -105,6 +108,7 @@ enemies=""
 player=""
 cameragame=""
 thumbstick=""
+nav=""
 
 [importer_defaults]
 
@@ -178,6 +182,7 @@ shoot={
 
 [input_devices]
 
+buffering/agile_event_flushing=true
 pointing/emulate_touch_from_mouse=true
 pointing/emulate_mouse_from_touch=false
 
@@ -190,13 +195,9 @@ pointing/emulate_mouse_from_touch=false
 3d_render/layer_5="hud"
 3d_render/layer_6="pickables"
 3d_physics/layer_1="player"
-3d_navigation/layer_1="nav_player"
 3d_physics/layer_2="enemies"
-3d_navigation/layer_2="nav_enemies"
 3d_physics/layer_3="environment"
-3d_navigation/layer_3="nav_environment"
 3d_physics/layer_4="buddy"
-3d_navigation/layer_4="nav_npc"
 3d_physics/layer_5="player_projectiles"
 3d_physics/layer_6="player_shield"
 3d_physics/layer_7="player_melee"
@@ -222,9 +223,10 @@ avoidance/layer_2="avoid_trap"
 avoidance/layer_3="avoid_scary"
 avoidance/layer_4="avoid_hole"
 
-[navigation]
+[network]
 
-3d/default_cell_height=0.5
+limits/debugger/max_errors_per_second=32
+limits/debugger/max_warnings_per_second=32
 
 [orchestrator]
 
@@ -240,7 +242,12 @@ settings/action_favorites=PackedStringArray("Math/remap")
 
 [physics]
 
-3d/physics_engine="JoltPhysics3D"
+3d/run_on_separate_thread=true
+common/max_physics_steps_per_frame=16
+3d/physics_engine="GodotPhysics3D"
+3d/solver/solver_iterations=64
+common/physics_interpolation=true
+common/enable_object_picking=false
 jolt_3d/limits/max_linear_velocity=100.0
 jolt_3d/limits/max_angular_velocity=1000.0
 jolt_3d/limits/max_bodies=2500
@@ -252,15 +259,16 @@ icon_explorer/preview_size_exp=5
 
 [rendering]
 
-textures/canvas_textures/default_texture_repeat=1
-rendering_device/driver="opengl3"
+occlusion_culling/bvh_build_quality=1
+rendering_device/vsync/swapchain_image_count=2
 rendering_device/fallback_to_vulkan=false
-rendering_device/fallback_to_d3d12=false
 renderer/rendering_method="mobile"
 renderer/rendering_method.web="mobile"
+textures/lossless_compression/force_png=true
+lights_and_shadows/directional_shadow/soft_shadow_filter_quality=3
+lights_and_shadows/directional_shadow/16_bits=false
+reflections/sky_reflections/texture_array_reflections=false
 shading/overrides/force_lambert_over_burley=true
-textures/default_filters/anisotropic_filtering_level=1
-environment/ssao/quality=1
 environment/screen_space_reflection/roughness_quality=0
 environment/subsurface_scattering/subsurface_scattering_quality=0
 

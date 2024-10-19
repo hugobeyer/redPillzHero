@@ -1,0 +1,14 @@
+res://_scenes/player.tscn
+res://_shaders/debug/deb_sh.tres
+res://_materials/small_shield_mat.tres
+res://_shaders/grounds/custom_gr_tex.tres
+res://_materials/gr.tres
+res://_resources/fonts/font_health_overhead.tres
+res://_scenes/bullet.tscn
+res://_scenes/buddy.tscn
+res://_scenes/enemy_types/imps/imp_berserker.tscn
+res://_scenes/enemy_features/shield.tscn
+res://_scenes/weapon.tscn
+res://_scenes/UI/enemy_health_bar.tscn
+res://_scenes/enemy.tscn
+res://_scenes/game_root.tscn

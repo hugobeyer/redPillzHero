@@ -6,68 +6,58 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_44twl"]
 render_priority = 0
 shader = ExtResource("2_548kj")
-shader_parameter/color_top = Color(0.703125, 0.536865, 0.0796509, 1)
-shader_parameter/color_bottom = Color(0.492188, 0.492188, 0.492188, 1)
+shader_parameter/color_top = Color(0.831673, 0.546197, 0.077676, 1)
+shader_parameter/color_bottom = Color(0.245797, 0.35196, 0.301599, 1)
 shader_parameter/specular_color = Color(1, 1, 1, 1)
-shader_parameter/fresnel_color = Color(1, 1, 1, 1)
+shader_parameter/fresnel_color = Color(0, 1, 0, 1)
 shader_parameter/vertex_color_mix = 0.0
-shader_parameter/blend_mode = 1
+shader_parameter/blend_mode = 0
 shader_parameter/gradient_rotation_mode = 1
-shader_parameter/gradient_offset = 0.11
-shader_parameter/gradient_smoothness = 0.0
-shader_parameter/diffuse_contrast = 0.88
+shader_parameter/gradient_offset = 0.19
+shader_parameter/gradient_smoothness = 0.077
+shader_parameter/diffuse_contrast = 0.075
 shader_parameter/diffuse_wrap = 2.0
 shader_parameter/diffuse_offset = 0.0
-shader_parameter/specular_intensity = 1.0
-shader_parameter/specular_size = 0.264
+shader_parameter/specular_intensity = 2.0
+shader_parameter/specular_size = 0.055
 shader_parameter/specular_smoothness = 0.0
-shader_parameter/specular_offset = 0.261
-shader_parameter/fresnel_power = 1.735
+shader_parameter/specular_offset = 0.035
+shader_parameter/fresnel_power = 4.75e-07
 shader_parameter/fresnel_intensity = 0.0
-shader_parameter/fresnel_contrast = 2.615
-shader_parameter/fresnel_offset = 0.251
+shader_parameter/fresnel_contrast = 2.0
+shader_parameter/fresnel_offset = 0.25
 
 [sub_resource type="Curve" id="Curve_0k6bf"]
-_data = [Vector2(0, 0), 0.0, 5.67061, 0, 0, Vector2(0.177501, 0.687438), 1.22349, 1.22349, 0, 0, Vector2(0.89251, 0.957019), 0.0, 0.0, 0, 0, Vector2(1, 0), -15.7529, 0.0, 0, 0]
+_data = [Vector2(0, 0), 0.0, 4.51284, 0, 0, Vector2(0.282323, 0.683186), 1.24605, 1.24605, 0, 0, Vector2(0.89251, 0.957019), -0.0394513, -6.47392, 0, 0, Vector2(1, 0), -15.7529, 0.0, 0, 0]
 point_count = 4
 
 [sub_resource type="TubeTrailMesh" id="TubeTrailMesh_7ckpg"]
 radius = 0.3
-radial_steps = 5
-sections = 6
-section_length = 0.1
+sections = 7
+section_length = 0.091
 section_rings = 1
 cap_top = false
 curve = SubResource("Curve_0k6bf")
 
-[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_8016x"]
-radius = 0.343233
-height = 0.755344
+[sub_resource type="SphereShape3D" id="SphereShape3D_tsc64"]
+radius = 0.339156
 
-[node name="Bullet" type="RigidBody3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.393739)
-top_level = true
+[node name="Bullet" type="RigidBody3D" groups=["player_projectyle"]]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 collision_layer = 16
 collision_mask = 395270
 input_ray_pickable = false
-can_sleep = false
+mass = 10.0
+gravity_scale = 0.0
 script = ExtResource("1_6qr1r")
-damage = 1.0
-lifetime = 1.86
+damage = 4.0
+max_speed = 120.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-1, -8.74228e-08, 0, -3.82137e-15, 4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, -9.31969e-09, 4.65984e-09, -0.106605)
+transform = Transform3D(-1, -8.74228e-08, -1.69407e-21, -3.82137e-15, 4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, 3.17139e-08, 4.65984e-09, -0.244031)
 material_override = SubResource("ShaderMaterial_44twl")
-instance_shader_parameters/alpha = 1.0
-instance_shader_parameters/lerp_color = Color(1, 1, 1, 1)
-instance_shader_parameters/lerp_displace_normal = 0.0
-instance_shader_parameters/lerp_wave = 0.0
-instance_shader_parameters/lerp_wave_freq = 1.0
-instance_shader_parameters/lerp_wave_offset = 0.0
-instance_shader_parameters/lerp_wave_type = 0
-instance_shader_parameters/wave_range_lerp = 0.0
 mesh = SubResource("TubeTrailMesh_7ckpg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 2.29875e-09, -0.0525894)
-shape = SubResource("CapsuleShape3D_8016x")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.14084e-08, 0, -0.244883)
+shape = SubResource("SphereShape3D_tsc64")

@@ -10,12 +10,12 @@ colors = PackedColorArray(0, 0, 0, 1)
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_st6xh"]
 gradient = SubResource("Gradient_ld7nr")
 width = 128
-height = 60
+height = 16
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_0n1xf"]
 gradient = SubResource("Gradient_ld7nr")
 width = 128
-height = 60
+height = 16
 
 [node name="HealthBar" type="Sprite3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.549, 0)
@@ -28,7 +28,7 @@ texture = SubResource("GradientTexture2D_st6xh")
 region_rect = Rect2(0, 0, 120, 50)
 script = ExtResource("1_o52pt")
 bar_width_px = 120
-bar_height_px = 32
+bar_height_px = 24
 shake_duration = 0.3
 
 [node name="Back" type="Sprite3D" parent="."]

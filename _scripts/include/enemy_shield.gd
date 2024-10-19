@@ -11,23 +11,23 @@ var current_shield_strength: float
 @onready var shield_mesh: MeshInstance3D
 
 func _ready():
-	shield_mesh = get_node("ShieldMesh")
-	shield_mesh.set_instance_shader_parameter("lerp_wave", 0)
-	shield_mesh.set_instance_shader_parameter("lerp_displace_normal", 0)
+	# shield_mesh = get_node("ShieldMesh")
+	# shield_mesh.set_instance_shader_parameter("lerp_wave", 0)
+	# shield_mesh.set_instance_shader_parameter("lerp_displace_normal", 0)
 	current_shield_strength = max_shield_strength
 
-func shield_fx():
-	if shield_mesh:
-		var local_tween = create_tween()
-		local_tween.tween_method(set_shield_fx_intensity, 0.0, 0.5, effect_duration / 2)
-		local_tween.tween_method(set_shield_fx_intensity, 0.5, 0.0, effect_duration /  2)
+# func shield_fx():
+# 	if shield_mesh:
+# 		var local_tween = create_tween()
+# 		local_tween.tween_method(set_shield_fx_intensity, 0.0, 0.5, effect_duration / 2)
+# 		local_tween.tween_method(set_shield_fx_intensity, 0.5, 0.0, effect_duration /  2)
 
-func set_shield_fx_intensity(value: float):
-	shield_mesh.set_instance_shader_parameter("lerp_wave", value)
-	shield_mesh.set_instance_shader_parameter("lerp_displace_normal", value)
+# func set_shield_fx_intensity(value: float):
+# 	shield_mesh.set_instance_shader_parameter("lerp_wave", value)
+# 	shield_mesh.set_instance_shader_parameter("lerp_displace_normal", value)
 
 func apply_shield_effect(damage: Vector3):
-	shield_fx()
+	# shield_fx()
 	take_damage(damage.length())
 
 func take_damage(damage: float) -> float:

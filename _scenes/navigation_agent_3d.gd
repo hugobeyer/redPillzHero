@@ -1,1 +1,0 @@
-extends NavigationAgent3D

@@ -1,10 +1,11 @@
 {
-    "godotTools.editorPath.godot4": "c:\\Godot\\Godot_v4.3-stable_win64.exe",
+    "godotTools.editorPath.godot4": "c:\\Godot\\Godot4.4\\Godot_v4.4-dev3_win64.exe",
     "editor.tokenColorCustomizations": {
         "comments": "",
         "textMateRules": []
     },
     "godotTools.formatter.maxEmptyLines": "1",
     "godotTools.inlayHints.gdscript": true,
-    "files.autoSave": "onFocusChange"
+    "files.autoSave": "onFocusChange",
+    "autoHide.autoHideSideBar": false
 }
