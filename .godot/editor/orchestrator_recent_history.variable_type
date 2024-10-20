@@ -1,2 +1,9 @@
-class:Node3D
 type:Vector3
+type:AABB
+type:Array
+type:int
+class:PackedScene
+type:Vector3
+type:float
+class:Object
+class:Node3D

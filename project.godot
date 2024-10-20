@@ -63,7 +63,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/thumbstick_plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/pillzgame/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/thumbstick_plugin/plugin.cfg")
 
 [file_customization]
 
@@ -81,6 +81,7 @@ folder_colors={
 "res://_textures/": "pink",
 "res://addons/": "gray",
 "res://addons/pillz_table_editor/": "orange",
+"res://addons/pillzgame/": "green",
 "res://demo/": "gray",
 "res://example/": "gray",
 "res://examples/": "gray"
@@ -242,15 +243,11 @@ settings/action_favorites=PackedStringArray("Math/remap")
 
 [physics]
 
-3d/run_on_separate_thread=true
-common/max_physics_steps_per_frame=16
 3d/physics_engine="GodotPhysics3D"
-3d/solver/solver_iterations=64
-common/physics_interpolation=true
+3d/solver/contact_max_separation=0.01
+3d/solver/contact_max_allowed_penetration=0.001
+3d/solver/default_contact_bias=0.12
 common/enable_object_picking=false
-jolt_3d/limits/max_linear_velocity=100.0
-jolt_3d/limits/max_angular_velocity=1000.0
-jolt_3d/limits/max_bodies=2500
 
 [plugins]
 

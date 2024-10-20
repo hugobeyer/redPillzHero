@@ -22,7 +22,12 @@ rings = 1
 
 [node name="Weapon" type="Node3D"]
 script = ExtResource("1_bky2i")
+fire_rate = 2.0
+bullet_damage = 5.0
+knockback = 5.0
 bullet_scene = ExtResource("2_cb5nk")
+recoil_force = 2.0
+max_recoil = 24.0
 recoil_curve_time = SubResource("Curve_q4akf")
 recoil_mouse_up_curve = SubResource("Curve_kuhlc")
 recoil_noise_texture = ExtResource("4_1n64c")

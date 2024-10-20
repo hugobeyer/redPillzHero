@@ -1,7 +1,6 @@
-[gd_scene load_steps=12 format=3 uid="uid://deykio3jwy2vg"]
+[gd_scene load_steps=11 format=3 uid="uid://deykio3jwy2vg"]
 
 [ext_resource type="Script" path="res://_scripts/enemy.gd" id="1_ia10i"]
-[ext_resource type="PackedScene" uid="uid://b6m5ebh7isok8" path="res://_pfx/default_enemy_die_fx.tscn" id="2_3gwb4"]
 [ext_resource type="Material" uid="uid://c41y16wbx4hl1" path="res://_materials/enemy_imp_mat.tres" id="2_gr5oo"]
 [ext_resource type="CapsuleMesh" uid="uid://bvl0n3ggpeowq" path="res://_meshes/Enemy/enemy_imp.tres" id="3_qf47k"]
 [ext_resource type="PackedScene" uid="uid://bud2p2xgbdxj4" path="res://_scenes/enemy_features/shield.tscn" id="4_earu6"]
@@ -29,38 +28,22 @@ collision_mask = 31
 input_ray_pickable = false
 axis_lock_linear_y = true
 script = ExtResource("1_ia10i")
-enable_general_features = null
-max_health = null
 movement_speed = 12.0
-knockback_resistance = 666.0
-turn_speed = null
-detection_range = 32.0
-damage = 0.01
-use_shield = null
-use_melee = null
-enable_flocking = null
-flock_separation_weight = null
+turn_speed = 5.0
+detection_range = 666.0
+damage = 4.0
 flock_alignment_weight = 32.0
-flock_cohesion_weight = 1.0
-flock_neighbor_distance = 1.0
-max_flock_neighbors = null
-flock_weight_change_rate = 2.0
-max_flock_weight_multiplier = null
-enable_death_effect = null
-death_effect_scene = ExtResource("2_3gwb4")
+flock_cohesion_weight = 32.0
+flock_neighbor_distance = 255.0
+max_flock_neighbors = 32
+max_flock_weight_multiplier = 1.0
 death_effect_duration = 1.0
-enable_berserk = null
-berserk_chance = null
-berserk_speed_multiplier = null
-berserk_duration = null
+berserk_duration = 4.0
 enable_wander = false
-wander_radius = null
-wander_interval = null
-enable_wobble = false
-wobble_strength = 0.01
-wobble_decay = 1.0
-wobble_damping = null
-initial_max_speed = null
+wander_radius = 32.0
+wander_interval = 32.0
+wobble_damping = 0.466
+initial_max_speed = 32.0
 
 [node name="EnemyEffects" type="Node3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
@@ -79,7 +62,7 @@ shape = SubResource("CapsuleShape3D_ejukm")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00617647, 0.976994, -0.00603771)
 layers = 31
 material_override = ExtResource("2_gr5oo")
-instance_shader_parameters/lerp_color = Color(1, 1, 1, 1)
+instance_shader_parameters/lerp_color = Color(1.5, 0.1, 0.1, 1)
 instance_shader_parameters/lerp_wave = 0.0
 instance_shader_parameters/lerp_wave_contrast = 1.0
 instance_shader_parameters/lerp_wave_freq = 1.0

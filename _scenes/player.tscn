@@ -16,7 +16,6 @@ height = 13
 repeat = 2
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ayx0v"]
-radius = 0.6
 radial_segments = 9
 rings = 4
 
@@ -64,20 +63,24 @@ section_length = 0.311
 section_segments = 6
 curve = SubResource("Curve_qkx6c")
 
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_t5lob"]
-height = 0.982
-radius = 2.557
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qre1v"]
+radius = 0.501
+height = 1.959
 
 [node name="Player" type="RigidBody3D" node_paths=PackedStringArray("camera") groups=["player"]]
-collision_mask = 3775921926
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.025, 0)
+collision_mask = 2
 input_ray_pickable = false
 axis_lock_linear_y = true
-mass = 43.0
+axis_lock_angular_x = true
+axis_lock_angular_z = true
+mass = 8.0
+can_sleep = false
 script = ExtResource("1_7wjim")
 health = 256.0
-SPEED = 12.0
+SPEED = 32.0
 ROTATION_SPEED = 5.0
-SHOOTING_THRESHOLD = 0.233
+SHOOTING_THRESHOLD = 0.25
 camera = NodePath("GameCamera")
 
 [node name="RecoilBar" type="Sprite3D" parent="."]
@@ -89,13 +92,13 @@ region_enabled = true
 region_rect = Rect2(-3, -3, 135, 19)
 
 [node name="PlayerMesh" type="MeshInstance3D" parent="."]
-transform = Transform3D(0.999908, -0.0120488, 0.0062203, 0.0120859, 0.999909, -0.00596117, -0.00614791, 0.0060358, 0.999963, -0.001, 1.183, -0.003)
+transform = Transform3D(0.999908, -0.0120488, 0.0062203, 0.0120859, 0.999909, -0.00596117, -0.00614791, 0.0060358, 0.999963, -0.001, 1, -0.003)
 material_override = ExtResource("2_qw1fv")
 mesh = SubResource("CapsuleMesh_ayx0v")
 skeleton = NodePath("")
 
 [node name="Decal" type="MeshInstance3D" parent="PlayerMesh"]
-transform = Transform3D(1, 1.16415e-08, 2.1937e-09, -7.50151e-09, -5.44824e-08, -1, -1.86265e-09, 1, -4.79631e-08, -0.0121381, -0.757969, 1.38697)
+transform = Transform3D(1, 1.21072e-08, 2.09911e-09, -7.40329e-09, -5.4948e-08, -1, -1.86265e-09, 1, -4.79631e-08, -0.0139724, -0.909729, 1.38787)
 layers = 2
 material_override = SubResource("StandardMaterial3D_s7uvh")
 cast_shadow = 0
@@ -104,14 +107,14 @@ mesh = SubResource("RibbonTrailMesh_oyiho")
 skeleton = NodePath("")
 
 [node name="Weapon" parent="." node_paths=PackedStringArray("camera_node") instance=ExtResource("3_v7pw0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.253, 0.546)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0.546)
 bullet_speed = 64.0
 bullet_damage = 1.0
 knockback = 1.0
 spread_count_bullet = 3
-recoil_force = 1.0
-max_recoil = 5.0
-recoil_amplitude = 1.0
+recoil_force = 5.0
+max_recoil = 12.0
+recoil_mouse_up_recovery_time = 2.0001
 camera_node = NodePath("../GameCamera")
 enable_debug_visualization = false
 enable_recoil_debug = false
@@ -131,21 +134,20 @@ gizmo_extents = 1.0
 transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 55, 55, 32)
 top_level = true
 cull_mask = 1
-current = true
-fov = 25.0
+doppler_tracking = 2
+fov = 15.0
 far = 1000.0
 script = ExtResource("4_pg2h6")
 player_pos = NodePath("..")
-camera_offset = Vector3(44, 50, 32)
-max_offset = 12.0
+camera_offset = Vector3(32, 55, 24)
+max_offset = 50.0
 attraction_strength = 1.0
+damping = 0.86
+blend_factor = 0.0
+look_adjust_strength = 0.0
+enemies_average_smoothing = 0.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." groups=["player"]]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 physics_interpolation_mode = 1
-transform = Transform3D(1.129, 0, 0, 0, 1.129, 0, 0, 0, 1.129, 0, 1.136, 0)
-shape = SubResource("CylinderShape3D_t5lob")
-
-[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
-simplify_path = true
-avoidance_enabled = true
-debug_enabled = true
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_qre1v")

@@ -26,7 +26,7 @@ func _process(delta):
 
 func update_camera_position(delta):
 	var player_target_position = player_pos.global_position + camera_offset
-	var enemies_average = calculate_enemies_average()
+	var enemies_average = calculate_enemies_average(delta)
 	smoothed_enemies_average = smoothed_enemies_average.lerp(enemies_average, delta * (enemies_average_smoothing * 20.0))
 	var blended_target_position = player_target_position.lerp(smoothed_enemies_average + camera_offset, blend_factor)
 	
@@ -36,7 +36,7 @@ func update_camera_position(delta):
 	var look_target = player_pos.global_position.lerp(smoothed_enemies_average, look_blend)
 	look_at(look_target, Vector3.UP)
 
-func calculate_enemies_average() -> Vector3:
+func calculate_enemies_average(delta: float) -> Vector3:
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	if enemies.is_empty():
 		return player_pos.global_position
@@ -51,7 +51,7 @@ func apply_camera_movement(target_position: Vector3, delta: float):
 	var distance_to_target = direction_to_target.length()
 	
 	if distance_to_target > max_offset:
-		direction_to_target = direction_to_target.normalized() * max_offset
+		direction_to_target = direction_to_target.normalized() * max_offset * delta
 		target_position = global_position + direction_to_target
 	
 	var force = direction_to_target * (attraction_strength * 16)

@@ -1,7 +1,6 @@
-[gd_scene load_steps=8 format=3 uid="uid://cw3xgyijrvuub"]
+[gd_scene load_steps=7 format=3 uid="uid://cw3xgyijrvuub"]
 
 [ext_resource type="Script" path="res://_scripts/enemy.gd" id="1_a3n1o"]
-[ext_resource type="PackedScene" uid="uid://b6m5ebh7isok8" path="res://_pfx/default_enemy_die_fx.tscn" id="2_fcxyv"]
 [ext_resource type="Script" path="res://_scripts/include/enemy_effects.gd" id="3_yiueq"]
 [ext_resource type="Material" uid="uid://c3n5l5qp54ah5" path="res://_materials/imp_mats/fast_imp.tres" id="4_cqftm"]
 [ext_resource type="PackedScene" uid="uid://d1dt4pblukewh" path="res://_scenes/UI/enemy_health_bar.tscn" id="5_upr6t"]
@@ -25,12 +24,6 @@ collision_mask = 17170687
 input_ray_pickable = false
 mass = 43.0
 script = ExtResource("1_a3n1o")
-death_effect_scene = ExtResource("2_fcxyv")
-death_effect_duration = 1.0
-berserk_chance = 0.06
-berserk_speed_multiplier = 1.0
-wobble_strength = 0.524
-wobble_damping = 0.883
 
 [node name="EnemyEffects" type="Node3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)

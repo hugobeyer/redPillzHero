@@ -45,19 +45,18 @@ radius = 0.339156
 [node name="Bullet" type="RigidBody3D" groups=["player_projectyle"]]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
 collision_layer = 16
-collision_mask = 395270
+collision_mask = 6
 input_ray_pickable = false
-mass = 10.0
+mass = 4.0
 gravity_scale = 0.0
+can_sleep = false
 script = ExtResource("1_6qr1r")
-damage = 4.0
-max_speed = 120.0
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(-1, -8.74228e-08, -1.69407e-21, -3.82137e-15, 4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, 3.17139e-08, 4.65984e-09, -0.244031)
+transform = Transform3D(-1, -8.74228e-08, -1.69407e-21, -3.82137e-15, 4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, 1.43562e-08, 4.65984e-09, -0.0454826)
 material_override = SubResource("ShaderMaterial_44twl")
 mesh = SubResource("TubeTrailMesh_7ckpg")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.14084e-08, 0, -0.244883)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.05076e-09, 0, -0.0463347)
 shape = SubResource("SphereShape3D_tsc64")

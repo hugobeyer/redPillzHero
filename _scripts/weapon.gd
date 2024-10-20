@@ -6,7 +6,7 @@ signal recoil_reset()
 #✦ 🔫 BULLET PARAMETERS 🔫                              ✦
 #╘═════════════════════════════════════════════════════╛
 @export_group("Bullet Parameters")
-@export_range(0.01, 2.0) var fire_rate: float = 0.05
+@export_range(0.5, 16.0) var fire_rate: float = 0.05
 @export_range(1.0, 1000.0) var bullet_speed: float = 50.0
 @export_range(1, 100) var bullet_damage: float = 10.0
 @export_range(0.0, 100.0) var knockback: float = 10.0
@@ -15,25 +15,26 @@ signal recoil_reset()
 #✦ 🧭 SPREAD PARAMETERS 🧭                             ✦
 #╘═════════════════════════════════════════════════════╛
 @export_group("Spread Parameters")
-@export_range(1, 20) var spread_count_bullet: int = 1
-@export_range(0.1, 360.0) var spread_count_angle: float = 20.0
-@export_range(0.1, 45.0) var spread_count_randomize_angle: float = 5.0
+@export_range(1, 7) var spread_count_bullet: int = 1
+@export_range(0.1, 120.0) var spread_count_angle: float = 20.0
+@export_range(0.1, 450) var spread_count_randomize_angle: float = 5.0
 
 #✦ 🔧 RECOIL PARAMETERS 🔧                             ✦
 #╘═════════════════════════════════════════════════════╛
 @export_group("Recoil Parameters")
 ## Base force of recoil applied to the Weapon
-@export_range(0.001, 256.0) var recoil_force: float = 0.5
-@export_range(0.001, 256.0) var max_recoil: float = 2.0
-@export_range(0.01, 5.0) var recoil_amplitude: float = 45.0
-@export_range(0.01, 5.0) var recoil_frequency: float = 1.0
-@export_range(0.001, 16.0) var recoil_increase_duration: float = 1.0
+@export_range(0.001, 382.0) var recoil_force: float = 1.5
+@export_range(0.001, 32.0) var max_recoil: float = 12.0
+@export_range(0.01, 4.0) var recoil_amplitude: float = 1.0
+@export_range(0.01, 4.0) var recoil_frequency: float = 1.0
+@export_range(0.001, 8.0) var recoil_increase_duration: float = 1.0
 @export var recoil_curve_time: Curve = Curve.new()
 @export var recoil_mouse_up_curve: Curve = Curve.new()
 @export var recoil_noise_speed: float = 1.0
-@export var recoil_noise_texture: Texture2D  # This should now be a normal map texture
+@export var recoil_noise_texture: Texture2D # This should now be a normal map texture
 @export var recoil_linear_damp: float = 0.01
 @export var recoil_angle_damp: float = 0.01
+
 
 #✦ ⏱ RECOVERY PARAMETERS ⏱                             ✦
 #╘═════════════════════════════════════════════════════╛
@@ -56,10 +57,10 @@ var current_recoil: float = 0.0
 var time_since_last_shot: float = 0.0
 var last_shot_time: float = 0.0
 var current_recoil_offset: float = 0.0
-var current_recoil_rotation_y: float = 0.0  # Only track Y-axis rotation for Weapon recoil
-var noise_sample_x: float = 0.0  # Track the current X position for sampling the noise texture
-var noise_sample_y: float = 0.0  # Track the current Y position for sampling the noise texture
-var initial_Weapon_rotation: Vector3  # Store the initial rotation of the Weapon
+var current_recoil_rotation_y: float = 0.0 # Only track Y-axis rotation for Weapon recoil
+var noise_sample_x: float = 0.0 # Track the current X position for sampling the noise texture
+var noise_sample_y: float = 0.0 # Track the current Y position for sampling the noise texture
+var initial_Weapon_rotation: Vector3 # Store the initial rotation of the Weapon
 
 # Debug cylinder export variables
 @export_group("Debug Visualization")
@@ -94,22 +95,22 @@ var recoil_recovery_label: Sprite3D
 
 var recoil_noise_sprite: Sprite3D
 var recoil_noise_label: Sprite3D
-var recoil_accumulation: float = 0.0  # Add this variable to track recoil buildup
+var recoil_accumulation: float = 0.0 # Add this variable to track recoil buildup
 
 var is_recovering: bool = false
 var recovery_start_time: float = 0.0
 
-@export var camera_node: Camera3D  # Assign this in the Inspector
+@export var camera_node: Camera3D # Assign this in the Inspector
 
 var thumbstick: Node = null
-var fire_threshold: float = 0.5  # Adjust this value as needed
+var fire_threshold: float = 0.5 # Adjust this value as needed
 
 var is_trigger_pressed: bool = false
 
 var shoot_direction: Vector2 = Vector2.ZERO
 
 # Add these if they're not already present
-var recoil_recovery_time: float = 0.5  # Adjust this value as needed
+var recoil_recovery_time: float = 0.5 # Adjust this value as needed
 var is_recovering_from_recoil: bool = false
 var recoil_recovery_start_time: float = 0.0
 
@@ -141,7 +142,7 @@ func _ready():
 		push_error("Weapon node could not be loaded. Assign a valid Node3D for the Weapon.")
 	else:
 		# print("Bullet scene, noise texture, and recovery curve successfully loaded in _ready().")
-		initial_Weapon_rotation = Weapon_node.rotation  # Store the initial rotation
+		initial_Weapon_rotation = Weapon_node.rotation # Store the initial rotation
 	
 	# Create debug sprites
 	create_debug_cylinders()
@@ -151,7 +152,7 @@ func _ready():
 		push_error("Thumbstick not found. Make sure it's properly added to the scene.")
 
 	# Ensure muzzle_node is a child of the Weapon and positioned correctly
-	muzzle_node = $Muzzle  # Adjust the path if necessary
+	muzzle_node = $Muzzle # Adjust the path if necessary
 	if not muzzle_node:
 		push_error("Muzzle node not found!")
 	else:
@@ -269,7 +270,7 @@ func update_cylinder_scale(cylinder: Node3D, scale_y: float):
 	
 	if mesh_instance and mesh_instance is MeshInstance3D:
 		var new_scale = Vector3(1, max(scale_y, 0.01), 1)
-		var original_height = 4.0  # Assuming the original height is 1.0, adjust if different
+		var original_height = 4.0 # Assuming the original height is 1.0, adjust if different
 		var height_difference = original_height * (new_scale.y - 1)
 		
 		# Scale the mesh
@@ -297,9 +298,11 @@ func _process(delta: float):
 			time_since_last_shot = 0.0
 	else:
 		handle_recoil_recovery(delta)
-
-	apply_recoil_to_player(delta)
 	update_debug_cylinders()
+	apply_recoil_to_player(delta)
+
+func _physics_process(delta: float):
+	apply_recoil_damping(recoil_linear_damp, recoil_angle_damp)
 
 func update_recoil(delta: float, current_time: float):
 	var recoil_duration = current_time - recoil_start_time
@@ -324,6 +327,12 @@ func update_recoil(delta: float, current_time: float):
 		Weapon_node.rotate_y(deg_to_rad(recoil_angle))
 		var max_rotation = deg_to_rad(max_recoil * curve_value)
 		Weapon_node.rotation.y = clamp(Weapon_node.rotation.y, initial_Weapon_rotation.y - max_rotation, initial_Weapon_rotation.y + max_rotation)
+
+func apply_recoil_damping(linear_damp: float, angle_damp: float):
+	var linear_damping = linear_damp
+	var angle_damping = angle_damp
+	recoil_linear_damp *= 1 - linear_damping
+	recoil_angle_damp *= 1 - angle_damping
 
 func apply_recoil_to_player(delta: float):
 	if player:
@@ -389,7 +398,7 @@ func shoot_bullet():
 
 		# Ensure spread_direction is not zero
 		if spread_direction.is_equal_approx(Vector3.ZERO):
-			spread_direction = forward_direction  # Use a default direction
+			spread_direction = forward_direction # Use a default direction
 
 		# Calculate recoil angle
 		var recoil_noise_sample = bullet_rng.randf() * recoil_noise_texture.get_width()
@@ -404,7 +413,7 @@ func shoot_bullet():
 			
 			# Set bullet rotation
 			bullet.global_transform = bullet.global_transform.looking_at(
-				bullet.global_transform.origin + spread_direction, 
+				bullet.global_transform.origin + spread_direction,
 				Vector3.UP
 			)
 
@@ -431,7 +440,7 @@ func shoot_bullet():
 	noise_sample_x = fmod(noise_sample_x + recoil_frequency, float(recoil_noise_texture.get_width()))
 
 func apply_recoil(direction: Vector3):
-	is_recovering = false  # Reset recovery when new recoil is applied
+	is_recovering = false # Reset recovery when new recoil is applied
 	
 	var recoil_value = get_recoil_value()
 	
@@ -444,10 +453,10 @@ func apply_recoil(direction: Vector3):
 	if Weapon_node and recoil_noise_texture:
 		# Use recoil_noise_speed to control the sampling rate
 		noise_sample_x += recoil_noise_speed * recoil_frequency * (recoil_value / max_recoil)
-		noise_sample_y += recoil_noise_speed * recoil_frequency * (recoil_value / max_recoil) * 0.7  # Slightly different rate for Y
+		noise_sample_y += recoil_noise_speed * recoil_frequency * (recoil_value / max_recoil) * 0.7 # Slightly different rate for Y
 		
 		# Sample the normal map texture
-		var texture_size = recoil_noise_texture.get_width()  # Assuming square texture
+		var texture_size = recoil_noise_texture.get_width() # Assuming square texture
 		var sample_pos = Vector2(
 			fmod(noise_sample_x, float(texture_size)) / float(texture_size),
 			fmod(noise_sample_y, float(texture_size)) / float(texture_size)
