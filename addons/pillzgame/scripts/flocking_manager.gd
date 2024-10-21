@@ -30,6 +30,8 @@ var target_nodes: Array[Node3D] = []
 var scattered_points: Array = []
 var velocities: Dictionary = {}
 
+@export var max_neighbors: int = 7  # Maximum number of neighbors to consider for flocking
+
 func _ready():
     scattered_points = get_children().filter(func(child): return child is Node3D)
     for point in scattered_points:
@@ -64,24 +66,37 @@ func calculate_flocking_force(point: Node3D) -> Vector3:
     var separation = Vector3.ZERO
     var alignment = Vector3.ZERO
     var cohesion = Vector3.ZERO
-    var neighbor_count = 0
-
+    var neighbors = []
+    
     for other in scattered_points:
         if other == point:
             continue
         var distance = point.global_position.distance_to(other.global_position)
         if distance < flock_neighbor_distance:
-            var offset = point.global_position - other.global_position
-            separation += offset.normalized() / max(distance, 0.001)
-            alignment += velocities[other]
-            cohesion += other.global_position
-            neighbor_count += 1
-
+            neighbors.append({"point": other, "distance": distance})
+    
+    # Sort neighbors by distance and limit to max_neighbors
+    neighbors.sort_custom(func(a, b): return a["distance"] < b["distance"])
+    neighbors = neighbors.slice(0, max_neighbors)
+    
+    for neighbor in neighbors:
+        var other = neighbor["point"]
+        var distance = neighbor["distance"]
+        
+        separation += (point.global_position - other.global_position) / distance
+        alignment += velocities[other]
+        cohesion += other.global_position
+    
+    var neighbor_count = neighbors.size()
     if neighbor_count > 0:
+        separation /= neighbor_count
+        alignment /= neighbor_count
+        cohesion = (cohesion / neighbor_count) - point.global_position
+        
         separation = separation.normalized() * max_speed * separation_weight
-        alignment = (alignment / neighbor_count).normalized() * max_speed * alignment_weight
-        cohesion = ((cohesion / neighbor_count) - point.global_position).normalized() * max_speed * cohesion_weight
-
+        alignment = alignment.normalized() * max_speed * alignment_weight
+        cohesion = cohesion.normalized() * max_speed * cohesion_weight
+    
     return separation + alignment + cohesion
 
 func calculate_target_force(point: Node3D) -> Vector3:
