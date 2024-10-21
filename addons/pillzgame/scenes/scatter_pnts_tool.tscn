@@ -1,116 +1,417 @@
-[gd_scene load_steps=2 format=3 uid="uid://cd5swp620y3m1"]
+[gd_scene load_steps=13 format=3 uid="uid://cd5swp620y3m1"]
 
-[ext_resource type="Script" path="res://addons/pillzgame/scripts/scatter/scatter_pnts_tool.gd" id="1_v5srb"]
+[ext_resource type="Script" path="res://addons/pillzgame/scripts/flocking_manager.gd" id="1_d830g"]
+[ext_resource type="Script" path="res://addons/pillzgame/scripts/camera_lookat.gd" id="2_hnsv0"]
+[ext_resource type="Script" path="res://addons/pillzgame/scripts/wasd_movement.gd" id="2_mmai2"]
+[ext_resource type="PackedScene" uid="uid://dyq15p7loajsl" path="res://addons/pillzgame/scenes/flocking_debug.tscn" id="2_qb75t"]
+[ext_resource type="Shader" uid="uid://lsqh43w8ge27" path="res://_shaders/grounds/custom_gr_tex.tres" id="5_ji5on"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_prt03"]
+render_priority = 0
+shader = ExtResource("5_ji5on")
+shader_parameter/ColorBot = Color(0.189344, 0.244, 0.210618, 1)
+shader_parameter/ColorTop = Color(0.30528, 0.36, 0.32516, 1)
+shader_parameter/tiling = 12.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_tmeit"]
+size = Vector2(256, 256)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mo3ep"]
+shading_mode = 0
+albedo_color = Color(0.884, 0.730283, 0.378352, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_fjhpb"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_dy7ow"]
+size = Vector3(0.282, 0.323, 0.077)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_xvins"]
+shading_mode = 0
+albedo_color = Color(0.237984, 0.888, 0.263985, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_u5oou"]
+shading_mode = 0
+albedo_color = Color(0.0652, 0.581584, 0.652, 1)
 
 [node name="ScatterPntsTool" type="Node3D"]
-script = ExtResource("1_v5srb")
-point_count = 1
-scatter_radius = 1.0
 
-[node name="@Node3D@165596" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.0608, -13.775, 10.3644)
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.0488497, 0.947743, -0.315272, 0, 0.315649, 0.948876, 0.998806, -0.0463523, 0.0154194, 0, 0, 0)
+shadow_enabled = true
+shadow_opacity = 0.52
 
-[node name="ScatteredPoint_1" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.6967, -28.0106, 12.3329)
+[node name="ScatteredPoints" type="Node3D" parent="."]
+script = ExtResource("1_d830g")
+point_radius = 1.0
+min_distance_between_points = 2.0
+min_distance_to_target = 1.25
+separation_weight = 24.0
+alignment_weight = 22.0
+cohesion_weight = 15.0
+target_weight = 22.0
+max_speed = 12.0
+max_force = 24.0
+turn_speed = 5.0
+flock_neighbor_distance = 4.0
+target_detection_range = 24.0
+target_node_path = NodePath("../Targets")
+flocking_debug_scene = ExtResource("2_qb75t")
+target_nodes_paths = Array[NodePath]([NodePath("../Targets/targetNode"), NodePath("../Targets/targetNode2"), NodePath("../Targets/targetNode3")])
+metadata/_edit_lock_ = true
 
-[node name="ScatteredPoint_2" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.8102, 10.921, 31.6154)
+[node name="ScatteredPoint_0" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.83483, 0, -4.65117)
 
-[node name="ScatteredPoint_3" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.0414, 16.4424, -14.8259)
+[node name="ScatteredPoint_1" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -5.47295, 0, 3.88836)
 
-[node name="@Node3D@165597" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.9073, 11.7053, -7.21795)
+[node name="ScatteredPoint_2" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.1736, 0, -1.08047)
 
-[node name="@Node3D@165598" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19.5427, 28.808, 7.20457)
+[node name="ScatteredPoint_3" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.51166, 0, 4.91386)
 
-[node name="@Node3D@165599" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.8474, -1.21431, -21.298)
+[node name="ScatteredPoint_4" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.54693, 0, 6.75284)
 
-[node name="@Node3D@165600" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 23.4027, -12.3106, -23.3899)
+[node name="ScatteredPoint_5" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 16.2051, 0, -14.6744)
 
-[node name="@Node3D@165601" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.68152, -7.31776, -24.5824)
+[node name="ScatteredPoint_6" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 7.05607, 0, -13.1077)
 
-[node name="@Node3D@165602" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.4419, -14.9312, -30.498)
+[node name="ScatteredPoint_7" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 16.9993, 0, -6.84902)
 
-[node name="@Node3D@165603" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.5692, -10.5986, 30.6841)
+[node name="ScatteredPoint_8" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 13.2265, 0, -1.63701)
 
-[node name="@Node3D@165604" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8.6224, 28.7767, 7.88472)
+[node name="ScatteredPoint_9" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 6.77444, 0, -8.25595)
 
-[node name="@Node3D@165605" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.8981, -3.2826, -27.3809)
+[node name="ScatteredPoint_10" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -7.12236, 0, -17.0779)
 
-[node name="ScatteredPoint_13" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 20.3342, 27.1495, -6.40392)
+[node name="ScatteredPoint_11" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -16.2714, 0, -15.5111)
 
-[node name="ScatteredPoint_14" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.19351, -10.1615, -7.66636)
+[node name="ScatteredPoint_12" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -6.3282, 0, -9.25243)
 
-[node name="ScatteredPoint_15" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.77538, -8.35221, 29.1913)
+[node name="ScatteredPoint_13" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -10.1009, 0, -4.04042)
 
-[node name="ScatteredPoint_16" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 31.1043, 23.1611, -0.26476)
+[node name="ScatteredPoint_14" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -16.553, 0, -10.6594)
 
-[node name="ScatteredPoint_17" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.5897, 0.828495, 4.3498)
+[node name="ScatteredPoint_15" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.35221, -1.90735e-06, -10.3113)
 
-[node name="ScatteredPoint_18" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.85292, -4.63086, -1.52502)
+[node name="ScatteredPoint_16" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.285913, -1.90735e-06, -1.77172)
 
-[node name="ScatteredPoint_19" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 17.4864, -31.4187, -30.5134)
+[node name="ScatteredPoint_17" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.3606, -1.90735e-06, -6.74055)
 
-[node name="ScatteredPoint_20" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -23.4833, -30.7389, -24.0945)
+[node name="ScatteredPoint_18" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.6987, -1.90735e-06, -0.746221)
 
-[node name="ScatteredPoint_21" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 29.7086, -25.7177, 31.4764)
+[node name="ScatteredPoint_19" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.64011, -1.90735e-06, 1.09276)
 
-[node name="ScatteredPoint_22" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.4737, 21.1799, -24.5106)
+[node name="ScatteredPoint_20" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 21.3921, -1.90735e-06, -20.3345)
 
-[node name="ScatteredPoint_23" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -22.8382, 12.4939, -3.46126)
+[node name="ScatteredPoint_21" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 12.2431, -1.90735e-06, -18.7678)
 
-[node name="@Node3D@18847" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.87849, 8.6984, 18.1256)
+[node name="ScatteredPoint_22" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 22.1863, -1.90735e-06, -12.5091)
 
-[node name="_Node3D_18848" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -26.4374, 13.7101, 30.7956)
+[node name="ScatteredPoint_23" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 18.4135, -1.90735e-06, -7.29709)
 
-[node name="ScatteredPoint_4" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.8117, -19.6128, 27.9994)
+[node name="ScatteredPoint_24" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, 11.9615, -1.90735e-06, -13.916)
 
-[node name="ScatteredPoint_5" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8.31152, -13.1432, 0.912115)
+[node name="ScatteredPoint_25" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -1.93532, -1.90735e-06, -22.738)
 
-[node name="ScatteredPoint_6" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.6996, -29.0002, 5.78933)
+[node name="ScatteredPoint_26" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -11.0844, -1.90735e-06, -21.1712)
 
-[node name="ScatteredPoint_7" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 30.9564, -0.51949, 7.94394)
+[node name="ScatteredPoint_27" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -1.14116, -1.90735e-06, -14.9125)
 
-[node name="ScatteredPoint_8" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.808313, -11.8269, 19.2257)
+[node name="ScatteredPoint_28" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -4.91386, -1.90735e-06, -9.7005)
 
-[node name="ScatteredPoint_9" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 26.3222, 11.4556, -25.0512)
+[node name="ScatteredPoint_29" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.541605, 0, -0.840633, 0, 1, 0, 0.840633, 0, 0.541605, -11.366, -1.90735e-06, -16.3195)
 
-[node name="ScatteredPoint_10" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.3213, -16.8453, 8.84912)
+[node name="ScatteredPoint_30" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -54.4812, 0, -74.108)
 
-[node name="ScatteredPoint_11" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.49333, 0.589615, 9.47778)
+[node name="ScatteredPoint_31" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -48.6449, 0, -66.8901)
 
-[node name="ScatteredPoint_12" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 21.8244, -17.0906, 24.7145)
+[node name="ScatteredPoint_32" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -48.0409, 0, -78.6235)
 
-[node name="@Node3D@22601" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.561863, 0.306283, 0.948659)
+[node name="ScatteredPoint_33" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -41.6501, 0, -77.8775)
+
+[node name="ScatteredPoint_34" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -44.2738, 0, -69.0144)
+
+[node name="ScatteredPoint_35" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -54.8742, 0, -94.7417)
+
+[node name="ScatteredPoint_36" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -57.7808, 0, -85.9263)
+
+[node name="ScatteredPoint_37" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -47.5902, 0, -91.7734)
+
+[node name="ScatteredPoint_38" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -44.756, 0, -85.997)
+
+[node name="ScatteredPoint_39" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -53.6277, 0, -83.4023)
+
+[node name="ScatteredPoint_40" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -67.9364, 0, -75.2654)
+
+[node name="ScatteredPoint_41" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -70.8429, 0, -66.4499)
+
+[node name="ScatteredPoint_42" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -60.6523, 0, -72.297)
+
+[node name="ScatteredPoint_43" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -57.8181, 0, -66.5207)
+
+[node name="ScatteredPoint_44" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -66.6899, 0, -63.926)
+
+[node name="ScatteredPoint_45" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -57.0479, -1.90735e-06, -81.3436)
+
+[node name="ScatteredPoint_46" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -51.2116, -1.90735e-06, -74.1257)
+
+[node name="ScatteredPoint_47" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -50.6076, -1.90735e-06, -85.8591)
+
+[node name="ScatteredPoint_48" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -44.2168, -1.90735e-06, -85.1131)
+
+[node name="ScatteredPoint_49" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, -46.8405, -1.90735e-06, -76.25)
+
+[node name="ScatteredPoint_50" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -57.4409, -1.90735e-06, -101.977)
+
+[node name="ScatteredPoint_51" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -60.3475, -1.90735e-06, -93.1619)
+
+[node name="ScatteredPoint_52" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -50.1569, -1.90735e-06, -99.009)
+
+[node name="ScatteredPoint_53" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -47.3227, -1.90735e-06, -93.2326)
+
+[node name="ScatteredPoint_54" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -56.1944, -1.90735e-06, -90.638)
+
+[node name="ScatteredPoint_55" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -70.5031, -1.90735e-06, -82.501)
+
+[node name="ScatteredPoint_56" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -73.4097, -1.90735e-06, -73.6855)
+
+[node name="ScatteredPoint_57" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -63.219, -1.90735e-06, -79.5326)
+
+[node name="ScatteredPoint_58" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -60.3848, -1.90735e-06, -73.7563)
+
+[node name="ScatteredPoint_59" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, -69.2566, -1.90735e-06, -71.1616)
+
+[node name="ScatteredPoint_60" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 86.7124, 1.52588e-05, -53.0055)
+
+[node name="ScatteredPoint_61" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 92.5486, 1.52588e-05, -45.7876)
+
+[node name="ScatteredPoint_62" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 93.1527, 1.52588e-05, -57.5211)
+
+[node name="ScatteredPoint_63" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 99.5435, 1.52588e-05, -56.7751)
+
+[node name="ScatteredPoint_64" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 96.9197, 1.52588e-05, -47.9119)
+
+[node name="ScatteredPoint_65" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 86.3194, 1.52588e-05, -73.6392)
+
+[node name="ScatteredPoint_66" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 83.4127, 1.52588e-05, -64.8239)
+
+[node name="ScatteredPoint_67" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 93.6034, 1.52588e-05, -70.671)
+
+[node name="ScatteredPoint_68" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 96.4375, 1.52588e-05, -64.8946)
+
+[node name="ScatteredPoint_69" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 87.5658, 1.52588e-05, -62.2999)
+
+[node name="ScatteredPoint_70" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 73.2572, 1.52588e-05, -54.1629)
+
+[node name="ScatteredPoint_71" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 70.3506, 1.52588e-05, -45.3475)
+
+[node name="ScatteredPoint_72" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 80.5413, 1.52588e-05, -51.1946)
+
+[node name="ScatteredPoint_73" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 83.3754, 1.52588e-05, -45.4183)
+
+[node name="ScatteredPoint_74" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.996453, 0, 0.0841469, 0, 1, 0, -0.0841469, 0, 0.996453, 74.5037, 1.52588e-05, -42.8236)
+
+[node name="ScatteredPoint_75" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 84.1456, 1.33514e-05, -60.2411)
+
+[node name="ScatteredPoint_76" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 89.9819, 1.33514e-05, -53.0232)
+
+[node name="ScatteredPoint_77" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 90.586, 1.33514e-05, -64.7566)
+
+[node name="ScatteredPoint_78" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 96.9768, 1.33514e-05, -64.0107)
+
+[node name="ScatteredPoint_79" type="Node3D" parent="ScatteredPoints"]
+transform = Transform3D(0.468948, 0, 0.883226, 0, 1, 0, -0.883226, 0, 0.468948, 94.353, 1.33514e-05, -55.1475)
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("target")]
+transform = Transform3D(1, 0, 0, 0, 0.627963, 0.778243, 0, -0.778243, 0.627963, 0, 64, 0)
+current = true
+fov = 33.6
+far = 512.0
+script = ExtResource("2_hnsv0")
+target = NodePath("../Targets")
+smooth_speed = 1.0
+offset = Vector3(0, 55, 32)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_prt03")
+mesh = SubResource("PlaneMesh_tmeit")
+
+[node name="Targets" type="Node3D" parent="."]
+
+[node name="targetNode" type="Node3D" parent="Targets"]
+transform = Transform3D(-0.90332, 0, -0.428967, 0, 1, 0, 0.428967, 0, -0.90332, -5.8392, 0, -1.33862)
+script = ExtResource("2_mmai2")
+wander_speed = 7.291
+flee_speed = 17.943
+world_noise_strength = 3.852
+noise_speed = 0.512
+max_radius = 127.7
+min_radius = 1.0
+turn_around_zone = 1.0
+max_turn_angle = 7.602
+flee_distance = 4.0
+flock_node_path = NodePath("../../ScatteredPoints")
+metadata/_edit_pinned_properties_ = [&"flee_speed", &"world_noise_strength", &"max_turn_angle", &"max_radius", &"min_radius", &"noise_speed"]
+
+[node name="target" type="Marker3D" parent="Targets/targetNode"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Targets/targetNode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+material_override = SubResource("StandardMaterial3D_mo3ep")
+mesh = SubResource("CapsuleMesh_fjhpb")
+
+[node name="pivot" type="Node3D" parent="Targets/targetNode"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.624632, 0)
+
+[node name="forward_arrow" type="MeshInstance3D" parent="Targets/targetNode/pivot"]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, -4.23516e-22, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 4.67923e-15, 0.0745398, -0.733)
+material_override = SubResource("StandardMaterial3D_mo3ep")
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("PrismMesh_dy7ow")
+skeleton = NodePath("../..")
+
+[node name="targetNode2" type="Node3D" parent="Targets"]
+transform = Transform3D(0.598241, 0, -0.801316, 0, 1, 0, 0.801316, 0, 0.598241, 5.44614, 0, -5.72047)
+script = ExtResource("2_mmai2")
+wander_speed = 8.0
+flee_speed = 24.0
+world_noise_strength = 12.0
+noise_speed = 0.1
+max_radius = 127.7
+min_radius = 1.0
+turn_around_zone = 1.0
+max_turn_angle = 12.0
+turn_speed = 3.0
+flee_distance = 12.0
+flock_node_path = NodePath("../../ScatteredPoints")
+metadata/_edit_pinned_properties_ = [&"flee_speed", &"world_noise_strength", &"max_turn_angle", &"max_radius", &"min_radius", &"noise_speed"]
+
+[node name="target" type="Marker3D" parent="Targets/targetNode2"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Targets/targetNode2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00814819, 1.02411, -0.040432)
+material_override = SubResource("StandardMaterial3D_xvins")
+mesh = SubResource("CapsuleMesh_fjhpb")
+
+[node name="pivot" type="Node3D" parent="Targets/targetNode2"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.624632, 0)
+
+[node name="forward_arrow" type="MeshInstance3D" parent="Targets/targetNode2/pivot"]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, -4.23516e-22, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 4.67923e-15, 0.0745398, -0.733)
+material_override = SubResource("StandardMaterial3D_xvins")
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("PrismMesh_dy7ow")
+skeleton = NodePath("../..")
+
+[node name="targetNode3" type="Node3D" parent="Targets"]
+transform = Transform3D(0.273254, 0, 0.961942, 0, 1, 0, -0.961942, 0, 0.273254, -12.6531, 0, -9.4032)
+script = ExtResource("2_mmai2")
+wander_speed = 3.0
+flee_speed = 17.943
+world_noise_strength = 5.0
+noise_speed = 0.6
+max_radius = 127.7
+min_radius = 1.0
+turn_around_zone = 1.0
+max_turn_angle = 4.0
+turn_speed = 1.0
+flee_distance = 9.0
+flock_node_path = NodePath("../../ScatteredPoints")
+metadata/_edit_pinned_properties_ = [&"flee_speed", &"world_noise_strength", &"max_turn_angle", &"max_radius", &"min_radius", &"noise_speed"]
+
+[node name="target" type="Marker3D" parent="Targets/targetNode3"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Targets/targetNode3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+material_override = SubResource("StandardMaterial3D_u5oou")
+mesh = SubResource("CapsuleMesh_fjhpb")
+
+[node name="pivot" type="Node3D" parent="Targets/targetNode3"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.624632, 0)
+
+[node name="forward_arrow" type="MeshInstance3D" parent="Targets/targetNode3/pivot"]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, -4.23516e-22, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 4.67923e-15, 0.0745398, -0.733)
+material_override = SubResource("StandardMaterial3D_u5oou")
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("PrismMesh_dy7ow")
+skeleton = NodePath("../..")

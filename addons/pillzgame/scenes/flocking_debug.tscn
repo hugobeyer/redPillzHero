@@ -1,0 +1,104 @@
+[gd_scene load_steps=8 format=3 uid="uid://dyq15p7loajsl"]
+
+[ext_resource type="Material" uid="uid://cqk0keq24yqr6" path="res://addons/pillzgame/res/radiusdebug.tres" id="1_xjcmd"]
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_vmjrb"]
+radial_segments = 15
+rings = 5
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_bc4dm"]
+flip_faces = true
+bottom_radius = 0.457
+height = 0.001
+radial_segments = 32
+rings = 1
+cap_top = false
+cap_bottom = false
+
+[sub_resource type="PrismMesh" id="PrismMesh_sn7os"]
+size = Vector3(0.282, 0.288, -0.22)
+
+[sub_resource type="PrismMesh" id="PrismMesh_3t1tv"]
+size = Vector3(0.79, 0.705, 0.009)
+
+[sub_resource type="PrismMesh" id="PrismMesh_lapyt"]
+size = Vector3(0.493, 0.437, 0.01)
+
+[sub_resource type="PrismMesh" id="PrismMesh_lbftr"]
+size = Vector3(0.506, 0.461, 0.01)
+
+[node name="FlockingDebug" type="Node3D"]
+
+[node name="capsule_vis" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+material_override = ExtResource("1_xjcmd")
+gi_mode = 0
+instance_shader_parameters/AddColor = Color(0.4872, 0.58, 0.58, 1)
+instance_shader_parameters/BaseColor = Color(0.28944, 0.331776, 0.36, 1)
+instance_shader_parameters/ColorModulate = 0.0
+mesh = SubResource("CapsuleMesh_vmjrb")
+
+[node name="radius_vis" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.134, 0)
+material_override = ExtResource("1_xjcmd")
+cast_shadow = 0
+gi_mode = 0
+instance_shader_parameters/AddColor = Color(0.45064, 0.524, 0.457096, 1)
+instance_shader_parameters/BaseColor = Color(0.58, 0.58, 0.58, 1)
+instance_shader_parameters/ColorModulate = 0.0
+mesh = SubResource("CylinderMesh_bc4dm")
+
+[node name="pivot" type="Node3D" parent="."]
+
+[node name="forward_arrow" type="MeshInstance3D" parent="pivot"]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, -4.23516e-22, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 0, 0.23144, -0.733)
+material_override = ExtResource("1_xjcmd")
+cast_shadow = 0
+gi_mode = 0
+instance_shader_parameters/AddColor = Color(0.4872, 0.58, 0.58, 1)
+instance_shader_parameters/BaseColor = Color(0.277952, 0.353581, 0.404, 1)
+instance_shader_parameters/ColorModulate = 0.0
+mesh = SubResource("PrismMesh_sn7os")
+skeleton = NodePath("../..")
+
+[node name="pivot_desired" type="Node3D" parent="."]
+
+[node name="desired_strength" type="MeshInstance3D" parent="pivot_desired"]
+transform = Transform3D(-1, -1.50996e-07, 6.60024e-15, -8.47033e-22, -4.37114e-08, -1, 1.50996e-07, -1, 4.37114e-08, 0, 0.033, -1.457)
+material_override = ExtResource("1_xjcmd")
+cast_shadow = 0
+gi_mode = 0
+instance_shader_parameters/AddColor = Color(0.16704, 0.59444, 0.696, 1)
+instance_shader_parameters/BaseColor = Color(0.179568, 0.491777, 0.516, 1)
+instance_shader_parameters/ColorModulate = 0.0
+mesh = SubResource("PrismMesh_3t1tv")
+skeleton = NodePath("../..")
+
+[node name="pivot_flock" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="flock_strength" type="MeshInstance3D" parent="pivot_flock"]
+transform = Transform3D(-1, -8.74227e-08, 3.82137e-15, 0, -4.37114e-08, -1, 8.74227e-08, -1, 4.37114e-08, 0, 0.253, -1.464)
+sorting_offset = 1.0
+material_override = ExtResource("1_xjcmd")
+cast_shadow = 0
+gi_mode = 0
+instance_shader_parameters/AddColor = Color(0.716, 0, 0.4296, 1)
+instance_shader_parameters/BaseColor = Color(0.264, 0, 0.133056, 1)
+instance_shader_parameters/ColorModulate = 0.0
+mesh = SubResource("PrismMesh_lapyt")
+skeleton = NodePath("../..")
+
+[node name="pivot_target" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="target_strength" type="MeshInstance3D" parent="pivot_target"]
+transform = Transform3D(-0.999989, 0.00373337, 0.00269931, -0.00269903, 8.08625e-05, -0.999996, -0.00373355, -0.999993, -7.07905e-05, 0, 0.37, -1.313)
+material_override = ExtResource("1_xjcmd")
+cast_shadow = 0
+gi_mode = 0
+instance_shader_parameters/AddColor = Color(0.023712, 0.456, 0.0721283, 1)
+instance_shader_parameters/BaseColor = Color(0, 0.064, 0.014848, 1)
+instance_shader_parameters/ColorModulate = 0.0
+mesh = SubResource("PrismMesh_lbftr")
+skeleton = NodePath("../..")
