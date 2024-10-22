@@ -1,0 +1,38 @@
+[gd_scene load_steps=5 format=3 uid="uid://mg0s823cdat4"]
+
+[ext_resource type="Script" path="res://addons/pillzgame/scripts/wasd_movement.gd" id="1_guapk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mo3ep"]
+shading_mode = 0
+albedo_color = Color(0.884, 0.730283, 0.378352, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_fjhpb"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_dy7ow"]
+size = Vector3(0.282, 0.323, 0.077)
+
+[node name="targetNode" type="Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+script = ExtResource("1_guapk")
+flee_speed = 24.0
+max_turn_angle = 0.785398
+min_radius = 20.0
+max_radius = 100.0
+world_noise_strength = 2.5
+metadata/_edit_pinned_properties_ = [&"flee_speed", &"world_noise_strength", &"max_turn_angle", &"max_radius", &"min_radius"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+material_override = SubResource("StandardMaterial3D_mo3ep")
+mesh = SubResource("CapsuleMesh_fjhpb")
+
+[node name="pivot" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.624632, 0)
+
+[node name="forward_arrow" type="MeshInstance3D" parent="pivot"]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, -4.23516e-22, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, 4.67923e-15, 0.0745398, -0.733)
+material_override = SubResource("StandardMaterial3D_mo3ep")
+cast_shadow = 0
+gi_mode = 0
+mesh = SubResource("PrismMesh_dy7ow")
+skeleton = NodePath("../..")

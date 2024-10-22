@@ -4,3 +4,6 @@ res://_shaders/grounds/custom_gr_tex.tres
 res://_shaders/debug/deb_sh.tres
 res://addons/pillzgame/scenes/flocking_debug.tscn
 res://addons/pillzgame/scripts/flocking_manager.gd
+res://addons/pillzgame/scripts/wasd_movement.gd
+res://addons/pillzgame/scenes/target_node.tscn
+res://addons/pillzgame/scripts/target_trail.gd
