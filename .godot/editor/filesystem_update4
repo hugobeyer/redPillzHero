@@ -1,6 +1,6 @@
 res://addons/pillzgame/scenes/scatter_pnts_tool.tscn
 res://addons/pillzgame/res/radiusdebug.tres
 res://_shaders/grounds/custom_gr_tex.tres
+res://_shaders/debug/deb_sh.tres
 res://addons/pillzgame/scenes/flocking_debug.tscn
 res://addons/pillzgame/scripts/flocking_manager.gd
-res://_shaders/debug/deb_sh.tres

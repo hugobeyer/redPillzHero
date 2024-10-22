@@ -5,6 +5,7 @@ extends Node3D
         point_radius = value
         update_all_radius_visualizations()
 
+
 @export var min_distance_between_points: float = 0.1
 @export var min_distance_to_target: float = 0.5
 @export var separation_weight: float = 1.0
@@ -15,6 +16,7 @@ extends Node3D
 @export var max_force: float = 0.1
 @export var turn_speed: float = 2.0
 @export var flock_neighbor_distance: float = 5.0
+@export var max_neighbors: int = 7  # Maximum number of neighbors to consider for flocking
 @export var target_detection_range: float = 10.0
 @export var fixed_y_position: float = 0.0
 @export var target_node_path: NodePath
@@ -30,7 +32,7 @@ var target_nodes: Array[Node3D] = []
 var scattered_points: Array = []
 var velocities: Dictionary = {}
 
-@export var max_neighbors: int = 7  # Maximum number of neighbors to consider for flocking
+
 
 func _ready():
     scattered_points = get_children().filter(func(child): return child is Node3D)

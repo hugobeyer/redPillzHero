@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://cd5swp620y3m1"]
+[gd_scene load_steps=17 format=3 uid="uid://cd5swp620y3m1"]
 
 [ext_resource type="Script" path="res://addons/pillzgame/scripts/flocking_manager.gd" id="1_d830g"]
 [ext_resource type="Script" path="res://addons/pillzgame/scripts/camera_lookat.gd" id="2_hnsv0"]
@@ -9,12 +9,12 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_prt03"]
 render_priority = 0
 shader = ExtResource("5_ji5on")
-shader_parameter/ColorBot = Color(0.189344, 0.244, 0.210618, 1)
-shader_parameter/ColorTop = Color(0.30528, 0.36, 0.32516, 1)
+shader_parameter/ColorBot = Color(0.312, 0.312, 0.312, 1)
+shader_parameter/ColorTop = Color(0.516, 0.516, 0.516, 1)
 shader_parameter/tiling = 12.0
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_tmeit"]
-size = Vector2(256, 256)
+size = Vector2(300, 300)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_mo3ep"]
 shading_mode = 0
@@ -33,6 +33,35 @@ albedo_color = Color(0.237984, 0.888, 0.263985, 1)
 shading_mode = 0
 albedo_color = Color(0.0652, 0.581584, 0.652, 1)
 
+[sub_resource type="SystemFont" id="SystemFont_fo61q"]
+font_names = PackedStringArray("8-bit", "Lilita One")
+force_autohinter = true
+subpixel_positioning = 2
+
+[sub_resource type="LabelSettings" id="LabelSettings_jra80"]
+line_spacing = 0.0
+font = SubResource("SystemFont_fo61q")
+font_size = 32
+font_color = Color(1, 0, 0.888, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_b64mb"]
+line_spacing = 0.0
+font = SubResource("SystemFont_fo61q")
+font_size = 32
+font_color = Color(0.171696, 0.876, 0.284385, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_owbyu"]
+line_spacing = 0.0
+font = SubResource("SystemFont_fo61q")
+font_size = 32
+font_color = Color(0.05984, 0.683161, 0.88, 1)
+outline_size = 8
+outline_color = Color(0, 0, 0, 1)
+
 [node name="ScatterPntsTool" type="Node3D"]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
@@ -42,18 +71,19 @@ shadow_opacity = 0.52
 
 [node name="ScatteredPoints" type="Node3D" parent="."]
 script = ExtResource("1_d830g")
-point_radius = 1.0
+point_radius = 1.027
 min_distance_between_points = 1.56
 min_distance_to_target = 1.25
-separation_weight = 32.0
-alignment_weight = 22.0
-cohesion_weight = 15.0
+separation_weight = 24.0
+alignment_weight = 11.959
+cohesion_weight = 16.0
 target_weight = 22.0
 max_speed = 12.0
 max_force = 24.0
 turn_speed = 5.0
 flock_neighbor_distance = 4.0
-target_detection_range = 24.0
+max_neighbors = 5
+target_detection_range = 40.0
 target_node_path = NodePath("../Targets")
 flocking_debug_scene = ExtResource("2_qb75t")
 target_nodes_paths = Array[NodePath]([NodePath("../Targets/targetNode"), NodePath("../Targets/targetNode2"), NodePath("../Targets/targetNode3")])
@@ -384,7 +414,7 @@ mesh = SubResource("PrismMesh_dy7ow")
 skeleton = NodePath("../..")
 
 [node name="targetNode3" type="Node3D" parent="Targets"]
-transform = Transform3D(0.273254, 0, 0.961942, 0, 1, 0, -0.961942, 0, 0.273254, -12.6531, 0, -9.4032)
+transform = Transform3D(0.273254, 0, 0.961942, 0, 1, 0, -0.961942, 0, 0.273254, -4.88937, 0, -8.98729)
 script = ExtResource("2_mmai2")
 wander_speed = 3.0
 flee_speed = 17.943
@@ -417,25 +447,43 @@ gi_mode = 0
 mesh = SubResource("PrismMesh_dy7ow")
 skeleton = NodePath("../..")
 
-[node name="Control" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label" type="Label" parent="Control"]
-layout_mode = 1
+[node name="Label" type="Label" parent="."]
 offset_left = 35.0
 offset_top = 26.0
-offset_right = 220.0
-offset_bottom = 101.0
-scale = Vector2(0.5, 0.5)
+offset_right = 268.0
+offset_bottom = 140.0
+scale = Vector2(0.688, 0.688)
 size_flags_horizontal = 8
 size_flags_vertical = 0
-text = "pink = flocking fore
-green = target force
-cyan = desired direction
+text = "flocking force
 "
+label_settings = SubResource("LabelSettings_jra80")
+text_direction = 1
+
+[node name="Label2" type="Label" parent="."]
+offset_left = 179.0
+offset_top = 26.0
+offset_right = 412.0
+offset_bottom = 140.0
+scale = Vector2(0.688, 0.688)
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "target force
+
+"
+label_settings = SubResource("LabelSettings_b64mb")
+text_direction = 1
+
+[node name="Label3" type="Label" parent="."]
+offset_left = 308.0
+offset_top = 26.0
+offset_right = 541.0
+offset_bottom = 140.0
+scale = Vector2(0.688, 0.688)
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "desired direction
+
+"
+label_settings = SubResource("LabelSettings_owbyu")
 text_direction = 1
