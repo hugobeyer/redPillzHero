@@ -30,9 +30,12 @@ func _process(delta):
         return
     _time_alive += delta
 
-func hit(direction: Vector3, hit_damage: float):
+func hit(direction: Vector3, hit_damage: float, knockback_force: float = 0.0):
     _health -= hit_damage
     update_health_bar()
+    
+    if knockback_force > 0:
+        _knockback_velocity = direction * knockback_force
     
     if _health <= 0:
         die()
@@ -40,13 +43,13 @@ func hit(direction: Vector3, hit_damage: float):
         if effects:
             effects.apply_damage_effect(direction)
         
-    if wobble_effect:
-        wobble_effect.apply_hit_wobble(-direction)
-    
-    if mesh_instance:
-        mesh_instance.set_instance_shader_parameter("lerp_wave", 0.5)
-        mesh_instance.set_instance_shader_parameter("lerp_color", Color(1.5, 0.1, 0.1, 1.0))
-        get_tree().create_timer(0.1).connect("timeout", Callable(self, "_reset_hit_feedback"))
+        if wobble_effect:
+            wobble_effect.apply_hit_wobble(-direction)
+        
+        if mesh_instance:
+            mesh_instance.set_instance_shader_parameter("lerp_wave", 0.5)
+            mesh_instance.set_instance_shader_parameter("lerp_color", Color(1.5, 0.1, 0.1, 1.0))
+            get_tree().create_timer(0.1).connect("timeout", Callable(self, "_reset_hit_feedback"))
 
 func _reset_hit_feedback():
     if mesh_instance:

@@ -9,7 +9,6 @@ signal recoil_reset()
 @export_range(0.001, 16.0) var fire_rate: float = 0.05
 @export_range(1.0, 1000.0) var bullet_speed: float = 50.0
 @export_range(0.1, 100) var bullet_damage: float = 10.0
-@export_range(0.0, 100.0) var knockback: float = 10.0
 @export var bullet_scene: PackedScene
 
 #✦ 🧭 SPREAD PARAMETERS 🧭                             ✦
@@ -450,8 +449,6 @@ func shoot_bullet():
 				bullet.set_bullet_owner(player)
 			if bullet.has_method("set_damage"):
 				bullet.set_damage(bullet_damage)
-			if bullet.has_method("set_knockback"):
-				bullet.set_knockback(knockback)
 
 	# Calculate and apply recoil (horizontal only)
 	var recoil_direction = muzzle_transform.basis.z.normalized()

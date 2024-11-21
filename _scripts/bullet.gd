@@ -4,6 +4,7 @@ extends Area3D
 @export var lifetime: float = 2.0
 @export var knockback: float = 1.0
 @export var max_speed: float = 50.0
+@export_range(0.0, 1.0) var damping: float = 0.02
 
 var bullet_owner: Node3D = null
 var time_alive: float = 0.0
@@ -32,6 +33,8 @@ func _physics_process(delta: float) -> void:
 	if not is_position_finite():
 		queue_free()
 		return
+	
+	velocity = velocity * (1.0 - damping)
 	
 	if velocity.length() > max_speed:
 		velocity = velocity.normalized() * max_speed
@@ -81,8 +84,22 @@ func find_enemy_node(node: Node) -> Node:
 	return null
 
 func apply_hit_to_enemy(enemy: Node):
-	var hit_direction = -velocity.normalized()
-	enemy.hit(hit_direction, damage)
+	var hit_direction = velocity.normalized()
+	hit_direction.y = 0  # Ensure knockback is horizontal
+	
+	# Calculate knockback force based on velocity and knockback multiplier
+	var knockback_force = velocity.length() * knockback
+	
+	# Apply hit with damage and knockback through flocking manager
+	if enemy.has_method("hit"):
+		enemy.hit(hit_direction, damage)
+		
+		# Get the parent point and flocking manager to apply knockback
+		var parent_point = enemy.get_parent()
+		if parent_point and is_instance_valid(parent_point):
+			var flocking_manager = parent_point.get_parent()
+			if flocking_manager and flocking_manager.has_method("apply_point_knockback"):
+				flocking_manager.apply_point_knockback(parent_point, hit_direction, knockback_force)
 
 func _on_body_entered(body: Node3D) -> void:
 	if body == bullet_owner:

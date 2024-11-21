@@ -14,6 +14,10 @@ var input_vector: Vector2 = Vector2.ZERO
 var is_shooting: bool = false
 var has_left_deadzone: bool = false
 
+@export_range(0.1, 20.0) var acceleration: float = 10.0
+@export_range(0.1, 20.0) var deceleration: float = 8.0
+var current_velocity: Vector3 = Vector3.ZERO
+
 func _ready():
     thumbstick = get_node("../../MainHUD/ControllerCanvas/MovementJoystick")
     if not thumbstick:
@@ -50,15 +54,19 @@ func handle_movement(delta: float):
 
     if move_vector.length() > 0:
         var cam_basis = camera.global_transform.basis
-        var direction = (cam_basis * Vector3(move_vector.x, 0, move_vector.y)).normalized()
-        direction.y = 0 # Ensure movement is horizontal
-
-        # Set velocity in the direction of movement
-        velocity.x = direction.x * SPEED
-        velocity.z = direction.z * SPEED
+        var target_direction = (cam_basis * Vector3(move_vector.x, 0, move_vector.y)).normalized()
+        target_direction.y = 0  # Ensure movement is horizontal
+        
+        # Smoothly accelerate towards target velocity
+        var target_velocity = target_direction * SPEED
+        current_velocity = current_velocity.lerp(target_velocity, acceleration * delta)
     else:
-        velocity.x = 0
-        velocity.z = 0
+        # Smoothly decelerate to zero
+        current_velocity = current_velocity.lerp(Vector3.ZERO, deceleration * delta)
+    
+    # Apply the smoothed velocity
+    velocity.x = current_velocity.x
+    velocity.z = current_velocity.z
 
 func handle_rotation(delta: float):
     if input_vector.length() > 0:

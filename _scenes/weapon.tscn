@@ -25,7 +25,6 @@ cap_bottom = false
 script = ExtResource("1_bky2i")
 fire_rate = 2.0
 bullet_damage = 5.0
-knockback = 5.0
 bullet_scene = ExtResource("2_cb5nk")
 recoil_force = 2.0
 max_recoil = 24.0

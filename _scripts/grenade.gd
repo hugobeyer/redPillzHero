@@ -53,6 +53,13 @@ func apply_explosion_damage(target, distance):
     damage_multiplier = clamp(damage_multiplier, 0.0, 1.0)
     var final_damage = damage * damage_multiplier
     
+    # Get camera and apply intense shake based on distance
+    var camera = get_tree().get_first_node_in_group("cameragame")
+    if camera:
+        var shake_intensity = 1.0 - (distance / explosion_radius)
+        shake_intensity = clamp(shake_intensity, 0.0, 1.0)
+        camera.add_shake(shake_intensity * 2.0)  # Multiply by 2 for more intense shake
+    
     if target.has_method("hit"):
         target.hit(direction, final_damage)
         

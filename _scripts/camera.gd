@@ -1,20 +1,21 @@
 extends Camera3D
 
-@export var camera_offset: Vector3 = Vector3(55, 64, 44)
+@export var camera_offset: Vector3 = Vector3(55, 75, 44)
 @export var max_offset: float = 20.0
 @export_range(0, 1, 0.01) var attraction_strength: float = 0.6
 @export_range(0, 1, 0.01) var damping: float = 0.5
 @export_range(0, 1, 0.01) var blend_factor: float = 0.5
 @export_range(0, 1, 0.01) var look_adjust_strength: float = 0.25
 @export_range(0, 1, 0.01) var enemies_average_smoothing: float = 0.5
+@export var player_y_offset: float = -15.0
 
 # Camera Shake Parameters
 @export_group("Camera Shake")
-@export var shake_decay: float = 0.90
-@export var shake_max_offset: float = 1.0
-@export var shake_max_roll: float = 4.0
+@export var shake_decay: float = 0.85
+@export var shake_max_offset: float = 2.0
+@export var shake_max_roll: float = 8.0
 @export_range(0, 5) var recoil_shake_intensity: float = 0.6
-@export_range(0.0, 1000.0) var smoothness: float = 0.1  # Lower = smoother
+@export_range(0.1, 5.0) var shake_falloff_time: float = 0.5  # Time in seconds to decay
 
 var camera_velocity: Vector3 = Vector3.ZERO
 var smoothed_enemies_average: Vector3 = Vector3.ZERO
@@ -27,6 +28,11 @@ var noise = FastNoiseLite.new()
 var noise_pos: float = 0.0
 
 var current_velocity := Vector3.ZERO
+
+var target_shake_strength: float = 0.0
+var shake_lerp_speed: float = 5.0  # Adjust this to control lerp speed
+
+@export_range(0.0, 1.0) var smoothness: float = 0.9
 
 func _ready():
 	smoothed_enemies_average = player_pos.global_position
@@ -46,14 +52,16 @@ func _process(delta):
 		apply_camera_shake(delta)
 
 func update_camera_position(delta):
-	var player_target_position = player_pos.global_position + camera_offset
+	var adjusted_player_pos = player_pos.global_position + Vector3(0, player_y_offset, 0)
+	var player_target_position = adjusted_player_pos + camera_offset
+	
 	var enemies_average = calculate_enemies_average(delta)
 	smoothed_enemies_average = smoothed_enemies_average.lerp(enemies_average, delta * (enemies_average_smoothing * 20.0))
 	var blended_target_position = player_target_position.lerp(smoothed_enemies_average + camera_offset, blend_factor)
 	apply_camera_movement(blended_target_position, delta)
 	
 	var look_blend = blend_factor * look_adjust_strength
-	var look_target = player_pos.global_position.lerp(smoothed_enemies_average, look_blend)
+	var look_target = adjusted_player_pos.lerp(smoothed_enemies_average, look_blend)
 	look_at(look_target, Vector3.UP)
 
 func calculate_enemies_average(_delta: float) -> Vector3:
@@ -80,10 +88,13 @@ func apply_camera_movement(target_position: Vector3, delta: float):
 	global_position += camera_velocity * delta
 
 func add_shake(strength: float):
-	shake_strength = min(shake_strength + strength, 1.0)
+	target_shake_strength = min(target_shake_strength + strength, 1.0)
 
 func apply_camera_shake(delta: float):
-	if shake_strength > 0:
+	# Smoothly lerp current shake to target
+	shake_strength = lerp(shake_strength, target_shake_strength, shake_lerp_speed * delta)
+	
+	if shake_strength > 0.001:
 		noise_pos += delta * 100.0
 		
 		# Calculate shake offset
@@ -99,17 +110,18 @@ func apply_camera_shake(delta: float):
 		v_offset = shake_offset.y
 		rotation_degrees.z = shake_rotation
 		
-		# Decay shake strength
-		shake_strength *= shake_decay
+		# Use falloff_time to calculate decay rate
+		var decay_rate = 1.0 / shake_falloff_time
+		target_shake_strength = lerp(target_shake_strength, 0.0, decay_rate * delta)
 		
-		# Reset when very small
-		if shake_strength < 0.001:
-			shake_strength = 0.0
-			h_offset = 0.0
-			v_offset = 0.0
-			rotation_degrees.z = 0.0
+		# Force reset when very small
+		if target_shake_strength < 0.001:
+			reset_shake()
+	else:
+		reset_shake()
 
 func reset_shake():
+	target_shake_strength = 0.0
 	shake_strength = 0.0
 	h_offset = 0.0
 	v_offset = 0.0
@@ -117,5 +129,5 @@ func reset_shake():
 
 func _physics_process(delta):
 	var target_pos = global_position
-	var new_pos = global_position.lerp(target_pos, 1.0 - pow(smoothness, delta * .50))
+	var new_pos = global_position.lerp(target_pos, 1.0 - pow(smoothness, delta * 50))
 	global_position = new_pos

@@ -41,10 +41,10 @@ shapes/navigation/agent_path_point_size=32.0
 
 [display]
 
-window/size/viewport_width=900
-window/size/viewport_height=1200
+window/size/viewport_width=1980
+window/size/viewport_height=1040
 window/size/initial_position_type=0
-window/size/initial_position=Vector2i(2000, 500)
+window/size/initial_position=Vector2i(2665, 500)
 window/size/always_on_top=true
 window/size/extend_to_title=true
 window/stretch/aspect="keep_width"
@@ -270,6 +270,7 @@ settings/action_favorites=PackedStringArray("Math/remap")
 
 [physics]
 
+3d/run_on_separate_thread=true
 3d/physics_engine="GodotPhysics3D"
 
 [plugins]

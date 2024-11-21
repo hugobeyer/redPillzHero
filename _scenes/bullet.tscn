@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dbg8lda400aod"]
+[gd_scene load_steps=14 format=3 uid="uid://dbg8lda400aod"]
 
 [ext_resource type="Script" path="res://_scripts/bullet.gd" id="1_6qr1r"]
 [ext_resource type="Shader" path="res://_shaders/custom/custom_frag_actors.gdshader" id="2_548kj"]
@@ -6,7 +6,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_44twl"]
 render_priority = 0
 shader = ExtResource("2_548kj")
-shader_parameter/color_top = Color(0.831673, 0.546197, 0.077676, 1)
+shader_parameter/color_top = Color(0.886719, 0.637547, 0.228607, 1)
 shader_parameter/color_bottom = Color(0.245797, 0.35196, 0.301599, 1)
 shader_parameter/specular_color = Color(1, 1, 1, 1)
 shader_parameter/fresnel_color = Color(0, 1, 0, 1)
@@ -14,12 +14,12 @@ shader_parameter/vertex_color_mix = 0.0
 shader_parameter/blend_mode = 0
 shader_parameter/gradient_rotation_mode = 1
 shader_parameter/gradient_offset = 0.19
-shader_parameter/gradient_smoothness = 0.077
+shader_parameter/gradient_smoothness = 0.0
 shader_parameter/diffuse_contrast = 0.075
 shader_parameter/diffuse_wrap = 2.0
 shader_parameter/diffuse_offset = 0.0
 shader_parameter/specular_intensity = 2.0
-shader_parameter/specular_size = 0.055
+shader_parameter/specular_size = 0.1
 shader_parameter/specular_smoothness = 0.0
 shader_parameter/specular_offset = 0.035
 shader_parameter/fresnel_power = 4.75e-07
@@ -32,16 +32,56 @@ _data = [Vector2(0, 0), 0.0, 4.51284, 0, 0, Vector2(0.282323, 0.683186), 1.24605
 point_count = 4
 
 [sub_resource type="TubeTrailMesh" id="TubeTrailMesh_7ckpg"]
-radius = 0.38
+radius = 0.177
 sections = 7
-section_length = 0.127
+section_length = 0.069
 section_rings = 1
 cap_top = false
+cap_bottom = false
 curve = SubResource("Curve_0k6bf")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_tsc64"]
 margin = 0.179
-radius = 0.496
+radius = 0.265
+
+[sub_resource type="Curve" id="Curve_yx7hr"]
+bake_resolution = 32
+_data = [Vector2(0, 0.853965), 0.0, 0.417392, 0, 0, Vector2(1, 0), -2.95739, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_wq28f"]
+offsets = PackedFloat32Array(0, 0.994595)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ydl3o"]
+gradient = SubResource("Gradient_wq28f")
+fill = 2
+fill_from = Vector2(0.482906, 0.0384615)
+fill_to = Vector2(0.495726, 1)
+
+[sub_resource type="Gradient" id="Gradient_h4b3n"]
+offsets = PackedFloat32Array(0.444595, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_os0af"]
+gradient = SubResource("Gradient_h4b3n")
+fill_from = Vector2(1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_vak6l"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+specular_mode = 2
+albedo_color = Color(0.81, 0.522045, 0.1701, 0.490196)
+albedo_texture = SubResource("GradientTexture2D_ydl3o")
+detail_mask = SubResource("GradientTexture2D_os0af")
+detail_blend_mode = 3
+
+[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_ecagq"]
+material = SubResource("StandardMaterial3D_vak6l")
+size = 0.409
+section_length = 0.271
+section_segments = 1
+curve = SubResource("Curve_yx7hr")
 
 [node name="Bullet" type="Area3D" groups=["player_projectyle"]]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0.218395)
@@ -50,8 +90,9 @@ collision_mask = 2
 input_ray_pickable = false
 linear_damp = 0.04
 script = ExtResource("1_6qr1r")
-lifetime = 1.0
+knockback = 0.2
 max_speed = 100.0
+damping = 0.01
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(-1, -8.74228e-08, -1.69407e-21, -3.82137e-15, 4.37114e-08, -1, 8.74228e-08, -1, -4.37114e-08, 1.43562e-08, 4.65984e-09, -0.0454826)
@@ -61,3 +102,7 @@ mesh = SubResource("TubeTrailMesh_7ckpg")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.05076e-09, 0, -0.0463347)
 shape = SubResource("SphereShape3D_tsc64")
+
+[node name="Flare" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 8.74228e-08, 8.74228e-08, -8.74228e-08, -4.37114e-08, 1, 8.74228e-08, -1, -4.37114e-08, -6.04426e-08, 0, 0.691382)
+mesh = SubResource("RibbonTrailMesh_ecagq")

@@ -135,11 +135,12 @@ skeleton = NodePath("")
 
 [node name="Weapon" parent="." node_paths=PackedStringArray("camera_node") instance=ExtResource("3_v7pw0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.001, 0.381)
-fire_rate = 0.075
-bullet_speed = 80.0
-bullet_damage = 2.0
-knockback = 32.0
+fire_rate = 0.05
+bullet_speed = 42.0
+bullet_damage = 10.0
+spread_count_bullet = 3
 spread_count_angle = 5.0
+spread_count_randomize_angle = 25.0
 recoil_force = 1.0
 max_recoil = 10.0
 recoil_increase_duration = 4.0
@@ -167,18 +168,18 @@ transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -
 top_level = true
 cull_mask = 1
 current = true
-fov = 22.0
+fov = 25.0
 far = 1000.0
 script = ExtResource("4_pg2h6")
-camera_offset = Vector3(44, 80.07, 32)
+camera_offset = Vector3(44, 65.04, 32)
 max_offset = 100.0
 attraction_strength = 0.39
 damping = 0.9
 blend_factor = 0.13
 look_adjust_strength = 0.22
 enemies_average_smoothing = 0.65
-shake_decay = 0.1
-recoil_shake_intensity = 0.0
+player_y_offset = 6.4
+shake_falloff_time = 0.1
 smoothness = 512.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -192,8 +193,7 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1, 
 shape = SubResource("CapsuleShape3D_cmorj")
 
 [node name="Grenade" type="Node3D" parent="."]
-transform = Transform3D(-1, -7.22464e-08, -4.92259e-08, 0, 0.563079, -0.826403, 8.74228e-08, -0.826403, -0.563079, 0, 2.15637, 1.38165)
+transform = Transform3D(-1, -8.29543e-08, -2.75919e-08, 0, 0.315616, -0.948887, 8.74228e-08, -0.948887, -0.315616, -1.33561e-07, 2.4044, -0.146106)
 script = ExtResource("5_0snai")
 grenade_scene = ExtResource("6_gbdp8")
-toss_strength = 32.0
 cooldown_time = 2.0

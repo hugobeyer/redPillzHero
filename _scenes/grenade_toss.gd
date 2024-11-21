@@ -12,13 +12,16 @@ func _input(event):
         start_cooldown()
 
 func toss_grenade():
-    if not grenade_scene:
+    if not grenade_scene or not is_inside_tree():
         return
     
     var grenade = grenade_scene.instantiate()
-    grenade.global_transform.origin = global_transform.origin
+    add_child(grenade)
     
-    get_tree().root.add_child(grenade)
+    var root = get_tree().root
+    remove_child(grenade)
+    root.add_child(grenade)
+    grenade.global_position = global_position
     
     var toss_direction = -global_transform.basis.z.normalized()
     grenade.apply_impulse(toss_direction * toss_strength)

@@ -81,6 +81,11 @@ var point_ids = {}  # Track points by their instance ID
 # Add to variables at top
 var point_knockback_velocities: Dictionary = {}
 
+# Add these variables at the top with other vars
+var cached_forces = {}
+var cache_time = 0.05
+var time_since_cache = 0.0
+
 func _ready():
     initialize_noise()
     
@@ -160,10 +165,27 @@ func _physics_process(delta):
     # Filter out invalid points
     scattered_points = scattered_points.filter(func(p): return is_instance_valid(p))
 
+    # Process knockback velocities first
+    for point in scattered_points:
+        var point_id = point.get_instance_id()
+        if point_id in point_knockback_velocities:
+            var knockback_vel = point_knockback_velocities[point_id]
+            point.global_position += knockback_vel * delta
+            # Dampen knockback
+            point_knockback_velocities[point_id] *= pow(0.1, delta)
+            if knockback_vel.length() < 0.01:
+                point_knockback_velocities.erase(point_id)
+
+    # Then process regular flocking forces
     update_counter += 1
     if update_counter >= update_frequency:
         update_spatial_grid()
         update_counter = 0
+
+    time_since_cache += delta
+    if time_since_cache >= cache_time:
+        cached_forces.clear()
+        time_since_cache = 0.0
 
     var forces: Dictionary = {}
     for point in scattered_points:
@@ -206,6 +228,11 @@ func get_nearby_points(point):
 
 func calculate_forces(point: Node3D) -> Vector3:
     var point_id = point.get_instance_id()
+    
+    # Check cache first
+    if point_id in cached_forces and time_since_cache < cache_time:
+        return cached_forces[point_id]
+        
     var total_force = Vector3.ZERO
     
     # Handle knockback separately from other forces
@@ -221,17 +248,30 @@ func calculate_forces(point: Node3D) -> Vector3:
     var flocking_force = calculate_flocking_forces(point)
     total_force += flocking_force
     
+    # Cache the result before returning
+    cached_forces[point_id] = total_force
     return total_force
 
 func calculate_flocking_forces(point: Node3D) -> Vector3:
     var point_id = point.get_instance_id()
     var total_force = Vector3.ZERO
     
-    # Safety check for valid point
     if not is_instance_valid(point):
-        scattered_points.erase(point)  # Remove invalid point
+        scattered_points.erase(point)
         return Vector3.ZERO
-        
+    
+    # Calculate distance to closest target for falloff
+    var closest_target = get_closest_target(point)
+    var flocking_falloff = 1.0
+    
+    if closest_target:
+        var distance_to_target = point.global_position.distance_to(closest_target.global_position)
+        # Start reducing flocking at 80% of detection range for more gradual falloff
+        var falloff_start = target_detection_range * 0.8
+        if distance_to_target < falloff_start:
+            flocking_falloff = distance_to_target / falloff_start
+            flocking_falloff = clamp(flocking_falloff, 0.3, 1.0)  # Keep more flocking strength (30% minimum)
+    
     var separation = Vector3.ZERO
     var alignment = Vector3.ZERO
     var cohesion = Vector3.ZERO
@@ -265,17 +305,16 @@ func calculate_flocking_forces(point: Node3D) -> Vector3:
             cohesion += other.global_position
             neighbor_count += 1
     
-    var flocking_force = Vector3.ZERO
     if neighbor_count > 0:
-        separation = separation / neighbor_count * flock_separation_weight
-        alignment = (alignment / neighbor_count - velocities[point_id]) * flock_alignment_weight
-        cohesion = ((cohesion / neighbor_count) - point_pos) * flock_cohesion_weight
-        flocking_force = separation + alignment + cohesion
+        separation = separation / neighbor_count * flock_separation_weight * flocking_falloff
+        alignment = (alignment / neighbor_count - velocities[point_id]) * flock_alignment_weight * flocking_falloff
+        cohesion = ((cohesion / neighbor_count) - point.global_position) * flock_cohesion_weight * flocking_falloff
+        total_force = separation + alignment + cohesion
     
     var target_force = calculate_target_force(point)
     var nav_force = get_navigation_force(point)
     
-    return flocking_force + target_force + nav_force + total_force
+    return total_force + target_force + nav_force
 
 func calculate_target_force(point: Node3D) -> Vector3:
     var closest_target = null
@@ -298,15 +337,39 @@ func apply_force(point: Node3D, force: Vector3, delta: float):
         return
     
     var acceleration = force.limit_length(max_force)
+    
+    # Apply any existing knockback velocity
+    if point_id in point_knockback_velocities:
+        var knockback = point_knockback_velocities[point_id]
+        velocities[point_id] += knockback * delta
+        # Reduce knockback over time
+        point_knockback_velocities[point_id] *= 0.95  # Damping factor
+        
+        # Remove very small knockback values
+        if point_knockback_velocities[point_id].length() < 0.01:
+            point_knockback_velocities.erase(point_id)
+    
     velocities[point_id] += acceleration * delta
     velocities[point_id] = velocities[point_id].limit_length(point_speeds[point_id]["max_speed"])
     
     point.global_position += velocities[point_id] * delta
     point.global_position.y = fixed_y_position
     
+    # Only rotate if we have significant movement
     if velocities[point_id].length() > 0.001:
-        var look_target = point.global_position + velocities[point_id]
-        point.look_at(look_target, Vector3.UP)
+        # Create a look target that's always on the XZ plane
+        var forward = velocities[point_id].normalized()
+        forward.y = 0  # Ensure movement is on XZ plane
+        
+        # Create look target ahead of current position
+        var look_target = point.global_position + forward
+        
+        # Use basis to ensure Y-axis only rotation
+        var current_basis = point.global_transform.basis
+        var target_basis = point.global_transform.looking_at(look_target, Vector3.UP).basis
+        
+        # Interpolate rotation using turn speed
+        point.global_transform.basis = current_basis.slerp(target_basis, point_speeds[point_id]["turn_speed"] * delta)
 
 func enforce_minimum_distances(point: Node3D):
     for other in scattered_points:
@@ -475,11 +538,11 @@ func update_preview_scenes():
         
    
     # Find ScatteredPoints node
-    var scattered_points = get_tree().get_nodes_in_group("ScatteredPoints")
-    if scattered_points.is_empty():
-        var scattered_container = get_node_or_null("../ScatteredPoints")
-        if scattered_container:
-            scattered_points = scattered_container.get_children()
+    # var scattered_points = get_tree().get_nodes_in_group("ScatteredPoints")
+    # if scattered_points.is_empty():
+    #     var scattered_container = get_node_or_null("../ScatteredPoints")
+    #     if scattered_container:
+    #         scattered_points = scattered_container.get_children()
     
     # print("Found points:", scattered_points.size())
     
@@ -549,7 +612,9 @@ func get_navigation_force(point: Node3D) -> Vector3:
 # Add this function to handle knockback
 func apply_point_knockback(point: Node3D, direction: Vector3, force: float):
     var point_id = point.get_instance_id()
-    # Ensure knockback is only on XZ plane
     direction.y = 0
+    direction = direction.normalized()
+    
+    # Store raw velocity for physics_process to handle
     point_knockback_velocities[point_id] = direction * force
 
