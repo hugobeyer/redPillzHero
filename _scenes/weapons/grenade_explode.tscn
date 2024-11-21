@@ -1,0 +1,156 @@
+[gd_scene load_steps=8 format=3 uid="uid://t30lq63r3ii6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4oxol"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(0.852698, 0.871094, 0.282425, 1)
+disable_receive_shadows = true
+
+[sub_resource type="SphereMesh" id="SphereMesh_4oxol"]
+radial_segments = 24
+rings = 12
+
+[sub_resource type="Animation" id="Animation_4oxol"]
+resource_name = "grenadeexp"
+length = 1.25
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 2
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.266667, 1),
+"transitions": PackedFloat32Array(0.196146, 2.92817, 0.34151),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(14.535, 14.535, 14.535), Vector3(0.1, 0.1, 0.1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:visible")
+tracks/1/interp = 2
+tracks/1/loop_wrap = false
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1.23333),
+"transitions": PackedFloat32Array(1, 1),
+"update": 1,
+"values": [true, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:material_override:albedo_color")
+tracks/2/interp = 2
+tracks/2/loop_wrap = false
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.366667, 1.23333),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Color(0.62, 0.547667, 0, 0.223529), Color(1, 0.9755, 0.79, 0.447059), Color(0.8, 0.36, 0, 0.333333)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../MeshInstance3D2:scale")
+tracks/3/interp = 2
+tracks/3/loop_wrap = false
+tracks/3/keys = {
+"times": PackedFloat32Array(0.033333, 0.6, 1.03333),
+"transitions": PackedFloat32Array(0.196146, 2.92817, 0.34151),
+"update": 0,
+"values": [Vector3(1, 1, 1), Vector3(18.81, 18.81, 18.81), Vector3(0.1, 0.1, 0.1)]
+}
+
+[sub_resource type="Animation" id="Animation_4p6ke"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(5, 5, 5)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath(".:visible")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [false]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".:material_override:albedo_color")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Color(0.852698, 0.871094, 0.282425, 1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("../MeshInstance3D2:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(1, 1, 1)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_pntop"]
+_data = {
+&"RESET": SubResource("Animation_4p6ke"),
+&"explode": SubResource("Animation_4oxol")
+}
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4p6ke"]
+transparency = 1
+blend_mode = 1
+diffuse_mode = 3
+specular_mode = 2
+albedo_color = Color(1, 0.84, 0.68, 0.231373)
+backlight = Color(1, 0, 0, 1)
+disable_receive_shadows = true
+proximity_fade_enabled = true
+
+[sub_resource type="TorusMesh" id="TorusMesh_4oxol"]
+inner_radius = 0.541
+outer_radius = 0.56
+
+[node name="GrenadeExplode" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+visible = false
+material_override = SubResource("StandardMaterial3D_4oxol")
+mesh = SubResource("SphereMesh_4oxol")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../MeshInstance3D")
+libraries = {
+&"": SubResource("AnimationLibrary_pntop")
+}
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
+material_override = SubResource("StandardMaterial3D_4p6ke")
+cast_shadow = 0
+mesh = SubResource("TorusMesh_4oxol")

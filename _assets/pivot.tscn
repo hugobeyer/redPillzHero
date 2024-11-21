@@ -1,0 +1,17 @@
+[gd_scene load_steps=3 format=3 uid="uid://bqey4meim1lok"]
+
+[ext_resource type="Material" uid="uid://dd6dxkv54psg8" path="res://_materials/debug/emissive_debug_mat.tres" id="1_vnpl6"]
+
+[sub_resource type="PrismMesh" id="PrismMesh_sn7os"]
+size = Vector3(0.25, 0.27, 0.002)
+
+[node name="pivot" type="Node3D"]
+
+[node name="forward_arrow" type="MeshInstance3D" parent="."]
+transform = Transform3D(-1, -8.74228e-08, 3.82137e-15, -4.23516e-22, -4.37114e-08, -1, 8.74228e-08, -1, 4.37114e-08, -0.027, 0, -1.282)
+material_override = ExtResource("1_vnpl6")
+cast_shadow = 0
+gi_mode = 0
+instance_shader_parameters/emissive_color = Color(0.101563, 1, 0, 1)
+mesh = SubResource("PrismMesh_sn7os")
+skeleton = NodePath("../..")

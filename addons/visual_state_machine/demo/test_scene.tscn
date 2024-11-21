@@ -1,0 +1,38 @@
+[gd_scene load_steps=8 format=3 uid="uid://dqnedooa00u8s"]
+
+[ext_resource type="Script" path="res://addons/visual_state_machine/scripts/statemachine/state_machine.gd" id="1_y45qq"]
+[ext_resource type="Script" path="res://addons/visual_state_machine/demo/dash.gd" id="2_e57wl"]
+[ext_resource type="Script" path="res://addons/visual_state_machine/demo/death.gd" id="3_o218c"]
+[ext_resource type="Script" path="res://addons/visual_state_machine/demo/idle.gd" id="4_41a1g"]
+[ext_resource type="Script" path="res://addons/visual_state_machine/demo/jump.gd" id="5_l11g7"]
+[ext_resource type="Script" path="res://addons/visual_state_machine/demo/on_air.gd" id="6_3gqb6"]
+[ext_resource type="Script" path="res://addons/visual_state_machine/demo/walk.gd" id="7_yn8y5"]
+
+[node name="Node" type="Node"]
+
+[node name="StateMachine" type="Node2D" parent="." node_paths=PackedStringArray("target")]
+script = ExtResource("1_y45qq")
+target = NodePath("..")
+auto_start = true
+scripts_states = Array[Script]([ExtResource("2_e57wl"), ExtResource("3_o218c"), ExtResource("4_41a1g"), ExtResource("5_l11g7"), ExtResource("6_3gqb6"), ExtResource("7_yn8y5")])
+_connections = Array[Dictionary]([{
+"from_output": 0,
+"from_state": "Start",
+"to_input": 0,
+"to_state": "Idle"
+}, {
+"from_output": 0,
+"from_state": "Death",
+"to_input": 0,
+"to_state": "End"
+}])
+_nodes_position = {
+"Dash": Vector2(336.864, 38.4773),
+"Death": Vector2(536.864, 220.295),
+"End": Vector2(718.682, 220.295),
+"Idle": Vector2(173.227, 165.75),
+"Jump": Vector2(355.045, 238.477),
+"On Air": Vector2(507.773, 49.3864),
+"Start": Vector2(-8.5909, 93.0227),
+"Walk": Vector2(336.864, 129.386)
+}

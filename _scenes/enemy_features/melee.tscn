@@ -1,8 +1,13 @@
-[gd_scene load_steps=7 format=4 uid="uid://dwpsppfskic5x"]
+[gd_scene load_steps=8 format=4 uid="uid://dwpsppfskic5x"]
 
 [ext_resource type="Script" path="res://_scripts/include/enemy_melee.gd" id="1_dw47a"]
-[ext_resource type="AnimationLibrary" uid="uid://i4t2law61ppy" path="res://_animations/enemy_animation_library.tres" id="2_xhtyw"]
-[ext_resource type="Material" uid="uid://cuuq6ur052i4o" path="res://_materials/prop_inst_mat.tres" id="3_bmokg"]
+[ext_resource type="Animation" uid="uid://cnqr2svne5oy2" path="res://_animations/melee_swing.tres" id="2_yaban"]
+[ext_resource type="Material" uid="uid://b8vv7ub5nbgg0" path="res://_materials/sw.tres" id="3_yaban"]
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_68p2o"]
+_data = {
+&"melee_swing": ExtResource("2_yaban")
+}
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pye1y"]
 vertex_color_use_as_albedo = true
@@ -41,34 +46,39 @@ shadow_mesh = SubResource("ArrayMesh_dk2me")
 
 [node name="MeleeWeapon" type="Node3D"]
 script = ExtResource("1_dw47a")
+swing_animation = "enemy_animation_library/melee_swing"
+animation_speed = 0.5
+attack_radius = 8.96
+animation_length = 4.0
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Root")
 audio_max_polyphony = 1
 libraries = {
-"": ExtResource("2_xhtyw")
+&"hh": SubResource("AnimationLibrary_68p2o")
 }
 playback_auto_capture_transition_type = 5
 
 [node name="Root" type="Node3D" parent="."]
-transform = Transform3D(-0.05, 0, -0.0866026, 0, 0.1, 0, 0.0866026, 0, -0.05, 0.230541, 0.6, -0.133103)
+transform = Transform3D(-0.05, 0, 0.0866026, 0, 0.1, 0, -0.0866026, 0, -0.05, 0.230541, 0.6, -0.133103)
 rotation_order = 0
 
 [node name="MeleeMesh" type="Node3D" parent="Root"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
+metadata/_edit_lock_ = true
 
 [node name="simple_sword" type="Node3D" parent="Root/MeleeMesh"]
 
 [node name="simple_sword" type="MeshInstance3D" parent="Root/MeleeMesh/simple_sword"]
 transform = Transform3D(0.251036, 0, 0, 0, 0.251036, 0, 0, 0, 0.251036, 0, 0, 0.44474)
-material_override = ExtResource("3_bmokg")
+material_override = ExtResource("3_yaban")
 instance_shader_parameters/lerp_color = Color(1, 1, 1, 1)
 instance_shader_parameters/lerp_displace_normal = 0.0
 instance_shader_parameters/lerp_wave = 0.0
-instance_shader_parameters/lerp_wave_contrast = 0.205
-instance_shader_parameters/lerp_wave_freq = 0.0
-instance_shader_parameters/lerp_wave_offset = 32.0
-instance_shader_parameters/lerp_wave_type = 6
-instance_shader_parameters/wave_range_lerp = 1.0
+instance_shader_parameters/lerp_wave_contrast = 1.0
+instance_shader_parameters/lerp_wave_freq = 1.0
+instance_shader_parameters/lerp_wave_offset = 0.0
+instance_shader_parameters/lerp_wave_type = 0
+instance_shader_parameters/wave_range_lerp = 0.0
 mesh = SubResource("ArrayMesh_f1vn7")
 skeleton = NodePath("")

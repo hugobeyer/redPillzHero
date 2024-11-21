@@ -1,5 +1,5 @@
 # enemy_melee.gd
-extends CharacterBody3D  # Change from Node3D to CharacterBody3D
+extends Node3D  # Change from Node3D to CharacterBody3D
 
 @export var animation_player_path: NodePath = "AnimationPlayer"
 @export var melee_node_path: NodePath = "SwordArea"

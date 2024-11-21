@@ -31,11 +31,11 @@ default_value = 4.0
 
 [resource]
 code = "shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_schlick_ggx;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_disabled;
 
 uniform vec4 ColorBot : source_color;
 uniform vec4 ColorTop : source_color;
-uniform float tiling = 4;
+uniform float tiling = 4.0;
 uniform sampler2D tex_frg_2;
 
 
@@ -76,7 +76,7 @@ void fragment() {
 
 }
 "
-graph_offset = Vector2(-2086.07, 123.28)
+modes/specular = 2
 nodes/fragment/2/node = SubResource("VisualShaderNodeTexture_lviul")
 nodes/fragment/2/position = Vector2(-900, 120)
 nodes/fragment/3/node = SubResource("VisualShaderNodeInput_a4160")

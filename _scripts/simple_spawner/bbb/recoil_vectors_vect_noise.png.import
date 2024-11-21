@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://xa7tssjgfnaa"
 path.s3tc="res://.godot/imported/recoil_vectors_vect_noise.png-c4fa73b14cb4feea66526a0c038400d8.s3tc.ctex"
+path.etc2="res://.godot/imported/recoil_vectors_vect_noise.png-c4fa73b14cb4feea66526a0c038400d8.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://_scripts/simple_spawner/bbb/recoil_vectors_vect_noise.png"
-dest_files=["res://.godot/imported/recoil_vectors_vect_noise.png-c4fa73b14cb4feea66526a0c038400d8.s3tc.ctex"]
+dest_files=["res://.godot/imported/recoil_vectors_vect_noise.png-c4fa73b14cb4feea66526a0c038400d8.s3tc.ctex", "res://.godot/imported/recoil_vectors_vect_noise.png-c4fa73b14cb4feea66526a0c038400d8.etc2.ctex"]
 
 [params]
 

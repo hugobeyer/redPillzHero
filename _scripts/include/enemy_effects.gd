@@ -9,29 +9,41 @@ extends Node3D
 var mesh_instance: MeshInstance3D
 
 func _ready():
-    mesh_instance = get_parent().get_node("MeshInstance3D")
-    mesh_instance.set_instance_shader_parameter("lerp_wave", 0)
-    mesh_instance.set_instance_shader_parameter("lerp_wave_offset", 0)
+	mesh_instance = get_parent().get_node("WobbleEffect/CharacterMesh")
+	mesh_instance.set_instance_shader_parameter("lerp_wave", 0)
+	mesh_instance.set_instance_shader_parameter("lerp_wave_offset", 0)
 
 func flash_red():
-    var local_tween = create_tween()
-
-    local_tween.tween_method(set_flash_intensity, 0.0, 1.0, flash_duration / 2)
-    local_tween.tween_method(set_flash_intensity, 1.0, 0.0, flash_duration / 2)
-    local_tween.tween_method(set_flash_color, flash_off_color, flash_color, flash_duration / 2)
-    local_tween.tween_method(set_flash_color, flash_color, flash_off_color, flash_duration / 2)
+	var local_tween = create_tween()
+	local_tween.set_parallel(false)  # Make sure tweens run in sequence
+	
+	# First sequence: Flash in
+	local_tween.set_parallel(true)   # These two happen together
+	local_tween.tween_method(set_flash_intensity, 0.0, 1.0, flash_duration / 2)
+	local_tween.tween_method(set_flash_color, flash_off_color, flash_color, flash_duration / 2)
+	
+	# Second sequence: Flash out
+	local_tween.set_parallel(true)   # These two happen together
+	local_tween.tween_method(set_flash_intensity, 1.0, 0.0, flash_duration / 2)
+	local_tween.tween_method(set_flash_color, flash_color, flash_off_color, flash_duration / 2)
+	
+	# Make sure values are reset at the end
+	local_tween.tween_callback(func():
+		set_flash_intensity(0.0)
+		set_flash_color(flash_off_color)
+	)
 
 func set_flash_intensity(value: float):
-    mesh_instance.set_instance_shader_parameter("lerp_wave", value)
-    mesh_instance.set_instance_shader_parameter("lerp_wave_offset", value * flash_offset)
+	mesh_instance.set_instance_shader_parameter("lerp_wave", value)
+	mesh_instance.set_instance_shader_parameter("lerp_wave_offset", value * flash_offset)
 
 func set_flash_color(color: Color):
-    mesh_instance.set_instance_shader_parameter("lerp_color", color)
+	mesh_instance.set_instance_shader_parameter("lerp_color", color)
 
 func apply_damage_effect(_damage: Vector3):
-    flash_red()
+	flash_red()
 
 func _on_property_changed():
-    mesh_instance.set_instance_shader_parameter("lerp_color", flash_color)
-    mesh_instance.set_instance_shader_parameter("lerp_wave", 1.0)
-    mesh_instance.set_instance_shader_parameter("lerp_wave_offset", flash_offset)
+	mesh_instance.set_instance_shader_parameter("lerp_color", flash_color)
+	mesh_instance.set_instance_shader_parameter("lerp_wave", 1.0)
+	mesh_instance.set_instance_shader_parameter("lerp_wave_offset", flash_offset)

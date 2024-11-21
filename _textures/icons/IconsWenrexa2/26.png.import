@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cn15omewadrnk"
 path.s3tc="res://.godot/imported/26.png-07ef815e8a9d4606ae123dc69cfef48a.s3tc.ctex"
+path.etc2="res://.godot/imported/26.png-07ef815e8a9d4606ae123dc69cfef48a.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://_textures/icons/IconsWenrexa2/26.png"
-dest_files=["res://.godot/imported/26.png-07ef815e8a9d4606ae123dc69cfef48a.s3tc.ctex"]
+dest_files=["res://.godot/imported/26.png-07ef815e8a9d4606ae123dc69cfef48a.s3tc.ctex", "res://.godot/imported/26.png-07ef815e8a9d4606ae123dc69cfef48a.etc2.ctex"]
 
 [params]
 

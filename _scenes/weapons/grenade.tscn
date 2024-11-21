@@ -1,0 +1,78 @@
+[gd_scene load_steps=9 format=3 uid="uid://d3iotrkckue1d"]
+
+[ext_resource type="Script" path="res://_scripts/grenade.gd" id="1_l3j8t"]
+[ext_resource type="PackedScene" uid="uid://t30lq63r3ii6" path="res://_scenes/weapons/grenade_explode.tscn" id="2_ffhlh"]
+[ext_resource type="Shader" path="res://_shaders/custom/custom_frag_actors.gdshader" id="3_3f1f3"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_ffhlh"]
+radius = 0.33
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_cpmo7"]
+render_priority = 0
+shader = ExtResource("3_3f1f3")
+shader_parameter/color_top = Color(0.209412, 0.231898, 0.285156, 1)
+shader_parameter/color_bottom = Color(0.828125, 0.0420532, 0.631607, 1)
+shader_parameter/specular_color = Color(1, 1, 1, 1)
+shader_parameter/fresnel_color = Color(0, 0.222656, 0.207001, 1)
+shader_parameter/vertex_color_mix = 0.0
+shader_parameter/blend_mode = 0
+shader_parameter/gradient_rotation_mode = 0
+shader_parameter/gradient_offset = 0.236
+shader_parameter/gradient_smoothness = 0.0
+shader_parameter/diffuse_contrast = 0.31
+shader_parameter/diffuse_wrap = 0.885
+shader_parameter/diffuse_offset = -0.67
+shader_parameter/specular_intensity = 0.695
+shader_parameter/specular_size = 0.05
+shader_parameter/specular_smoothness = 0.628
+shader_parameter/specular_offset = 0.55
+shader_parameter/fresnel_power = 0.215
+shader_parameter/fresnel_intensity = 1.198
+shader_parameter/fresnel_contrast = 1.76
+shader_parameter/fresnel_offset = -0.504
+
+[sub_resource type="SphereMesh" id="SphereMesh_3f1f3"]
+radius = 0.33
+height = 0.66
+
+[sub_resource type="Gradient" id="Gradient_3f1f3"]
+offsets = PackedFloat32Array(0.303385, 0.705729)
+colors = PackedColorArray(0.998688, 0.996094, 1, 1, 0.945313, 0, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_cpmo7"]
+gradient = SubResource("Gradient_3f1f3")
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
+[node name="Grenade" type="RigidBody3D"]
+collision_layer = 128
+collision_mask = 6
+input_ray_pickable = false
+mass = 64.0
+gravity_scale = 5.0
+linear_damp = 1.0
+script = ExtResource("1_l3j8t")
+explosion_force = 50.0
+damage = 20.0
+fuse_time = 1.5
+explosion_effect_scene = ExtResource("2_ffhlh")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_ffhlh")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+material_override = SubResource("ShaderMaterial_cpmo7")
+instance_shader_parameters/lerp_color = Color(0.691406, 0, 0.453735, 1)
+instance_shader_parameters/lerp_displace_normal = 0.0
+instance_shader_parameters/lerp_wave = 1.0
+instance_shader_parameters/lerp_wave_contrast = 4.0
+instance_shader_parameters/lerp_wave_freq = 12.0
+instance_shader_parameters/lerp_wave_offset = 16.0
+instance_shader_parameters/lerp_wave_type = 1
+instance_shader_parameters/wave_range_lerp = -0.47
+mesh = SubResource("SphereMesh_3f1f3")
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+pixel_size = 0.024
+billboard = 1
+texture = SubResource("GradientTexture2D_cpmo7")

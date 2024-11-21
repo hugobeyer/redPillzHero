@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cqbnriwxky0gy"
 path.s3tc="res://.godot/imported/plug_switch_icon.svg-27457c2578fbae9881f008235eeaee3b.s3tc.ctex"
+path.etc2="res://.godot/imported/plug_switch_icon.svg-27457c2578fbae9881f008235eeaee3b.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://addons/plugin_refresher/plug_switch_icon.svg"
-dest_files=["res://.godot/imported/plug_switch_icon.svg-27457c2578fbae9881f008235eeaee3b.s3tc.ctex"]
+dest_files=["res://.godot/imported/plug_switch_icon.svg-27457c2578fbae9881f008235eeaee3b.s3tc.ctex", "res://.godot/imported/plug_switch_icon.svg-27457c2578fbae9881f008235eeaee3b.etc2.ctex"]
 
 [params]
 

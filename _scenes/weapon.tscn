@@ -14,11 +14,12 @@ _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
 
 [sub_resource type="CylinderMesh" id="CylinderMesh_ick36"]
-top_radius = 0.2
-bottom_radius = 0.1
+top_radius = 0.263
+bottom_radius = 0.074
 height = 1.0
-radial_segments = 6
-rings = 1
+radial_segments = 9
+rings = 3
+cap_bottom = false
 
 [node name="Weapon" type="Node3D"]
 script = ExtResource("1_bky2i")

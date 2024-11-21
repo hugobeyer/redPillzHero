@@ -6,9 +6,9 @@ signal recoil_reset()
 #✦ 🔫 BULLET PARAMETERS 🔫                              ✦
 #╘═════════════════════════════════════════════════════╛
 @export_group("Bullet Parameters")
-@export_range(0.5, 16.0) var fire_rate: float = 0.05
+@export_range(0.001, 16.0) var fire_rate: float = 0.05
 @export_range(1.0, 1000.0) var bullet_speed: float = 50.0
-@export_range(1, 100) var bullet_damage: float = 10.0
+@export_range(0.1, 100) var bullet_damage: float = 10.0
 @export_range(0.0, 100.0) var knockback: float = 10.0
 @export var bullet_scene: PackedScene
 
@@ -32,8 +32,8 @@ signal recoil_reset()
 @export var recoil_mouse_up_curve: Curve = Curve.new()
 @export var recoil_noise_speed: float = 1.0
 @export var recoil_noise_texture: Texture2D # This should now be a normal map texture
-@export var recoil_linear_damp: float = 0.01
-@export var recoil_angle_damp: float = 0.01
+@export var recoil_linear_damp: float = 0.92
+@export var recoil_angle_damp: float = 0.90
 
 
 #✦ ⏱ RECOVERY PARAMETERS ⏱                             ✦
@@ -122,6 +122,11 @@ var recoil_recovery_start_time: float = 0.0
 @export var enable_recoil_recovery_debug: bool = true
 @export var enable_recoil_noise_debug: bool = true
 
+var can_shoot: bool = true
+var shoot_timer: float = 0.0
+
+@onready var camera: Camera3D = get_tree().get_first_node_in_group("cameragame")
+
 func _ready():
 	if camera_node:
 		if not camera_node:
@@ -157,6 +162,12 @@ func _ready():
 		push_error("Muzzle node not found!")
 	else:
 		print("Muzzle position: ", muzzle_node.global_transform.origin)
+
+	# Add this to verify camera connection
+	if camera:
+		print("Camera connected successfully")
+	else:
+		push_error("Camera not found! Check the path!")
 
 func create_debug_cylinders():
 	if not enable_debug_visualization:
@@ -291,17 +302,27 @@ func _process(delta: float):
 	var current_time = Time.get_ticks_msec() / 1000.0
 	time_since_last_shot = current_time - last_shot_time
 
+	# Handle fire rate
+	if not can_shoot:
+		shoot_timer += delta
+		if shoot_timer >= fire_rate:
+			can_shoot = true
+			shoot_timer = 0.0
+
 	if is_shooting:
-		time_since_last_shot += delta
-		if time_since_last_shot >= fire_rate:
+		if can_shoot:
 			shoot_bullet()
-			time_since_last_shot = 0.0
+			can_shoot = false
+			shoot_timer = 0.0
+			last_shot_time = current_time
+		update_recoil(delta, current_time)
 	else:
 		handle_recoil_recovery(delta)
+	
 	update_debug_cylinders()
 	apply_recoil_to_player(delta)
 
-func _physics_process(delta: float):
+func _physics_process(_delta: float):
 	apply_recoil_damping(recoil_linear_damp, recoil_angle_damp)
 
 func update_recoil(delta: float, current_time: float):
@@ -314,40 +335,50 @@ func update_recoil(delta: float, current_time: float):
 	recoil_accumulation += recoil_increment
 	recoil_accumulation = min(recoil_accumulation, max_recoil)
 	
-	# Calculate recoil offset
-	var local_back_direction = -player.global_transform.basis.z * recoil_accumulation
+	# Calculate recoil offset (only in XZ plane, no Y component)
+	var back_direction = -player.global_transform.basis.z
+	back_direction.y = 0  # Remove vertical component
+	back_direction = back_direction.normalized()  # Renormalize after removing Y
+	
+	var local_back_direction = back_direction * recoil_accumulation
 	current_recoil_offset = local_back_direction.length()
 	current_recoil_offset = clamp(current_recoil_offset, 0, max_recoil)
 
-	# Apply recoil to the Weapon's rotation
+	# Apply recoil to the Weapon's rotation (Y-axis only)
 	if Weapon_node and recoil_noise_texture:
 		noise_sample_x += recoil_noise_speed * recoil_frequency * delta
 		var noise_value = recoil_noise_texture.get_image().get_pixelv(Vector2(int(noise_sample_x) % recoil_noise_texture.get_width(), 0)).r * 2.0 - 1.0
 		var recoil_angle = noise_value * recoil_amplitude * max(curve_value, 0.1)
+		
+		# Only rotate on Y axis
 		Weapon_node.rotate_y(deg_to_rad(recoil_angle))
+		
+		# Clamp Y rotation
 		var max_rotation = deg_to_rad(max_recoil * curve_value)
-		Weapon_node.rotation.y = clamp(Weapon_node.rotation.y, initial_Weapon_rotation.y - max_rotation, initial_Weapon_rotation.y + max_rotation)
+		Weapon_node.rotation.y = clamp(Weapon_node.rotation.y, 
+			initial_Weapon_rotation.y - max_rotation, 
+			initial_Weapon_rotation.y + max_rotation)
+			
+		# Lock X and Z rotations
+		Weapon_node.rotation.x = initial_Weapon_rotation.x
+		Weapon_node.rotation.z = initial_Weapon_rotation.z
 
 func apply_recoil_damping(linear_damp: float, angle_damp: float):
 	var linear_damping = linear_damp
 	var angle_damping = angle_damp
-	recoil_linear_damp *= 1 - linear_damping
-	recoil_angle_damp *= 1 - angle_damping
+	recoil_linear_damp *= linear_damping
+	recoil_angle_damp *= angle_damping
 
 func apply_recoil_to_player(delta: float):
 	if player:
+		# Get horizontal direction only
 		var recoil_direction = -player.global_transform.basis.z
+		recoil_direction.y = 0  # Force Y to zero
+		recoil_direction = recoil_direction.normalized()  # Renormalize
+		
+		# Apply horizontal recoil only
 		var recoil_offset = recoil_direction * current_recoil_offset * delta
 		player.global_translate(recoil_offset)
-
-func shoot():
-	var current_time = Time.get_ticks_msec() / 1000.0
-	if current_time - last_shot_time >= fire_rate:
-		shoot_bullet()
-		last_shot_time = current_time
-		# Reset recoil accumulation when starting a new burst
-		if not is_shooting:
-			recoil_accumulation = 0.0
 
 func handle_recoil_recovery(delta: float):
 	if is_recovering:
@@ -371,7 +402,9 @@ func handle_recoil_recovery(delta: float):
 
 func shoot_bullet():
 	var muzzle_transform = muzzle_node.global_transform
-	var forward_direction = muzzle_transform.basis.z.normalized()
+	var shoot_direction = muzzle_transform.basis.z.normalized()
+	shoot_direction.y = 0  # Force initial direction to be horizontal
+	shoot_direction = shoot_direction.normalized()
 
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
@@ -384,42 +417,33 @@ func shoot_bullet():
 		var bullet_rng = RandomNumberGenerator.new()
 		bullet_rng.seed = bullet_seed
 
-		# Calculate the spread angle for this bullet
+		# Calculate horizontal spread only
 		var spread_angle = (i - (spread_count_bullet - 1) / 2.0) * base_spread_angle
 		var random_angle_variation = bullet_rng.randf_range(-spread_count_randomize_angle, spread_count_randomize_angle)
 		var final_spread_angle = spread_angle + random_angle_variation
 		
-		var angle_offset = deg_to_rad(final_spread_angle)
-		var random_rotation = bullet_rng.randf() * TAU
+		# Only rotate around Y axis for spread
+		var spread_direction = shoot_direction.rotated(Vector3.UP, deg_to_rad(final_spread_angle))
+		
+		# Ensure spread_direction is horizontal
+		spread_direction.y = 0
+		spread_direction = spread_direction.normalized()
 
-		# Calculate spread direction
-		var spread_direction = Quaternion(muzzle_transform.basis.y, angle_offset) * forward_direction
-		spread_direction = Quaternion(forward_direction, random_rotation) * spread_direction
-
-		# Ensure spread_direction is not zero
-		if spread_direction.is_equal_approx(Vector3.ZERO):
-			spread_direction = forward_direction # Use a default direction
-
-		# Calculate recoil angle
-		var recoil_noise_sample = bullet_rng.randf() * recoil_noise_texture.get_width()
-		var recoil_noise_value = recoil_noise_texture.get_image().get_pixelv(Vector2(int(recoil_noise_sample) % recoil_noise_texture.get_width(), 0)).r * 2 - 1
-		var bullet_recoil_angle = recoil_noise_value * recoil_amplitude * get_recoil_value()
-		spread_direction = Quaternion(muzzle_transform.basis.y, deg_to_rad(bullet_recoil_angle)) * spread_direction
-
+		# Create and setup bullet
 		var bullet = bullet_scene.instantiate()
 		if bullet:
 			get_tree().root.add_child(bullet)
 			bullet.global_transform.origin = muzzle_node.global_transform.origin
 			
-			# Set bullet rotation
+			# Set bullet rotation (Y-axis only)
 			bullet.global_transform = bullet.global_transform.looking_at(
 				bullet.global_transform.origin + spread_direction,
 				Vector3.UP
 			)
 
-			# Set velocity
+			# Set velocity (horizontal only)
 			if bullet.has_method("set_velocity"):
-				var velocity = spread_direction.normalized() * bullet_speed
+				var velocity = spread_direction * bullet_speed
 				bullet.set_velocity(velocity)
 
 			if bullet.has_method("set_bullet_owner"):
@@ -428,53 +452,66 @@ func shoot_bullet():
 				bullet.set_damage(bullet_damage)
 			if bullet.has_method("set_knockback"):
 				bullet.set_knockback(knockback)
-			if bullet.has_method("set_lifetime"):
-				bullet.set_lifetime(3.0)
 
-	# Calculate and apply recoil
-	var recoil_force_forward = -forward_direction * get_recoil_value()
-	apply_recoil(forward_direction)
-	emit_signal("Weapon_fired", recoil_force_forward)
+	# Calculate and apply recoil (horizontal only)
+	var recoil_direction = muzzle_transform.basis.z.normalized()
+	recoil_direction.y = 0  # Force Y to zero
+	recoil_direction = recoil_direction.normalized()  # Renormalize
+	
+	var recoil_force = -recoil_direction * get_recoil_value()
+	apply_recoil(recoil_direction)
+	emit_signal("Weapon_fired", recoil_force)
 
 	# Update noise sample position
 	noise_sample_x = fmod(noise_sample_x + recoil_frequency, float(recoil_noise_texture.get_width()))
 
 func apply_recoil(direction: Vector3):
-	is_recovering = false # Reset recovery when new recoil is applied
+	is_recovering = false
 	
 	var recoil_value = get_recoil_value()
 	
-	# Calculate recoil offset
-	var local_back_direction = player.to_local(direction) * -recoil_value
+	# Calculate recoil offset with linear damping (only in XZ plane)
+	var recoil_direction = direction
+	recoil_direction.y = 0  # Remove vertical component
+	recoil_direction = recoil_direction.normalized()  # Renormalize
+	
+	var local_back_direction = player.to_local(recoil_direction) * -recoil_value
 	current_recoil_offset = local_back_direction.length()
 	current_recoil_offset = clamp(current_recoil_offset, 0, max_recoil)
+	current_recoil_offset *= recoil_linear_damp
 
-	# Apply recoil to the Weapon's rotation
+	# Apply recoil to the Weapon's rotation (Y-axis only)
 	if Weapon_node and recoil_noise_texture:
-		# Use recoil_noise_speed to control the sampling rate
 		noise_sample_x += recoil_noise_speed * recoil_frequency * (recoil_value / max_recoil)
-		noise_sample_y += recoil_noise_speed * recoil_frequency * (recoil_value / max_recoil) * 0.7 # Slightly different rate for Y
 		
-		# Sample the normal map texture
-		var texture_size = recoil_noise_texture.get_width() # Assuming square texture
+		var texture_size = recoil_noise_texture.get_width()
 		var sample_pos = Vector2(
 			fmod(noise_sample_x, float(texture_size)) / float(texture_size),
-			fmod(noise_sample_y, float(texture_size)) / float(texture_size)
+			0  # Only sample X for Y rotation
 		)
 		var normal = recoil_noise_texture.get_image().get_pixelv(sample_pos * texture_size)
 		
-		# Convert normal map values from [0, 1] to [-1, 1] range
-		var recoil_x = (normal.r * 2.0 - 1.0) * recoil_amplitude * (recoil_value / max_recoil)
-		var recoil_y = (normal.g * 2.0 - 1.0) * recoil_amplitude * (recoil_value / max_recoil)
+		# Only calculate Y rotation
+		var recoil_y = (normal.r * 2.0 - 1.0) * recoil_amplitude * (recoil_value / max_recoil)
+		recoil_y *= recoil_angle_damp
 		
-		# Apply recoil rotation
-		Weapon_node.rotate_y(deg_to_rad(recoil_x))
-		Weapon_node.rotate_x(deg_to_rad(recoil_y))
+		# Apply only Y rotation
+		Weapon_node.rotate_y(deg_to_rad(recoil_y))
 		
-		# Clamp rotation to prevent excessive recoil
-		var max_rotation = deg_to_rad(recoil_value)
-		Weapon_node.rotation.y = clamp(Weapon_node.rotation.y, initial_Weapon_rotation.y - max_rotation, initial_Weapon_rotation.y + max_rotation)
-		Weapon_node.rotation.x = clamp(Weapon_node.rotation.x, initial_Weapon_rotation.x - max_rotation, initial_Weapon_rotation.x + max_rotation)
+		# Clamp Y rotation
+		var max_rotation = deg_to_rad(recoil_value * recoil_angle_damp)
+		Weapon_node.rotation.y = clamp(Weapon_node.rotation.y, 
+			initial_Weapon_rotation.y - max_rotation, 
+			initial_Weapon_rotation.y + max_rotation)
+			
+		# Lock X and Z rotations
+		Weapon_node.rotation.x = initial_Weapon_rotation.x
+		Weapon_node.rotation.z = initial_Weapon_rotation.z
+
+	# Add camera shake
+	if camera:
+		var shake_amount = (recoil_value / max_recoil) * 0.2
+		camera.add_shake(shake_amount)
 
 func apply_recoil_force(delta: float):
 	# Apply translation recoil to player
@@ -510,3 +547,7 @@ func trigger_released():
 	shoot_direction = Vector2.ZERO
 	is_shooting = false
 	reset_recoil()
+	
+	# Reset camera shake when trigger released
+	if camera:
+		camera.reset_shake()

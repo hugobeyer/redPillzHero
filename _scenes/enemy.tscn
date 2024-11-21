@@ -13,12 +13,12 @@ margin = 0.1
 radius = 0.563
 height = 1.922
 
-[sub_resource type="Gradient" id="Gradient_ld7nr"]
+[sub_resource type="Gradient" id="Gradient_1tv6w"]
 offsets = PackedFloat32Array(0)
 colors = PackedColorArray(0, 0, 0, 1)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_jvmx3"]
-gradient = SubResource("Gradient_ld7nr")
+gradient = SubResource("Gradient_1tv6w")
 width = 128
 height = 60
 
@@ -29,6 +29,7 @@ input_ray_pickable = false
 axis_lock_linear_y = true
 script = ExtResource("1_ia10i")
 movement_speed = 12.0
+initial_max_speed = 32.0
 turn_speed = 5.0
 detection_range = 666.0
 damage = 4.0
@@ -43,7 +44,6 @@ enable_wander = false
 wander_radius = 32.0
 wander_interval = 32.0
 wobble_damping = 0.466
-initial_max_speed = 32.0
 
 [node name="EnemyEffects" type="Node3D" parent="."]
 transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)

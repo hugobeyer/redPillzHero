@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://dil1pqmf4s0n3"
 path.s3tc="res://.godot/imported/stone_tiles_basecolor.png-d918cb4920ccbb9a5b22ef9c7c2feaff.s3tc.ctex"
+path.etc2="res://.godot/imported/stone_tiles_basecolor.png-d918cb4920ccbb9a5b22ef9c7c2feaff.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://_textures/environment/stone_tiles_basecolor.png"
-dest_files=["res://.godot/imported/stone_tiles_basecolor.png-d918cb4920ccbb9a5b22ef9c7c2feaff.s3tc.ctex"]
+dest_files=["res://.godot/imported/stone_tiles_basecolor.png-d918cb4920ccbb9a5b22ef9c7c2feaff.s3tc.ctex", "res://.godot/imported/stone_tiles_basecolor.png-d918cb4920ccbb9a5b22ef9c7c2feaff.etc2.ctex"]
 
 [params]
 

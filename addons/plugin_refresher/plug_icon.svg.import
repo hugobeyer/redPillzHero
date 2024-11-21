@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://cxittwl8j5042"
 path.s3tc="res://.godot/imported/plug_icon.svg-b180bca47232308b352da81a86bc8fad.s3tc.ctex"
+path.etc2="res://.godot/imported/plug_icon.svg-b180bca47232308b352da81a86bc8fad.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://addons/plugin_refresher/plug_icon.svg"
-dest_files=["res://.godot/imported/plug_icon.svg-b180bca47232308b352da81a86bc8fad.s3tc.ctex"]
+dest_files=["res://.godot/imported/plug_icon.svg-b180bca47232308b352da81a86bc8fad.s3tc.ctex", "res://.godot/imported/plug_icon.svg-b180bca47232308b352da81a86bc8fad.etc2.ctex"]
 
 [params]
 

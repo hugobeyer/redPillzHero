@@ -1,4 +1,3 @@
-# @tool
 extends RigidBody3D
 
 # @export var enemy_type: EnemyType:
@@ -12,6 +11,7 @@ extends RigidBody3D
 @export var enable_general_features: bool = true
 @export var max_health: float = 125.0
 @export var movement_speed: float = 3.0
+@export var initial_max_speed: float = 5.0  # This can be set in the inspector
 @export var knockback_resistance: float = 32.0
 @export var turn_speed: float = 3.0
 @export var detection_range: float = 65.0
@@ -50,14 +50,17 @@ extends RigidBody3D
 @export var wobble_strength: float = 1.0
 @export var wobble_decay: float = 5.0
 @export_range(0, 1) var wobble_damping: float = 0.98
+var _initial_mesh_transform: Transform3D
 
 # Onready Variables
 @onready var shield: EnemyShield = $EnemyShield if has_node("EnemyShield") else null
-@onready var mesh: MeshInstance3D = $MeshInstance3D
-@onready var mesh_instance: MeshInstance3D = $MeshInstance3D
+@onready var mesh = $mesh_pivot/MeshInstance3D
+@onready var mesh_instance = $mesh_pivot/MeshInstance3D
+@onready var mesh_pivot = $mesh_pivot
 @onready var effects: EnemyEffects = $EnemyEffects
 @onready var health_bar: Sprite3D = $HealthBar
 @onready var melee_weapon = $MeleeWeapon if has_node("MeleeWeapon") else null
+@onready var max_speed: float = initial_max_speed
 
 # State Variables (hidden from Inspector)
 var _health: float
@@ -72,12 +75,12 @@ var _wobble_velocity: Vector3 = Vector3.ZERO
 
 # Reference Variables (hidden from Inspector)
 var _player: Node3D = null
-var _formation_manager: Node3D
+# var _formation_manager: Node3D
 # var _ai_director: Node
 # var _spawner: Node
 
 # Transform Variables (hidden from Inspector)
-var _initial_mesh_transform: Transform3D
+
 
 # Signals
 signal enemy_killed(enemy)
@@ -85,48 +88,50 @@ signal enemy_killed(enemy)
 # var _formation_target: Vector3
 
 # At the top of your script, with other @export variables
-@export var initial_max_speed: float = 15.0  # This can be set in the inspector
+
 
 # Add this near your other @onready variables
-@onready var max_speed: float = initial_max_speed
+
 
 # var _formation_target: Vector3
 
 var is_invulnerable = false
-var invulnerability_duration = 0.1  # Adjust this value as needed
+var invulnerability_duration = 0.05  # Adjust this value as needed
 
 func _ready():
+	mesh_pivot = get_node("mesh_pivot")
+	mesh_instance = get_node("mesh_pivot/MeshInstance3D")
 	if not Engine.is_editor_hint():
 		_health = max_health  # Initialize health
 		update_health_bar()
 		add_to_group("enemies")
-		max_speed = initial_max_speed  # Ensure max_speed is set
-		
-		# Set up RigidBody3D properties
-		gravity_scale = 0  # Disable gravity if you don't want vertical movement
-		linear_damp = 1.0  # Adjust this value to control how quickly the enemy slows down
-		
-	_player = get_tree().current_scene.get_node("Main/Player")
-	if not _player:
-		push_error("Player node not found!")
+		max_speed = initial_max_speed
+		_player = get_tree().get_first_node_in_group("player")
+		print("Initial player reference: ", _player) # Debug print
+    
+		if not _player:
+			# Fallback to direct path if needed
+			_player = get_node("/root/GameRoot/Main/Player")
+			print("Fallback player reference: ", _player) # Debug print
+    
+		if not _player:
+			push_error("Player node not found! Make sure Player node is in 'player' group")
 	
-	if not mesh_instance:
-		push_error("MeshInstance3D not found on enemy!")
+	if not mesh_pivot:
+		push_error("Pivot not found on enemy!")
 	else:
-		_initial_mesh_transform = mesh_instance.transform
+		_initial_mesh_transform = mesh_pivot.transform
 
 func _integrate_forces(state: PhysicsDirectBodyState3D):
+	if not _player or not is_instance_valid(_player):
+		return
 	if not state.linear_velocity.is_finite():
-		print("Non-finite linear_velocity detected: ", state.linear_velocity)
 		state.linear_velocity = Vector3.ZERO
 
 	if not global_transform.origin.is_finite():
-		print("Non-finite position detected: ", global_transform.origin)
 		global_transform.origin = Vector3.ZERO
 
-	if _player and is_instance_valid(_player):
-		apply_distance_to_player_limit(state)
-	
+	apply_distance_to_player_limit(state)
 	apply_knockback(state)
 	
 	# Enforce max speed
@@ -144,44 +149,23 @@ func move_towards_player(state: PhysicsDirectBodyState3D):
 
 	var distance_to_player = global_position.distance_to(_player.global_position)
 	
-	# Check for zero distance
-	if distance_to_player < 0.001:
-		print("Very close to player, avoiding division by zero")
+	if distance_to_player < 0.01:
 		return
 
 	var aggression_factor = clamp(1.0 - (distance_to_player / detection_range), 0.0, 1.0)
 	var current_speed = lerp(movement_speed * 0.5, movement_speed * 1.5, aggression_factor)
-	current_speed = min(current_speed, max_speed)  # Limit the current speed
+	current_speed = min(current_speed, max_speed)
 	
 	var direction_to_player = (_player.global_position - global_position).normalized()
-	direction_to_player.y = 0  # Ignore vertical difference
+	direction_to_player.y = 0
 
-	var flocking_force = calculate_flocking_force()
-	flocking_force.y = 0
-
-	var desired_direction = (direction_to_player + flocking_force).normalized()
+	var force = direction_to_player * current_speed * 12
 	
-	# Check if desired_direction is valid
-	if not desired_direction.is_normalized():
-		print("Invalid desired_direction: ", desired_direction)
-		desired_direction = Vector3.FORWARD  # Use a default direction
-
-	var desired_velocity = desired_direction * current_speed
-
-	if not desired_velocity.is_finite():
-		print("Non-finite desired_velocity detected: ", desired_velocity)
-		print("Components: direction=", desired_direction, ", speed=", current_speed)
-		desired_velocity = Vector3.ZERO
-
-	# Use a softer interpolation
-	state.linear_velocity = state.linear_velocity.move_toward(desired_velocity, state.step * 2.0)
-	state.linear_velocity = state.linear_velocity.limit_length(max_speed)
-
-	if not state.linear_velocity.is_finite():
-		print("Non-finite linear_velocity after move_towards_player: ", state.linear_velocity)
-		state.linear_velocity = Vector3.ZERO
-
-	# Call orient_to_movement outside of this function
+	var flocking_force = calculate_flocking_force()
+	if flocking_force != Vector3.ZERO:
+		force += flocking_force * current_speed * 3
+	
+	state.apply_central_force(force)
 
 func wander(state: PhysicsDirectBodyState3D):
 	if not enable_wander:
@@ -216,13 +200,13 @@ func orient_to_movement(delta: float):
 
 func hit(direction: Vector3, hit_damage: float, impulse: float):
 	if is_invulnerable:
-		print("Enemy is invulnerable, ignoring hit")
+		#print("Enemy is invulnerable, ignoring hit")
 		return
 
 	is_invulnerable = true
 	get_tree().create_timer(invulnerability_duration).connect("timeout", Callable(self, "_end_invulnerability"))
 
-	print("Enemy hit: Damage =", hit_damage, ", Health before =", _health)
+	#print("Enemy hit: Damage =", hit_damage, ", Health before =", _health)
 	
 	var remaining_damage = hit_damage
 
@@ -239,10 +223,10 @@ func hit(direction: Vector3, hit_damage: float, impulse: float):
 
 	if remaining_damage > 0:
 		_health -= remaining_damage
-		print("Enemy health after hit:", _health)
+		#print("Enemy health after hit:", _health)
 		update_health_bar()
 		if _health <= 0:
-			print("Enemy health <= 0, calling die()")
+			#print("Enemy health <= 0, calling die()")
 			die()
 		else:
 			apply_hit_wobble(direction * impulse)
@@ -279,30 +263,29 @@ func update_health_bar():
 		push_warning("Health bar is null or not assigned.")
 
 func _process(delta):
+	if Engine.is_editor_hint():
+		return
+        
 	_time_alive += delta
-	var weight_multiplier = min(1 + _time_alive * flock_weight_change_rate, max_flock_weight_multiplier)
-	flock_alignment_weight = flock_alignment_weight * weight_multiplier
-	flock_cohesion_weight = flock_cohesion_weight * weight_multiplier
-	if _player and global_position.distance_to(_player.global_position) <= detection_range:
-		orient_to_movement(delta)
-	# Make the health bar face the camera/player
-	if health_bar and _player:
-		health_bar.look_at(_player.global_position, Vector3.UP)
+    
 	if enable_berserk and not _is_berserk and randf() < berserk_chance * delta:
 		enter_berserk_mode()
+    
+	# Only modify flocking weights during berserk mode changes
+	# Remove the continuous weight multiplication here
 
 func apply_distance_to_player_limit(state: PhysicsDirectBodyState3D):
 	if _player:
 		var previous_player_position = _player.global_position
 		var distance_to_player = global_position.distance_to(_player.global_position)
-		if distance_to_player > 80:
+		if distance_to_player > 32:
 			_player.global_position = previous_player_position
 			wander(state)
 		else:
 			move_towards_player(state)
 
 func die():
-	print("Enemy die() function called")
+	#print("Enemy die() function called")
 	emit_signal("enemy_killed", self)
 	
 	# Instantiate death effect
@@ -343,43 +326,42 @@ func calculate_flocking_force():
 			continue
 		var offset = enemy.global_position - global_position
 		var distance = offset.length()
-		if distance < flock_neighbor_distance and distance > 0.001:  # Avoid very small distances
+		if distance < flock_neighbor_distance and distance > 0.001:
 			neighbors.append([distance, enemy])
 
-	# Sort neighbors by distance
 	neighbors.sort()
-
-	# Limit the number of neighbors to max_flock_neighbors
 	var max_neighbors = min(max_flock_neighbors, neighbors.size())
+	
 	for i in range(max_neighbors):
 		var neighbor_info = neighbors[i]
 		var distance = neighbor_info[0]
 		var neighbor = neighbor_info[1]
-		var offset = neighbor.global_position - global_position
-
-		# Separation: steer away from nearby enemies
-		separation_force += (global_position - neighbor.global_position) / distance
-		# Alignment: match velocity with nearby enemies
-		alignment_force += neighbor.linear_velocity	
-		# Cohesion: move towards the average position of nearby enemies
+		
+		# Separation: stronger when closer
+		separation_force += (global_position - neighbor.global_position).normalized() * (flock_neighbor_distance / distance)
+		
+		# Alignment: match velocity
+		alignment_force += neighbor.linear_velocity
+		
+		# Cohesion: move toward center
 		cohesion_force += neighbor.global_position
 		neighbor_count += 1
 
 	if neighbor_count > 0:
-		# Average the forces
-		var velocity = linear_velocity
-		separation_force = ((separation_force / neighbor_count) * flock_separation_weight).normalized()
-		alignment_force = (((alignment_force / neighbor_count) - velocity) * flock_alignment_weight).normalized()
-		cohesion_force = (((cohesion_force / neighbor_count) - global_position) * flock_cohesion_weight).normalized()
+		# Calculate final forces without early normalization
+		separation_force = separation_force * flock_separation_weight
+		alignment_force = (alignment_force / neighbor_count - linear_velocity) * flock_alignment_weight
+		
+		var center = cohesion_force / neighbor_count
+		cohesion_force = (center - global_position) * flock_cohesion_weight
+		
+		# Combine forces
+		var final_force = separation_force + alignment_force + cohesion_force
+		
+		# Only normalize at the very end
+		return final_force.normalized()
 
-	# Combine and normalize the flocking forces
-	var flocking_force = (separation_force + alignment_force + cohesion_force).normalized()
-
-	if not flocking_force.is_finite():
-		print("Non-finite flocking_force detected: ", flocking_force)
-		return Vector3.ZERO
-
-	return flocking_force
+	return Vector3.ZERO
 
 func set_physics_enabled(enabled: bool):
 	set_physics_process(enabled)
@@ -392,26 +374,26 @@ func enter_berserk_mode():
 	
 	_is_berserk = true
 	movement_speed *= berserk_speed_multiplier
-	max_speed *= berserk_speed_multiplier  # Increase max speed during berserk mode
-	flock_separation_weight *= 0.5  # Reduce separation to make them cluster more
-	mesh.set_instance_shader_parameter("lerp_wave", 0.5)  # Visual indicator
-	mesh.set_instance_shader_parameter("lerp_color", Color(1.5, 0.1, 0.1, 1.0))  # Visual indicator
+	max_speed *= berserk_speed_multiplier
+	flock_separation_weight *= 0.5
+	mesh_instance.set_instance_shader_parameter("lerp_wave", 0.5)
+	mesh_instance.set_instance_shader_parameter("lerp_color", Color(1.5, 0.1, 0.1, 1.0))
 
 	await get_tree().create_timer(berserk_duration).timeout
 	exit_berserk_mode()
 
 func exit_berserk_mode():
-	var default_hit_color = mesh.get_instance_shader_parameter("lerp_color")  # Visual indicator
+	var default_hit_color = mesh.get_instance_shader_parameter("lerp_color")
 	_is_berserk = false
 	movement_speed /= berserk_speed_multiplier
-	max_speed /= berserk_speed_multiplier  # Restore original max speed
-	flock_separation_weight *= 2  # Restore original separation
-	mesh.set_instance_shader_parameter("lerp_wave", 0.0)  # Restore original color
-	mesh.set_instance_shader_parameter("lerp_color", default_hit_color)  # Restore original color
+	max_speed /= berserk_speed_multiplier
+	flock_separation_weight *= 2
+	mesh_instance.set_instance_shader_parameter("lerp_wave", 0.0)
+	mesh_instance.set_instance_shader_parameter("lerp_color", default_hit_color)
 
-func _exit_tree():
-	if _formation_manager:
-		_formation_manager.remove_enemy(self)
+# func _exit_tree():
+# 	if _formation_manager:
+# 		_formation_manager.remove_enemy(self)
 
 func apply_hit_wobble(force: Vector3):
 	if not enable_wobble:
@@ -419,15 +401,14 @@ func apply_hit_wobble(force: Vector3):
 	_wobble_velocity += force * wobble_strength
 
 func apply_wobble(delta: float):
-	if not enable_wobble or not mesh_instance:
+	if not enable_wobble or not mesh_pivot:
 		return
 	
 	# Calculate wobble rotation
 	var wobble_rotation = Quaternion(Vector3(1, 0, 0), _wobble_velocity.z * delta) * Quaternion(Vector3(0, 0, 1), -_wobble_velocity.x * delta)
 	
 	# Apply wobble to mesh transform
-	mesh_instance.transform = _initial_mesh_transform * Transform3D(wobble_rotation)
-
+	mesh_pivot.transform = _initial_mesh_transform * Transform3D(wobble_rotation)
 	# Decay wobble
 	_wobble_velocity = _wobble_velocity.lerp(Vector3.ZERO, wobble_decay * delta)
 	_wobble_velocity *= wobble_damping  # Additional damping
@@ -440,7 +421,7 @@ func calculate_direction_to_player():
 	else:
 		return Vector3.ZERO
 
-func _physics_process(delta):
+func _physics_process(_delta):
 	if not global_transform.origin.is_finite():
 		print("Resetting non-finite position in _physics_process")
 		global_transform.origin = Vector3.ZERO
@@ -455,13 +436,12 @@ func _end_invulnerability():
 # Visual feedback for hit
 
 
-func _reset_color(original_color):
-	if mesh_instance:
-		var material = mesh_instance.get_surface_override_material(0)
-		if material:
-			material.albedo_color = original_color
-		else:
-			print("No material found on mesh_instance when resetting color")
-	else:
-		print("No mesh_instance found on enemy when resetting color")
-
+# func _reset_color(original_color):
+# 	if mesh_instance:
+# 		var material = mesh_instance.get_surface_override_material(0)
+# 		if material:
+# 			material.albedo_color = original_color
+# 		else:
+# 			print("No material found on mesh_instance when resetting color")
+# 	else:
+# 		print("No mesh_instance found on enemy when resetting color")

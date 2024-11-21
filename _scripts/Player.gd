@@ -1,5 +1,5 @@
-# This script is for movement (attached to the Player (RigidBody3D))
-extends RigidBody3D
+# This script is for movement (attached to the Player (CharacterBody3D))
+extends CharacterBody3D
 
 @export var health: float = 1000.0
 @export var SPEED: float = 6.0
@@ -33,20 +33,32 @@ func _physics_process(delta):
     handle_movement(delta)
     handle_rotation(delta)
     # Apply gravity manually
-    apply_central_force(Vector3.UP * -gravity * mass)
-    linear_damp = 0.1
+    velocity.y -= gravity * delta
+    move_and_slide()
 
 func handle_movement(delta: float):
-    if input_vector.length() > 0:
+    var move_vector = Vector2.ZERO
+    if Input.is_action_pressed("move_forward"):
+        move_vector.y -= 1
+    if Input.is_action_pressed("move_backward"):
+        move_vector.y += 1
+    if Input.is_action_pressed("move_left"):
+        move_vector.x -= 1
+    if Input.is_action_pressed("move_right"):
+        move_vector.x += 1
+    move_vector = move_vector.normalized()
+
+    if move_vector.length() > 0:
         var cam_basis = camera.global_transform.basis
-        var direction = (cam_basis * Vector3(input_vector.x, 0, input_vector.y)).normalized()
+        var direction = (cam_basis * Vector3(move_vector.x, 0, move_vector.y)).normalized()
         direction.y = 0 # Ensure movement is horizontal
 
-        # Directly apply force in the direction of movement
-        var force = direction * SPEED * mass * delta
-        apply_central_force(force)
-    else:        # Optionally, apply damping when not moving
-        linear_damp = 0.99 * delta
+        # Set velocity in the direction of movement
+        velocity.x = direction.x * SPEED
+        velocity.z = direction.z * SPEED
+    else:
+        velocity.x = 0
+        velocity.z = 0
 
 func handle_rotation(delta: float):
     if input_vector.length() > 0:
@@ -93,8 +105,8 @@ func _input(event):
             Weapon.shoot2()
 
 func _on_Weapon_fired(recoil_force_forward: Vector3) -> void:
-    # Apply the recoil force
-    apply_central_impulse(-recoil_force_forward * Weapon.get_recoil_value())
+    # Handle recoil by adjusting velocity or another method
+    velocity += recoil_force_forward * Weapon.get_recoil_value()
 
 func get_shoot_direction() -> Vector2:
     # Get the direction from the thumbstick

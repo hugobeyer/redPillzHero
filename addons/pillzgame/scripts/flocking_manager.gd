@@ -1,29 +1,31 @@
 @tool
 extends Node3D
-
-@export_range(0.1, 5.0, 0.1, "or_greater") var point_radius: float = 1.0:
-    set(value):
-        point_radius = value
-        update_all_radius_visualizations()
-
-@export_range(1.0, 20.0, 0.1, "or_greater") var max_speed: float = 7.0:
-    set(value):
-        max_speed = value
-        update_point_speeds()
-
-@export_range(1.0, 50.0, 0.1, "or_greater") var max_force: float = 24.0
-@export_range(0.1, 10.0, 0.1, "or_greater") var turn_speed: float = 2.0
-@export var fixed_y_position: float = 0.0
-
-@export_group("Target Parameters", "target_")
+@export var flocking_enabled: bool = true
+@export var flocking_agent: PackedScene
 @export var target_nodes_paths: Array[NodePath] = []
 @export var target_node_path: NodePath
 @export_range(1.0, 100.0, 0.1, "or_greater") var target_detection_range: float = 42.0
 @export_range(0.1, 50.0, 0.1, "or_greater") var target_weight: float = 25.0
+@export_range(0.1, 5.0, 0.1, "or_greater") var point_radius: float = 1.0:
+    set(value):
+        point_radius = value
+        update_all_radius_visualizations()
+@export_range(1.0, 20.0, 0.1, "or_greater") var max_speed: float = 7.0:
+    set(value):
+        max_speed = value
+        update_point_speeds()
+@export_range(1.0, 50.0, 0.1, "or_greater") var max_force: float = 24.0
+@export_range(0.1, 10.0, 0.1, "or_greater") var turn_speed: float = 2.0
+@export var fixed_y_position: float = 0.0
+
+
+@export_group("Speed Randomization", "speed_")
+@export var min_max_speed: float = 5.0
+@export var max_max_speed: float = 9.0
+@export var min_turn_speed: float = 1.5
+@export var max_turn_speed: float = 5.5
 
 @export_group("Flocking Parameters", "flock_")
-@export var flocking_enabled: bool = true
-@export var flocking_debug_scene: PackedScene
 @export_range(0.1, 10.0, 0.1, "or_greater") var flock_min_distance_between_points: float = 2.0
 @export_range(0.1, 10.0, 0.1, "or_greater") var flock_min_distance_to_target: float = 1.5
 @export_range(1.0, 50.0, 0.1, "or_greater") var flock_neighbor_distance: float = 12.0
@@ -32,15 +34,6 @@ extends Node3D
 @export_range(0.1, 50.0, 0.1, "or_greater") var flock_alignment_weight: float = 17.0
 @export_range(0.1, 50.0, 0.1, "or_greater") var flock_cohesion_weight: float = 15.0
 
-@export_range(0.1, 5.0, 0.1) var min_speed: float = 0.1
-@export_range(1.0, 20.0, 0.1) var rotation_smoothing: float = 10.0
-
-@export_group("Speed Randomization", "speed_")
-@export_range(1.0, 10.0, 0.1) var speed_min_max: float = 5.0
-@export_range(5.0, 20.0, 0.1) var speed_max_max: float = 9.0
-@export_range(0.1, 5.0, 0.1) var speed_min_turn: float = 1.5
-@export_range(1.0, 10.0, 0.1) var speed_max_turn: float = 2.5
-
 @export_group("Editor Controls")
 @export var reset_positions: bool = false:
     set(value):
@@ -48,10 +41,16 @@ extends Node3D
         if Engine.is_editor_hint():
             call_deferred("reset_to_initial_positions")
 
-@export_group("World Boundaries")
-@export var min_radius: float = 20.0
-@export var max_radius: float = 100.0
-@export var turn_around_zone: float = 10.0
+@export_group("Editor Preview")
+@export var preview_scene: PackedScene:
+    set(value):
+        preview_scene = value
+        if Engine.is_editor_hint():
+            update_preview_scenes()
+
+@export_group("Collision")
+@export var use_navigation: bool = true
+@export var nav_path_ahead_distance: float = 3.0
 
 var target_node: Node3D
 var target_nodes: Array[Node3D] = []
@@ -71,35 +70,47 @@ var neighbor_distance_squared: float
 var min_distance_squared: float
 
 # New variables for randomization
-@export var min_max_speed: float = 5.0
-@export var max_max_speed: float = 9.0
-@export var min_turn_speed: float = 1.5
-@export var max_turn_speed: float = 2.5
+
 
 var initial_positions = {}
 
 var noise: FastNoiseLite
 
+var point_ids = {}  # Track points by their instance ID
+
+# Add to variables at top
+var point_knockback_velocities: Dictionary = {}
+
 func _ready():
     initialize_noise()
     
-    if not Engine.is_editor_hint():
-        # Filter and cast children to Node3D
-        scattered_points = get_children().filter(func(child): return child is Node3D)
+    if Engine.is_editor_hint():
+        # Only handle preview scenes in editor
+        return
         
-        for point in scattered_points:
-            velocities[point] = Vector3.ZERO
-            point.global_position.y = fixed_y_position
-            randomize_point_speeds(point)
-            initial_positions[point] = point.global_position
-        setup_all_flocking_debug()
-        
-        initialize_targets()
-        update_spatial_grid()
-        
-        # Precompute squared distances
-        neighbor_distance_squared = flock_neighbor_distance * flock_neighbor_distance
-        min_distance_squared = flock_min_distance_between_points * flock_min_distance_between_points
+    # Remove any preview scenes that might exist
+    for point in get_children():
+        var preview = point.get_node_or_null("Preview")
+        if preview:
+            preview.queue_free()
+    
+    scattered_points = get_children().filter(func(child): return child is Node3D)
+    
+    for point in scattered_points:
+        var point_id = point.get_instance_id()
+        point_ids[point_id] = point
+        velocities[point_id] = Vector3.ZERO
+        point.global_position.y = fixed_y_position
+        randomize_point_speeds(point)
+        initial_positions[point_id] = point.global_position
+    setup_all_flocking_debug()
+    
+    initialize_targets()
+    update_spatial_grid()
+    
+    # Precompute squared distances
+    neighbor_distance_squared = flock_neighbor_distance * flock_neighbor_distance
+    min_distance_squared = flock_min_distance_between_points * flock_min_distance_between_points
 
     initialize_point_speeds()
 
@@ -146,6 +157,9 @@ func _physics_process(delta):
     if Engine.is_editor_hint() or not flocking_enabled:
         return
 
+    # Filter out invalid points
+    scattered_points = scattered_points.filter(func(p): return is_instance_valid(p))
+
     update_counter += 1
     if update_counter >= update_frequency:
         update_spatial_grid()
@@ -153,11 +167,13 @@ func _physics_process(delta):
 
     var forces: Dictionary = {}
     for point in scattered_points:
-        forces[point] = calculate_forces(point)
+        if is_instance_valid(point):
+            forces[point] = calculate_forces(point)
 
     for point in scattered_points:
-        apply_force(point, forces[point], delta)
-        enforce_minimum_distances(point)
+        if is_instance_valid(point) and point in forces:
+            apply_force(point, forces[point], delta)
+            enforce_minimum_distances(point)
 
 func update_spatial_grid():
     spatial_grid.clear()
@@ -189,6 +205,33 @@ func get_nearby_points(point):
     return nearby
 
 func calculate_forces(point: Node3D) -> Vector3:
+    var point_id = point.get_instance_id()
+    var total_force = Vector3.ZERO
+    
+    # Handle knockback separately from other forces
+    if point_id in point_knockback_velocities:
+        var knockback = point_knockback_velocities[point_id]
+        knockback.y = 0  # Ensure Y stays at zero during lerp
+        point.global_position += knockback * get_physics_process_delta_time()
+        point_knockback_velocities[point_id] = knockback.lerp(Vector3.ZERO, get_physics_process_delta_time() * 3.0)
+        if point_knockback_velocities[point_id].length() < 0.01:
+            point_knockback_velocities.erase(point_id)
+    
+    # Calculate regular flocking forces
+    var flocking_force = calculate_flocking_forces(point)
+    total_force += flocking_force
+    
+    return total_force
+
+func calculate_flocking_forces(point: Node3D) -> Vector3:
+    var point_id = point.get_instance_id()
+    var total_force = Vector3.ZERO
+    
+    # Safety check for valid point
+    if not is_instance_valid(point):
+        scattered_points.erase(point)  # Remove invalid point
+        return Vector3.ZERO
+        
     var separation = Vector3.ZERO
     var alignment = Vector3.ZERO
     var cohesion = Vector3.ZERO
@@ -197,36 +240,42 @@ func calculate_forces(point: Node3D) -> Vector3:
     var nearby_points = get_nearby_points(point)
     var point_pos = point.global_position
     
+    # Filter out invalid points from nearby_points
+    nearby_points = nearby_points.filter(func(p): return is_instance_valid(p))
+    
     for other in nearby_points:
         if other == point:
             continue
-        
+            
+        # Safety check for valid other point
+        if not is_instance_valid(other):
+            continue
+            
+        var other_id = other.get_instance_id()
+        if not other_id in velocities:
+            continue
+            
         var offset = point_pos - other.global_position
         var distance_squared = offset.length_squared()
         
         if distance_squared < neighbor_distance_squared and neighbor_count < flock_max_neighbors:
             var distance = sqrt(distance_squared)
-            # Separation
             separation += offset.normalized() / distance
-            
-            # Alignment
-            alignment += velocities[other]
-            
-            # Cohesion
+            alignment += velocities[other_id]
             cohesion += other.global_position
-            
             neighbor_count += 1
     
     var flocking_force = Vector3.ZERO
     if neighbor_count > 0:
         separation = separation / neighbor_count * flock_separation_weight
-        alignment = (alignment / neighbor_count - velocities[point]) * flock_alignment_weight
+        alignment = (alignment / neighbor_count - velocities[point_id]) * flock_alignment_weight
         cohesion = ((cohesion / neighbor_count) - point_pos) * flock_cohesion_weight
         flocking_force = separation + alignment + cohesion
     
     var target_force = calculate_target_force(point)
+    var nav_force = get_navigation_force(point)
     
-    return flocking_force + target_force
+    return flocking_force + target_force + nav_force + total_force
 
 func calculate_target_force(point: Node3D) -> Vector3:
     var closest_target = null
@@ -244,28 +293,19 @@ func calculate_target_force(point: Node3D) -> Vector3:
     return Vector3.ZERO
 
 func apply_force(point: Node3D, force: Vector3, delta: float):
+    var point_id = point.get_instance_id()
+    if not point_id in velocities:
+        return
+    
     var acceleration = force.limit_length(max_force)
-    velocities[point] += acceleration * delta
-    velocities[point] = velocities[point].limit_length(point_speeds[point]["max_speed"])
+    velocities[point_id] += acceleration * delta
+    velocities[point_id] = velocities[point_id].limit_length(point_speeds[point_id]["max_speed"])
     
-    var new_position = point.global_position + velocities[point] * delta
-    var distance_from_center = new_position.length()
-    
-    if distance_from_center > max_radius:
-        # Apply a force to turn around when reaching the max radius
-        var turn_force = -new_position.normalized() * turn_around_zone
-        velocities[point] += turn_force * delta
-        new_position = new_position.normalized() * max_radius
-    elif distance_from_center < min_radius:
-        # Apply a force to move away from the center when too close
-        var away_force = new_position.normalized() * turn_around_zone
-        velocities[point] += away_force * delta
-    
-    point.global_position = new_position
+    point.global_position += velocities[point_id] * delta
     point.global_position.y = fixed_y_position
     
-    if velocities[point].length() > 0.001:
-        var look_target = point.global_position + velocities[point]
+    if velocities[point_id].length() > 0.001:
+        var look_target = point.global_position + velocities[point_id]
         point.look_at(look_target, Vector3.UP)
 
 func enforce_minimum_distances(point: Node3D):
@@ -292,91 +332,68 @@ func setup_all_flocking_debug():
         setup_flocking_debug(point)
 
 func setup_flocking_debug(point: Node3D):
-    var existing_debug = point.get_node_or_null("FlockingDebug")
+    var existing_debug = point.get_node_or_null("Enemy")
     if existing_debug:
         existing_debug.queue_free()
     
-    if flocking_debug_scene:
-        var debug_instance = flocking_debug_scene.instantiate()
-        point.add_child(debug_instance)
-        debug_instance.name = "FlockingDebug"
+    if flocking_agent:
+        var enemy_instance = flocking_agent.instantiate()
+        point.add_child(enemy_instance)
+        enemy_instance.name = "Enemy"
         
         # Disable shadows for all MeshInstance3D children
-        for child in debug_instance.get_children():
+        for child in enemy_instance.get_children():
             if child is MeshInstance3D:
                 child.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
         
         # print("Debug instance added to ", point.name)
-        update_radius_visualization(debug_instance)
-    else:
-        print("Error: flocking_debug_scene is not set")
+        update_radius_visualization(enemy_instance)
+    # else:
+        # print("Error: flocking_agent is not set")
 
-func update_radius_visualization(debug_instance: Node3D):
-    var radius_vis = debug_instance.get_node_or_null("radius_vis")
+func update_radius_visualization(enemy_instance: Node3D):
+    var radius_vis = enemy_instance.get_node_or_null("radius_vis")
     if radius_vis:
         var scale_factor = point_radius * 2
         radius_vis.scale = Vector3(scale_factor, scale_factor, scale_factor)
         # print("Updated radius visualization")
-    else:
-        print("Error: radius_vis node not found in debug instance")
+    # else:
+        # print("Error: radius_vis node not found in debug instance")
 
 func update_all_radius_visualizations():
     for point in scattered_points:
-        update_radius_visualization(point.get_node_or_null("FlockingDebug"))
+        update_radius_visualization(point.get_node_or_null("Enemy"))
 
-# func update_flocking_debug(point: Node3D, flocking_force: Vector3, target_force: Vector3):  
-#     var debug_instance = point.get_node_or_null("FlockingDebug")
-#     if not debug_instance:
-#         return
-    # var capsule_vis = debug_instance.get_node("capsule_vis")
-    # var forward_arrow = debug_instance.get_node("pivot/forward_arrow")
-    # var pivot_orient = debug_instance.get_node("pivot")
-    # var pivot_flock = debug_instance.get_node("pivot_flock")
-    # var pivot_desired = debug_instance.get_node("pivot_desired")
-    # var pivot_target = debug_instance.get_node("pivot_target")
-    
-    # if capsule_vis and forward_arrow:
-    #     var closest_target_distance = INF
-    #     var closest_target = null
-    #     for target in target_nodes:
-    #         var distance = point.global_position.distance_to(target.global_position)
-    #         if distance < closest_target_distance:
-    #             closest_target_distance = distance
-    #             closest_target = target
+func update_flocking_debug(point: Node3D, flocking_force: Vector3, target_force: Vector3):  
+    var point_id = point.get_instance_id()
+    if not point_id in velocities:
+        return
         
-    #     # if closest_target:
-    #         var color_modulate = max(0, 1 - closest_target_distance / pow(target_detection_range, 0.5))
-    #         capsule_vis.set_instance_shader_parameter("ColorModulate", color_modulate)
-    #         forward_arrow.set_instance_shader_parameter("ColorModulate", color_modulate)
-    #     else:
-    #         capsule_vis.set_instance_shader_parameter("ColorModulate", 0)
-    #         forward_arrow.set_instance_shader_parameter("ColorModulate", 0)
+    var enemy_instance = point.get_node_or_null("Enemy")
+    if not enemy_instance:
+        return
+        
+    var char_mesh_instance = enemy_instance.get_node("CharacterMesh")
 
-    # if pivot_orient:
-    #     if velocities[point].length() > 0.001:
-    #         pivot_orient.look_at(pivot_orient.global_position + velocities[point], Vector3.UP)
-    
-    # if pivot_flock:
-    #     if flocking_force.length() > 0.001:
-    #         pivot_flock.look_at(pivot_flock.global_position + flocking_force, Vector3.UP)
-    #         pivot_flock.get_node("flock_strength").set_instance_shader_parameter("ColorModulate", flocking_force.length())
-    #     else:
-    #         pivot_flock.get_node("flock_strength").set_instance_shader_parameter("ColorModulate", 0)
+    if char_mesh_instance:
+        var closest_target_distance = INF
+        var closest_target = null
+        for target in target_nodes:
+            var distance = point.global_position.distance_to(target.global_position)
+            if distance < closest_target_distance:
+                closest_target_distance = distance
+                closest_target = target
+        
+        if closest_target:
+            var color_modulate = max(0, 1 - closest_target_distance / pow(target_detection_range, 0.5))
+            char_mesh_instance.set_instance_shader_parameter("ColorModulate", color_modulate)
+        else:
+            char_mesh_instance.set_instance_shader_parameter("ColorModulate", 0)
 
-    # if pivot_desired:
-    #     if velocities[point].length() > 0.001:
-    #         var closest_target = get_closest_target(point)
-    #         if closest_target:
-    #             var angle_diff = 1 - velocities[point].angle_to((closest_target.global_position - point.global_position).normalized())
-    #             pivot_desired.look_at(pivot_desired.global_position + velocities[point], Vector3.UP)
-
-    # if pivot_target:
-    #     var closest_target = get_closest_target(point)
-    #     if closest_target:
-    #         pivot_target.look_at(closest_target.global_position, Vector3.UP)
-    #         pivot_target.get_node("target_strength").set_instance_shader_parameter("ColorModulate", target_force.normalized().length())
-    #     else:
-    #         pivot_target.get_node("target_strength").set_instance_shader_parameter("ColorModulate", 0)
+    if velocities[point_id].length() > 0.001:
+        var closest_target = get_closest_target(point)
+        if closest_target:
+            var angle_diff = 1 - velocities[point_id].angle_to((closest_target.global_position - point.global_position).normalized())
 
 func get_closest_target(point: Node3D) -> Node3D:
     var closest_target = null
@@ -420,8 +437,13 @@ func disable_flocking():
 func toggle_flocking():
     flocking_enabled = not flocking_enabled
 
+func initialize_point_speeds():
+    for point in scattered_points:
+        randomize_point_speeds(point)
+
 func randomize_point_speeds(point: Node3D):
-    point_speeds[point] = {
+    var point_id = point.get_instance_id()
+    point_speeds[point_id] = {
         "max_speed": randf_range(min_max_speed, max_max_speed),
         "turn_speed": randf_range(min_turn_speed, max_turn_speed)
     }
@@ -431,8 +453,8 @@ func reset_to_initial_positions():
     for point in scattered_points:
         if point in initial_positions:
             point.global_position = initial_positions[point]
-        else:
-            print("Warning: No initial position stored for ", point.name)
+        # else:
+        #     print("Warning: No initial position stored for ", point.name)
     
     # Reset velocities
     for point in velocities.keys():
@@ -442,18 +464,92 @@ func reset_to_initial_positions():
     update_spatial_grid()
     # print("Positions reset complete.")
 
-func initialize_point_speeds():
-    for point in scattered_points:
-        randomize_point_speed(point)
-
-func randomize_point_speed(point: Node3D):
-    point_speeds[point] = {
-        "max_speed": randf_range(speed_min_max, speed_max_max),
-        "turn_speed": randf_range(speed_min_turn, speed_max_turn)
-    }
-
 func update_point_speeds():
     for point in scattered_points:
         if point in point_speeds:
             point_speeds[point]["max_speed"] = min(point_speeds[point]["max_speed"], max_speed)
+
+func update_preview_scenes():
+    if not Engine.is_editor_hint():
+        return
+        
+   
+    # Find ScatteredPoints node
+    var scattered_points = get_tree().get_nodes_in_group("ScatteredPoints")
+    if scattered_points.is_empty():
+        var scattered_container = get_node_or_null("../ScatteredPoints")
+        if scattered_container:
+            scattered_points = scattered_container.get_children()
+    
+    # print("Found points:", scattered_points.size())
+    
+    for point in scattered_points:
+        # print("Processing point:", point.name)
+        
+        # Remove existing preview
+        var existing = point.get_node_or_null("Preview")
+        if existing:
+            existing.queue_free()
+            
+        # Add new preview if we have a scene
+        if preview_scene:
+            var preview = preview_scene.instantiate()
+            preview.name = "Preview"
+            point.add_child(preview)
+            preview.set_owner(get_tree().edited_scene_root)
+            # print("Added preview to:", point.name)
+
+# Add this function to remove points from tracking
+func remove_point(point: Node3D):
+    if not point or not is_instance_valid(point):
+        return
+        
+    var point_id = point.get_instance_id()
+    
+    # Remove from all tracking
+    scattered_points.erase(point)
+    if point_id in point_ids:
+        point_ids.erase(point_id)
+    if point_id in velocities:
+        velocities.erase(point_id)
+    if point_id in point_speeds:
+        point_speeds.erase(point_id)
+    if point_id in initial_positions:
+        initial_positions.erase(point_id)
+
+func get_navigation_force(point: Node3D) -> Vector3:
+    var point_id = point.get_instance_id()
+    if not point_id in velocities:
+        return Vector3.ZERO
+    
+    # Get current velocity direction
+    var current_velocity = velocities[point_id]
+    if current_velocity.length_squared() < 0.001:
+        return Vector3.ZERO
+    
+    # Check point ahead of current movement
+    var look_ahead = point.global_position + current_velocity.normalized() * nav_path_ahead_distance
+    
+    # Get path using NavigationServer3D directly
+    var path = NavigationServer3D.map_get_path(
+        NavigationServer3D.get_maps()[0],  # Get first navigation map
+        point.global_position,
+        look_ahead,
+        true  # optimize path
+    )
+    
+    # If path exists and has points, use it for steering
+    if path.size() > 1:
+        var next_point = path[1]
+        var desired_velocity = (next_point - point.global_position).normalized() * point_speeds[point_id]["max_speed"]
+        return (desired_velocity - current_velocity) * 2.0
+    
+    return Vector3.ZERO
+
+# Add this function to handle knockback
+func apply_point_knockback(point: Node3D, direction: Vector3, force: float):
+    var point_id = point.get_instance_id()
+    # Ensure knockback is only on XZ plane
+    direction.y = 0
+    point_knockback_velocities[point_id] = direction * force
 

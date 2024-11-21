@@ -4,16 +4,16 @@
 parameter_name = "emissive_color"
 qualifier = 2
 default_value_enabled = true
-default_value = Color(0, 0, 0, 1)
+default_value = Color(0.792969, 0.792969, 0.792969, 1)
 
 [sub_resource type="VisualShaderNodeColorConstant" id="VisualShaderNodeColorConstant_hwtqj"]
 constant = Color(0, 0, 0, 1)
 
 [resource]
 code = "shader_type spatial;
-render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_disabled, unshaded;
+render_mode blend_add, depth_draw_opaque, cull_back, diffuse_lambert, specular_disabled, depth_test_disabled, unshaded;
 
-instance uniform vec4 emissive_color : source_color = vec4(0.000000, 0.000000, 0.000000, 1.000000);
+instance uniform vec4 emissive_color : source_color = vec4(0.792969, 0.792969, 0.792969, 1.000000);
 
 
 
@@ -28,7 +28,9 @@ void fragment() {
 
 }
 "
+modes/blend = 1
 modes/specular = 2
+flags/depth_test_disabled = true
 flags/unshaded = true
 nodes/fragment/2/node = SubResource("VisualShaderNodeColorParameter_5nk76")
 nodes/fragment/2/position = Vector2(-220, 240)
