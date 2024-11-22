@@ -36,28 +36,30 @@ radius = 0.33
 height = 0.66
 
 [sub_resource type="Gradient" id="Gradient_3f1f3"]
-offsets = PackedFloat32Array(0.291667, 0.31901, 0.428385, 0.628906)
-colors = PackedColorArray(1, 0.351563, 0.898682, 1, 0.900827, 0.325973, 1, 0.591837, 0.83776, 0.0352, 0.88, 0.160784, 0.824572, 0.0204163, 0.871094, 0)
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.221172, 0.257089, 0.383743, 0.47448, 0.567108)
+colors = PackedColorArray(1, 0.542969, 0.671509, 0, 1, 0, 0.654902, 1, 0.824208, 0.0738146, 0.814365, 0.477917, 0.83, 0.0747, 0.804823, 0.188235, 0.82737, 0.0174, 0.87, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_cpmo7"]
 gradient = SubResource("Gradient_3f1f3")
-width = 128
-height = 128
+width = 256
+height = 256
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
 [node name="Grenade" type="RigidBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.00445509, 0.00709581, -0.00696945)
 collision_layer = 128
 collision_mask = 6
 input_ray_pickable = false
-mass = 120.0
-gravity_scale = 6.0
-linear_damp = 0.1
+mass = 150.0
+gravity_scale = 3.25
+can_sleep = false
+linear_damp = 1.0
 angular_damp = 0.1
+constant_force = Vector3(0, -4.425, 0)
 script = ExtResource("1_l3j8t")
-explosion_force = 50.0
-damage = 64.0
-fuse_time = 1.5
+explosion_force = 100.0
 explosion_effect_scene = ExtResource("2_ffhlh")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
@@ -76,6 +78,5 @@ instance_shader_parameters/wave_range_lerp = -0.47
 mesh = SubResource("SphereMesh_3f1f3")
 
 [node name="Sprite3D" type="Sprite3D" parent="."]
-pixel_size = 0.0156
 billboard = 1
 texture = SubResource("GradientTexture2D_cpmo7")

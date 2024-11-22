@@ -1,3 +1,88 @@
-[gd_resource type="AnimationLibrary" format=3 uid="uid://i4t2law61ppy"]
+[gd_resource type="AnimationLibrary" load_steps=3 format=3 uid="uid://i4t2law61ppy"]
+
+[sub_resource type="Animation" id="Animation_2vwtv"]
+resource_name = "RESET"
+step = 0.025
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeleeMesh:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(22.9602, 24.4029, 21.8708)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeleeMesh:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(8.201, 0.698, -1.78641)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeleeMesh:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0.361367, 1.11083, -0.387597)]
+}
+
+[sub_resource type="Animation" id="Animation_f8l40"]
+resource_name = "swing"
+length = 1.5
+step = 0.025
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("MeleeMesh:rotation")
+tracks/0/interp = 2
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0.25, 0.425, 0.675, 1.075, 1.125, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.109956, -0.225147, -0.963422), Vector3(0, 0.479669, 0), Vector3(0, 1.02102, 0), Vector3(0, 2.55762, 0), Vector3(0, 4.05091, 0), Vector3(0, 5.34943, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("MeleeMesh:position")
+tracks/1/interp = 2
+tracks/1/loop_wrap = false
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.425, 0.95, 1.075, 1.125, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.595342, 0, 2.73207), Vector3(3.235, 0, 2.732), Vector3(8.201, 0.698, -1.78641), Vector3(0.424273, 3.57654, -4.79469), Vector3(-5.85029, 4.13307, -3.52532), Vector3(-2.68672, 4.13307, 3.57734)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("MeleeMesh:scale")
+tracks/2/interp = 2
+tracks/2/loop_wrap = false
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.25, 0.675, 0.85, 0.95, 1, 1.125, 1.25, 1.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, -1.31951, 1, 1),
+"update": 0,
+"values": [Vector3(2, 2, 2), Vector3(2.221, 3.809, 2.805), Vector3(6.66, 10.943, 8.15), Vector3(5.769, 7.734, 6.317), Vector3(8.555, 7.774, 7.774), Vector3(11.535, 9.209, 9.91), Vector3(32.24, 3.911, 8.596), Vector3(6.808, 5.521, 5.412), Vector3(2, 2, 2)]
+}
 
 [resource]
+_data = {
+&"RESET": SubResource("Animation_2vwtv"),
+&"swing": SubResource("Animation_f8l40")
+}

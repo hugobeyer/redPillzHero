@@ -64,21 +64,16 @@ directional_shadow_pancake_size = 9.0
 transform = Transform3D(1, -0.000105063, -0.000146679, 0.000105063, 1, 0.000106358, 0.000146679, -0.000106358, 1, 0, 0, 0)
 script = ExtResource("1_d830g")
 flocking_agent = ExtResource("2_crrpk")
-target_nodes_paths = Array[NodePath]([NodePath("../Targets/targetNode2"), NodePath("../Targets/targetNode3")])
 target_node_path = NodePath("../Targets/targetNode")
 target_detection_range = 256.0
-target_weight = 100.0
 point_radius = 1.0
-max_speed = 8.0
 max_force = 80.0
-max_max_speed = 12.0
+max_speed = 12.0
 min_turn_speed = 0.0
-max_turn_speed = 6.0
 flock_neighbor_distance = 16.5
 flock_separation_weight = 1300.0
 flock_alignment_weight = 0.2
-flock_cohesion_weight = 3.0
-metadata/_edit_pinned_properties_ = [&"point_radius", &"max_force", &"max_speed", &"target_nodes_paths"]
+metadata/_edit_pinned_properties_ = [&"point_radius", &"max_force", &"max_speed"]
 
 [node name="ScatteredPoint_0" type="Node3D" parent="ScatteredPoints"]
 transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 67.0282, 4.12343e-06, -6.97608)

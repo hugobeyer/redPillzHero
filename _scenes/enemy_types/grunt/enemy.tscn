@@ -1,11 +1,13 @@
-[gd_scene load_steps=18 format=3 uid="uid://b438ssjn22xfs"]
+[gd_scene load_steps=20 format=3 uid="uid://b438ssjn22xfs"]
 
 [ext_resource type="Shader" path="res://_shaders/custom/custom_frag_actors.gdshader" id="1_7w157"]
 [ext_resource type="Script" path="res://_scripts/enemy_pillz.gd" id="1_fsbj1"]
+[ext_resource type="PackedScene" uid="uid://b6m5ebh7isok8" path="res://_pfx/default_enemy_die_fx.tscn" id="2_66fd8"]
 [ext_resource type="PackedScene" uid="uid://bqey4meim1lok" path="res://_assets/pivot.tscn" id="2_ntddm"]
 [ext_resource type="Script" path="res://_scripts/effect/wobble.gd" id="3_s7aba"]
 [ext_resource type="PackedScene" uid="uid://dkdkucw2l03dw" path="res://_scenes/enemy_features/enemy_effects.tscn" id="5_s7aba"]
 [ext_resource type="Script" path="res://_resources/ui/health_bar_3d.gd" id="6_4ttvg"]
+[ext_resource type="PackedScene" uid="uid://dwpsppfskic5x" path="res://_scenes/enemy_features/melee.tscn" id="8_gkdcr"]
 
 [sub_resource type="Gradient" id="Gradient_7w157"]
 resource_local_to_scene = true
@@ -90,11 +92,14 @@ height = 60
 
 [node name="Enemy" type="Area3D" groups=["enemies"]]
 collision_layer = 2
-collision_mask = 209
+collision_mask = 241
 script = ExtResource("1_fsbj1")
+max_health = 150.0
+death_effect_scene = ExtResource("2_66fd8")
 
 [node name="pivot" parent="." instance=ExtResource("2_ntddm")]
 transform = Transform3D(1, -0.000527468, 0.000497165, 0.000527695, 1, -0.000485827, -0.000496924, 0.000486074, 1, 0.000175823, 8.9407e-08, -0.000162025)
+visible = false
 
 [node name="radius_vis" type="MeshInstance3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, -8.74228e-08, 2, 0, -2, -8.74228e-08, 0, 0.176774, -5.19646e-09)
@@ -106,10 +111,10 @@ mesh = SubResource("QuadMesh_4ttvg")
 [node name="WobbleEffect" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
 script = ExtResource("3_s7aba")
-spring_stiffness = 512.0
-spring_damping = 12.815
-max_rotation_degrees = 90.0
-hit_force = 64.0
+spring_stiffness = 64.0
+spring_damping = 6.29
+max_rotation_degrees = 80.0
+hit_force = 32.0
 
 [node name="CharacterMesh" type="MeshInstance3D" parent="WobbleEffect"]
 process_physics_priority = 1
@@ -164,3 +169,5 @@ texture_filter = 0
 render_priority = -1
 texture = SubResource("GradientTexture2D_oiro4")
 region_rect = Rect2(0, 0, 120, 50)
+
+[node name="MeleeWeapon" parent="." instance=ExtResource("8_gkdcr")]

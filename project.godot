@@ -32,6 +32,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 SignalBus="res://_scripts/signal_bus.gd"
+GameEvents="*res://_scripts/autoload/GameEvents.gd"
 
 [debug]
 
@@ -41,20 +42,15 @@ shapes/navigation/agent_path_point_size=32.0
 
 [display]
 
-window/size/viewport_width=1980
+window/size/viewport_width=1920
 window/size/viewport_height=1040
 window/size/initial_position_type=0
 window/size/initial_position=Vector2i(2665, 500)
 window/size/always_on_top=true
 window/size/extend_to_title=true
 window/stretch/aspect="keep_width"
-display_server/driver="opengl3"
-display_server/driver.windows="windows"
-display_server/driver.android="android"
-display_server/driver.ios="iOS"
-display_server/driver.macos="macos"
 window/handheld/orientation=1
-window/vsync/vsync_mode=0
+window/vsync/vsync_mode=2
 mouse_cursor/custom_image="res://addons/orchestrator/editor/icons/CircleValue.svg"
 
 [editor]
@@ -271,7 +267,11 @@ settings/action_favorites=PackedStringArray("Math/remap")
 [physics]
 
 3d/run_on_separate_thread=true
-3d/physics_engine="GodotPhysics3D"
+common/physics_ticks_per_second=30
+common/physics_jitter_fix=0.1
+3d/physics_engine="Rapier3D"
+3d/sleep_threshold_linear=0.125
+3d/sleep_threshold_angular=0.16
 
 [plugins]
 

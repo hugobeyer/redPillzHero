@@ -16,12 +16,13 @@ func toss_grenade():
         return
     
     var grenade = grenade_scene.instantiate()
-    add_child(grenade)
+    var spawn_pos = global_position
     
-    var root = get_tree().root
-    remove_child(grenade)
-    root.add_child(grenade)
-    grenade.global_position = global_position
+    grenade.transform = Transform3D(Basis(), spawn_pos)
+    
+    get_tree().root.call_deferred("add_child", grenade)
+    
+    await grenade.ready
     
     var toss_direction = -global_transform.basis.z.normalized()
     grenade.apply_impulse(toss_direction * toss_strength)

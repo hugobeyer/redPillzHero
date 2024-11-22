@@ -14,9 +14,12 @@ var input_vector: Vector2 = Vector2.ZERO
 var is_shooting: bool = false
 var has_left_deadzone: bool = false
 
-@export_range(0.1, 20.0) var acceleration: float = 10.0
-@export_range(0.1, 20.0) var deceleration: float = 8.0
-var current_velocity: Vector3 = Vector3.ZERO
+@export var acceleration: float = 15.0  # How quickly the player reaches max speed
+@export var deceleration: float = 10.0  # How quickly the player comes to a stop
+@export var air_control: float = 0.3    # How much control the player has while in the air
+
+# Current movement velocity (separate from gravity)
+var movement_velocity: Vector3 = Vector3.ZERO
 
 func _ready():
     thumbstick = get_node("../../MainHUD/ControllerCanvas/MovementJoystick")
@@ -36,11 +39,17 @@ func _ready():
 func _physics_process(delta):
     handle_movement(delta)
     handle_rotation(delta)
-    # Apply gravity manually
-    velocity.y -= gravity * delta
+    
+    # Apply gravity
+    if not is_on_floor():
+        velocity.y -= gravity * delta
+    elif velocity.y < 0:
+        velocity.y = 0  # Reset vertical velocity when on ground
+    
     move_and_slide()
 
 func handle_movement(delta: float):
+    # Get input and normalize immediately to ensure consistent speed
     var move_vector = Vector2.ZERO
     if Input.is_action_pressed("move_forward"):
         move_vector.y -= 1
@@ -50,23 +59,38 @@ func handle_movement(delta: float):
         move_vector.x -= 1
     if Input.is_action_pressed("move_right"):
         move_vector.x += 1
+    
+    # Normalize before applying any movement
+    # This ensures diagonal movement isn't faster
     move_vector = move_vector.normalized()
 
-    if move_vector.length() > 0:
-        var cam_basis = camera.global_transform.basis
-        var target_direction = (cam_basis * Vector3(move_vector.x, 0, move_vector.y)).normalized()
-        target_direction.y = 0  # Ensure movement is horizontal
-        
-        # Smoothly accelerate towards target velocity
-        var target_velocity = target_direction * SPEED
-        current_velocity = current_velocity.lerp(target_velocity, acceleration * delta)
-    else:
-        # Smoothly decelerate to zero
-        current_velocity = current_velocity.lerp(Vector3.ZERO, deceleration * delta)
+    # Get the desired direction relative to the camera
+    var cam_basis = camera.global_transform.basis
+    var direction = Vector3.ZERO
     
-    # Apply the smoothed velocity
-    velocity.x = current_velocity.x
-    velocity.z = current_velocity.z
+    if move_vector.length() > 0:
+        direction = (cam_basis * Vector3(move_vector.x, 0, move_vector.y)).normalized()
+        direction.y = 0  # Ensure movement is horizontal
+    
+    # Calculate target velocity
+    # Since direction is normalized, this will maintain consistent speed
+    var target_velocity = direction * SPEED
+    
+    # Calculate acceleration rate based on whether we're on the ground
+    var current_acceleration = acceleration
+    if not is_on_floor():
+        current_acceleration *= air_control
+    
+    if direction.length() > 0:
+        # Accelerate towards target velocity
+        movement_velocity = movement_velocity.move_toward(target_velocity, current_acceleration * delta)
+    else:
+        # Decelerate when no input
+        movement_velocity = movement_velocity.move_toward(Vector3.ZERO, deceleration * delta)
+    
+    # Apply movement velocity
+    velocity.x = movement_velocity.x
+    velocity.z = movement_velocity.z
 
 func handle_rotation(delta: float):
     if input_vector.length() > 0:

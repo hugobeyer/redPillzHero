@@ -126,6 +126,11 @@ var shoot_timer: float = 0.0
 
 @onready var camera: Camera3D = get_tree().get_first_node_in_group("cameragame")
 
+# Add these new variables at the top
+@export_range(0.1, 10.0) var recoil_noise_intensity: float = 2.0  # Controls how "jumpy" the recoil is
+@export_range(0.1, 10.0) var recoil_snap_speed: float = 3.0      # How quickly recoil snaps to new positions
+@export_range(0.0, 1.0) var recoil_randomness: float = 0.4       # Additional random variation
+
 func _ready():
 	if camera_node:
 		if not camera_node:
@@ -159,14 +164,14 @@ func _ready():
 	muzzle_node = $Muzzle # Adjust the path if necessary
 	if not muzzle_node:
 		push_error("Muzzle node not found!")
-	else:
-		print("Muzzle position: ", muzzle_node.global_transform.origin)
+	# else:
+		# print("Muzzle position: ", muzzle_node.global_transform.origin)
 
 	# Add this to verify camera connection
-	if camera:
-		print("Camera connected successfully")
-	else:
-		push_error("Camera not found! Check the path!")
+	# if camera:
+	# 	print("Camera connected successfully")
+	# else:
+	# 	push_error("Camera not found! Check the path!")
 
 func create_debug_cylinders():
 	if not enable_debug_visualization:
@@ -329,35 +334,65 @@ func update_recoil(delta: float, current_time: float):
 	var recoil_progress = min(recoil_duration / recoil_increase_duration, 1.0)
 	var curve_value = recoil_curve_time.sample_baked(recoil_progress)
 	
-	# Calculate recoil increment
-	var recoil_increment = recoil_force * curve_value * delta
-	recoil_accumulation += recoil_increment
+	# Add sudden jumps to the recoil
+	var noise_jump = randf() * recoil_noise_intensity
+	var random_spike = 1.0 + (randf() * recoil_randomness if randf() < 0.3 else 0.0)
+	
+	# Calculate recoil increment with added noise
+	var recoil_increment = recoil_force * curve_value * delta * random_spike
+	recoil_increment *= (1.0 + noise_jump)
+	
+	# Snap to new recoil values more quickly
+	recoil_accumulation = lerp(recoil_accumulation, 
+		recoil_accumulation + recoil_increment, 
+		delta * recoil_snap_speed)
 	recoil_accumulation = min(recoil_accumulation, max_recoil)
 	
-	# Calculate recoil offset (only in XZ plane, no Y component)
+	# Get the back direction for recoil
 	var back_direction = -player.global_transform.basis.z
-	back_direction.y = 0  # Remove vertical component
-	back_direction = back_direction.normalized()  # Renormalize after removing Y
+	back_direction.y = 0
+	back_direction = back_direction.normalized()
+	
+	# Apply noise to the direction
+	var noise_offset = Vector3(
+		randf_range(-1, 1) * recoil_randomness,
+		0,
+		randf_range(-1, 1) * recoil_randomness
+	)
+	back_direction += noise_offset
+	back_direction = back_direction.normalized()
 	
 	var local_back_direction = back_direction * recoil_accumulation
 	current_recoil_offset = local_back_direction.length()
 	current_recoil_offset = clamp(current_recoil_offset, 0, max_recoil)
 
-	# Apply recoil to the Weapon's rotation (Y-axis only)
+	# Apply more erratic weapon rotation
 	if Weapon_node and recoil_noise_texture:
-		noise_sample_x += recoil_noise_speed * recoil_frequency * delta
-		var noise_value = recoil_noise_texture.get_image().get_pixelv(Vector2(int(noise_sample_x) % recoil_noise_texture.get_width(), 0)).r * 2.0 - 1.0
-		var recoil_angle = noise_value * recoil_amplitude * max(curve_value, 0.1)
+		noise_sample_x += recoil_noise_speed * recoil_frequency * delta * (1.0 + noise_jump)
+		var noise_value = recoil_noise_texture.get_image().get_pixelv(
+			Vector2(int(noise_sample_x) % recoil_noise_texture.get_width(), 0)
+		).r * 2.0 - 1.0
 		
-		# Only rotate on Y axis
-		Weapon_node.rotate_y(deg_to_rad(recoil_angle))
+		# Add sudden rotational kicks
+		var kick_multiplier = 1.0 + (randf() * 2.0 if randf() < 0.2 else 0.0)
+		var recoil_angle = noise_value * recoil_amplitude * max(curve_value, 0.1) * kick_multiplier
 		
-		# Clamp Y rotation
-		var max_rotation = deg_to_rad(max_recoil * curve_value)
-		Weapon_node.rotation.y = clamp(Weapon_node.rotation.y, 
-			initial_Weapon_rotation.y - max_rotation, 
-			initial_Weapon_rotation.y + max_rotation)
-			
+		# Apply rotation with quick snapping
+		var target_rotation = deg_to_rad(recoil_angle)
+		Weapon_node.rotation.y = lerp_angle(
+			Weapon_node.rotation.y,
+			initial_Weapon_rotation.y + target_rotation,
+			delta * recoil_snap_speed
+		)
+		
+		# Clamp rotation with some random variation
+		var max_rotation = deg_to_rad(max_recoil * curve_value * (1.0 + randf() * recoil_randomness))
+		Weapon_node.rotation.y = clamp(
+			Weapon_node.rotation.y,
+			initial_Weapon_rotation.y - max_rotation,
+			initial_Weapon_rotation.y + max_rotation
+		)
+		
 		# Lock X and Z rotations
 		Weapon_node.rotation.x = initial_Weapon_rotation.x
 		Weapon_node.rotation.z = initial_Weapon_rotation.z

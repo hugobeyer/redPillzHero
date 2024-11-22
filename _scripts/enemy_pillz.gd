@@ -4,6 +4,8 @@ extends Area3D
 @export var enable_general_features: bool = true
 @export var max_health: float = 100.0
 @export var damage: float = 10.0
+@export var death_effect_scene: PackedScene
+@export var enable_melee: bool = true
 
 @onready var mesh_instance = $WobbleEffect/CharacterMesh
 @onready var wobble_effect = $WobbleEffect
@@ -11,12 +13,13 @@ extends Area3D
 @onready var health_bar: Sprite3D = $HealthBar
 @onready var parent_point = get_parent()
 @onready var flocking_manager = parent_point.get_parent()
+@onready var melee_weapon = $MeleeWeapon  # Reference to the melee scene
 
 var _health: float
 var _time_alive: float = 0
 var _knockback_velocity: Vector3 = Vector3.ZERO
 
-signal enemy_killed(enemy)
+signal enemy_killed(enemy_node)
 
 func _ready():
     if not Engine.is_editor_hint():
@@ -31,6 +34,9 @@ func _process(delta):
     _time_alive += delta
 
 func hit(direction: Vector3, hit_damage: float, knockback_force: float = 0.0):
+    if _health <= 0:
+        return
+        
     _health -= hit_damage
     update_health_bar()
     
@@ -57,10 +63,36 @@ func _reset_hit_feedback():
         mesh_instance.set_instance_shader_parameter("lerp_color", Color(0.395203, 0.24353, 0.546875, 1))
 
 func die():
+    # Prevent further hits immediately
+    set_deferred("monitoring", false)
+    set_deferred("monitorable", false)
+    
+    # Hide the mesh immediately
+    if mesh_instance:
+        mesh_instance.visible = false
+    
+    if death_effect_scene:
+        # Only spawn effect if visible to camera
+        var camera = get_viewport().get_camera_3d()
+        if camera and camera.is_position_in_frustum(global_position):
+            var effect = death_effect_scene.instantiate()
+            get_tree().current_scene.add_child(effect)
+            effect.global_position = global_position
+            
+            if effect is GPUParticles3D:
+                effect.one_shot = true
+                effect.emitting = false
+                effect.restart()
+                effect.emitting = true
+    
+    # Register kill immediately
+    GameEvents.register_kill(self)
+    
+    # Clean up after a tiny delay to ensure effect spawns
+    await get_tree().create_timer(0.025).timeout
+    
     if is_instance_valid(parent_point) and flocking_manager and flocking_manager.has_method("remove_point"):
         flocking_manager.remove_point(parent_point)
-    
-    emit_signal("enemy_killed", self)
     
     if is_instance_valid(parent_point):
         parent_point.queue_free()

@@ -1,13 +1,32 @@
 [gd_scene load_steps=8 format=4 uid="uid://dwpsppfskic5x"]
 
 [ext_resource type="Script" path="res://_scripts/include/enemy_melee.gd" id="1_dw47a"]
-[ext_resource type="Animation" uid="uid://cnqr2svne5oy2" path="res://_animations/melee_swing.tres" id="2_yaban"]
-[ext_resource type="Material" uid="uid://b8vv7ub5nbgg0" path="res://_materials/sw.tres" id="3_yaban"]
+[ext_resource type="AnimationLibrary" uid="uid://i4t2law61ppy" path="res://_animations/enemy_animation_library.tres" id="2_yaban"]
+[ext_resource type="Shader" path="res://_shaders/custom/custom_frag_actors.gdshader" id="3_yaban"]
 
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_68p2o"]
-_data = {
-&"melee_swing": ExtResource("2_yaban")
-}
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_68p2o"]
+render_priority = 0
+shader = ExtResource("3_yaban")
+shader_parameter/color_top = Color(0.585938, 0.267792, 0.267792, 1)
+shader_parameter/color_bottom = Color(0.726563, 0.726563, 0.726563, 1)
+shader_parameter/specular_color = Color(0.835938, 0.930786, 1, 1)
+shader_parameter/fresnel_color = Color(0.164063, 0.164063, 0.164063, 1)
+shader_parameter/vertex_color_mix = 1.0
+shader_parameter/blend_mode = 0
+shader_parameter/gradient_rotation_mode = 1
+shader_parameter/gradient_offset = 0.0800001
+shader_parameter/gradient_smoothness = 0.0
+shader_parameter/diffuse_contrast = 0.165
+shader_parameter/diffuse_wrap = 0.98
+shader_parameter/diffuse_offset = -0.532
+shader_parameter/specular_intensity = 2.0
+shader_parameter/specular_size = 0.091
+shader_parameter/specular_smoothness = 0.088
+shader_parameter/specular_offset = 0.161
+shader_parameter/fresnel_power = 0.895001
+shader_parameter/fresnel_intensity = 1.0
+shader_parameter/fresnel_contrast = 1.273
+shader_parameter/fresnel_offset = 0.296
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pye1y"]
 vertex_color_use_as_albedo = true
@@ -46,32 +65,30 @@ shadow_mesh = SubResource("ArrayMesh_dk2me")
 
 [node name="MeleeWeapon" type="Node3D"]
 script = ExtResource("1_dw47a")
-swing_animation = "enemy_animation_library/melee_swing"
-animation_speed = 0.5
-attack_radius = 8.96
-animation_length = 4.0
+animation_speed = 2.0
+attack_radius = 5.0
+animation_length = 1.5
+hit_window_start = 0.475
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 root_node = NodePath("../Root")
 audio_max_polyphony = 1
 libraries = {
-&"hh": SubResource("AnimationLibrary_68p2o")
+&"": ExtResource("2_yaban")
 }
 playback_auto_capture_transition_type = 5
 
 [node name="Root" type="Node3D" parent="."]
-transform = Transform3D(-0.05, 0, 0.0866026, 0, 0.1, 0, -0.0866026, 0, -0.05, 0.230541, 0.6, -0.133103)
-rotation_order = 0
+transform = Transform3D(0.1, 0, 0, 0, 0.1, 0, 0, 0, 0.1, 0.230541, 0.6, -0.133103)
 
 [node name="MeleeMesh" type="Node3D" parent="Root"]
-transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0, 0)
-metadata/_edit_lock_ = true
+transform = Transform3D(6.68697, 11.2519, 18.332, -8.11765, 21.1335, -7.73249, -20.4098, -4.71896, 9.0817, 8.201, 0.698, -1.78641)
 
 [node name="simple_sword" type="Node3D" parent="Root/MeleeMesh"]
 
 [node name="simple_sword" type="MeshInstance3D" parent="Root/MeleeMesh/simple_sword"]
 transform = Transform3D(0.251036, 0, 0, 0, 0.251036, 0, 0, 0, 0.251036, 0, 0, 0.44474)
-material_override = ExtResource("3_yaban")
+material_override = SubResource("ShaderMaterial_68p2o")
 instance_shader_parameters/lerp_color = Color(1, 1, 1, 1)
 instance_shader_parameters/lerp_displace_normal = 0.0
 instance_shader_parameters/lerp_wave = 0.0

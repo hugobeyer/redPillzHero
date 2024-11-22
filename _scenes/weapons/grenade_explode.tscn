@@ -1,17 +1,31 @@
-[gd_scene load_steps=8 format=3 uid="uid://t30lq63r3ii6"]
+[gd_scene load_steps=11 format=3 uid="uid://t30lq63r3ii6"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4oxol"]
+[ext_resource type="Material" uid="uid://d58p32hgp45d" path="res://_materials/gr.tres" id="1_4p6ke"]
+
+[sub_resource type="Gradient" id="Gradient_4p6ke"]
+offsets = PackedFloat32Array(0.102616, 0.179074, 0.293763, 0.496982, 0.555332)
+colors = PackedColorArray(1, 0.706268, 0.658203, 0.875, 1, 0.808807, 0.300781, 1, 1, 0.789167, 0.45, 1, 0, 0, 0, 0.615686, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_pntop"]
+gradient = SubResource("Gradient_4p6ke")
+width = 256
+height = 256
+fill_to = Vector2(0, 0.944444)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_63tqn"]
 transparency = 1
 blend_mode = 1
-shading_mode = 0
 diffuse_mode = 3
-specular_mode = 2
+specular_mode = 1
 albedo_color = Color(0.852698, 0.871094, 0.282425, 1)
+albedo_texture = SubResource("GradientTexture2D_pntop")
+rim = 0.4
+rim_tint = 1.0
 disable_receive_shadows = true
 
 [sub_resource type="SphereMesh" id="SphereMesh_4oxol"]
 radial_segments = 24
-rings = 12
+rings = 10
 
 [sub_resource type="Animation" id="Animation_4p6ke"]
 length = 0.001
@@ -63,6 +77,18 @@ tracks/3/keys = {
 "update": 0,
 "values": [Vector3(1, 1, 1)]
 }
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(0, 1.97319, 0)]
+}
 
 [sub_resource type="Animation" id="Animation_4oxol"]
 resource_name = "grenadeexp"
@@ -74,10 +100,10 @@ tracks/0/path = NodePath(".:scale")
 tracks/0/interp = 2
 tracks/0/loop_wrap = false
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.266667, 1),
-"transitions": PackedFloat32Array(0.196146, 2.92817, 0.34151),
+"times": PackedFloat32Array(0, 0.133333, 0.266667, 0.733333, 1.23333),
+"transitions": PackedFloat32Array(0.196146, 2.92817, 1, 1, 0.34151),
 "update": 0,
-"values": [Vector3(1, 1, 1), Vector3(14.535, 14.535, 14.535), Vector3(0.1, 0.1, 0.1)]
+"values": [Vector3(1, 1, 1), Vector3(7, 7, 7), Vector3(10, 10, 10), Vector3(12, 12, 12), Vector3(14.025, 14.025, 14.025)]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -98,10 +124,10 @@ tracks/2/path = NodePath(".:material_override:albedo_color")
 tracks/2/interp = 2
 tracks/2/loop_wrap = false
 tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.366667, 1.23333),
-"transitions": PackedFloat32Array(1, 1, 1),
+"times": PackedFloat32Array(0, 0.2, 0.6, 1.23333),
+"transitions": PackedFloat32Array(1, 0.594604, 1, 1),
 "update": 0,
-"values": [Color(0.62, 0.547667, 0, 0.223529), Color(1, 0.9755, 0.79, 0.447059), Color(0.8, 0.36, 0, 0.333333)]
+"values": [Color(1, 0.883333, 0, 0.694118), Color(1, 0.950134, 0.832031, 1), Color(0.746094, 0.65923, 0.428421, 1), Color(0.8, 0.36, 0, 0)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -110,10 +136,22 @@ tracks/3/path = NodePath("../MeshInstance3D2:scale")
 tracks/3/interp = 2
 tracks/3/loop_wrap = false
 tracks/3/keys = {
-"times": PackedFloat32Array(0.033333, 0.6, 1.03333),
-"transitions": PackedFloat32Array(0.196146, 2.92817, 0.34151),
+"times": PackedFloat32Array(0, 0.533333, 1.23333),
+"transitions": PackedFloat32Array(0.466516, 2.92817, 6.9644),
 "update": 0,
-"values": [Vector3(1, 1, 1), Vector3(18.81, 18.81, 18.81), Vector3(0.1, 0.1, 0.1)]
+"values": [Vector3(1, 1, 1), Vector3(20, 20, 20), Vector3(12.905, 12.905, 12.905)]
+}
+tracks/4/type = "value"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath(".:position")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0, 0.433333, 1.06667),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 1.97319, 0), Vector3(0, 7.083, 0)]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_pntop"]
@@ -122,26 +160,24 @@ _data = {
 &"explode": SubResource("Animation_4oxol")
 }
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_4p6ke"]
-transparency = 1
-blend_mode = 1
-diffuse_mode = 3
-specular_mode = 2
-albedo_color = Color(1, 0.84, 0.68, 0.231373)
-backlight = Color(1, 0, 0, 1)
-disable_receive_shadows = true
-proximity_fade_enabled = true
-
 [sub_resource type="TorusMesh" id="TorusMesh_4oxol"]
-inner_radius = 0.541
-outer_radius = 0.56
+inner_radius = 0.353
+outer_radius = 0.288
+rings = 32
+ring_segments = 12
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_pntop"]
+size = Vector2(256, 256)
+subdivide_width = 128
+subdivide_depth = 128
 
 [node name="GrenadeExplode" type="Node3D"]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 0, 0)
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 0, 1.97319, 0)
 visible = false
-material_override = SubResource("StandardMaterial3D_4oxol")
+material_override = SubResource("StandardMaterial3D_63tqn")
+cast_shadow = 0
 mesh = SubResource("SphereMesh_4oxol")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
@@ -151,6 +187,13 @@ libraries = {
 }
 
 [node name="MeshInstance3D2" type="MeshInstance3D" parent="."]
-material_override = SubResource("StandardMaterial3D_4p6ke")
+material_override = SubResource("StandardMaterial3D_63tqn")
 cast_shadow = 0
 mesh = SubResource("TorusMesh_4oxol")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+
+[node name="FloorMesh" type="MeshInstance3D" parent="OmniLight3D" groups=["nav"]]
+material_override = ExtResource("1_4p6ke")
+mesh = SubResource("PlaneMesh_pntop")
+skeleton = NodePath("")

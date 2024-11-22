@@ -68,9 +68,10 @@ func apply_explosion_damage(target, distance):
         if parent_point and is_instance_valid(parent_point):
             var flocking_manager = parent_point.get_parent()
             if flocking_manager and flocking_manager.has_method("apply_point_knockback"):
+                # print("Applying knockback to target:", target, "with force:", explosion_force * damage_multiplier)
                 flocking_manager.apply_point_knockback(parent_point, direction, explosion_force * damage_multiplier)
 
 func _integrate_forces(state):
     if state.get_contact_count() > 0:
-        print("Grenade touched something!")
+        # print("Grenade touched something!")
         explode()

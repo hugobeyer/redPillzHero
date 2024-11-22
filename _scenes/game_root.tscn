@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cqhe3y3sj4vb3" path="res://_scenes/player.tscn" id="4_2xjta"]
 [ext_resource type="Script" path="res://addons/pillzgame/scripts/flocking_manager.gd" id="4_h5qa2"]
 [ext_resource type="PackedScene" uid="uid://b438ssjn22xfs" path="res://_scenes/enemy_types/grunt/enemy.tscn" id="5_jpu4a"]
-[ext_resource type="PackedScene" uid="uid://cyw5sexd8rqxc" path="res://addons/pillzgame/scenes/flocking_ring.tscn" id="6_jpu4a"]
+[ext_resource type="Script" path="res://_scripts/fps.gd" id="8_scswu"]
 [ext_resource type="PackedScene" uid="uid://bwr26kclpyg6b" path="res://_scenes/buddy.tscn" id="9_428cj"]
 [ext_resource type="PackedScene" uid="uid://cjh03gwy5bmhx" path="res://_scenes/env/wall.tscn" id="11_scswu"]
 [ext_resource type="Material" uid="uid://d58p32hgp45d" path="res://_materials/gr.tres" id="11_xwy4t"]
@@ -47,7 +47,7 @@ shadow_offset = Vector2(5.761, 5.085)
 light_mode = 1
 
 [sub_resource type="SystemFont" id="SystemFont_0ls1l"]
-font_names = PackedStringArray("Squada One", "Suez One", "MV Boli", "Bungee", "Fantasy", "Bowlby One SC", "Luckiest Guy", "Lilita One", "Poppins", "Bowlby One SC", "Titan One")
+font_names = PackedStringArray("Squada One")
 generate_mipmaps = true
 allow_system_fallback = false
 subpixel_positioning = 0
@@ -67,7 +67,7 @@ shadow_color = Color(0, 0.096, 0.32, 0)
 
 [sub_resource type="LabelSettings" id="LabelSettings_uetrx"]
 font = ExtResource("12_ihlwy")
-font_size = 135
+font_size = 116
 font_color = Color(0.796463, 0.81893, 0.549323, 1)
 outline_size = 4
 outline_color = Color(0.53, 0.1113, 0.1113, 0)
@@ -84,480 +84,34 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0)
 visible = false
 
 [node name="Player" parent="Main" instance=ExtResource("4_2xjta")]
-SPEED = 20.0
 
 [node name="ScatteredPoints" type="Node3D" parent="Main" groups=["enemies", "flock_manager"]]
 script = ExtResource("4_h5qa2")
 flocking_agent = ExtResource("5_jpu4a")
 target_node_path = NodePath("../Player")
-target_detection_range = 256.0
-target_weight = 32.0
-max_speed = 8.0
-max_force = 64.0
-turn_speed = 3.0
-min_max_speed = 2.0
+target_detection_range = 174.0
+target_weight = 21.0
+max_force = 20.0
+turn_speed = 5.0
+min_speed = 8.0
+max_speed = 16.0
 min_turn_speed = 0.25
-max_turn_speed = 4.0
+max_turn_speed = 5.0
 flock_min_distance_between_points = 2.2
 flock_min_distance_to_target = 2.0
 flock_neighbor_distance = 8.0
-flock_max_neighbors = 5
-flock_separation_weight = 256.0
-flock_alignment_weight = 1.0
-flock_cohesion_weight = 1.0
-preview_scene = ExtResource("6_jpu4a")
-use_navigation = false
-nav_path_ahead_distance = 5.0
-
-[node name="ScatteredPoint_0" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 67.0282, 4.12343e-06, -6.97608)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_0" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_1" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 17.8093, 4.12343e-06, 21.6974)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_1" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_2" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 52.3807, 4.12343e-06, -34.9601)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_2" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_3" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 66.1719, 4.12297e-06, 22.2682)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_3" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_4" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 5.76963, 4.12343e-06, 23.0682)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_4" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_5" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 33.1832, 4.1239e-06, -73.3354)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_5" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_6" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 47.6959, 4.1239e-06, 44.9673)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_6" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_7" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -1.30696, 4.12297e-06, 76.6702)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_7" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_8" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 60.6476, 4.1239e-06, 20.2948)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_8" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_9" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -34.4261, 4.12436e-06, -49.773)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_9" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_10" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -1.76184, 4.12297e-06, 81.0665)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_10" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_11" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 52.0052, 4.12436e-06, 52.6742)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_11" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_12" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -45.2486, 4.1239e-06, 55.3721)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_12" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_13" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 37.7974, 4.12372e-06, 4.58512)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_13" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_14" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -12.6321, 4.1239e-06, -49.9439)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_14" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_15" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 15.5903, 4.1239e-06, 24.2797)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_15" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_16" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -5.239, 4.12378e-06, -8.52061)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_16" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_17" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 2.21341, 4.12366e-06, 19.534)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_17" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_18" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -84.0045, 4.12343e-06, 19.9448)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_18" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_19" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -8.57032, 4.12378e-06, -9.41774)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_19" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_20" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -15.7667, 4.1239e-06, -41.5557)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_20" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_21" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -52.559, 4.12413e-06, 19.1114)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_21" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_22" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 44.867, 4.12297e-06, 39.5845)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_22" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_23" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 25.5032, 4.12355e-06, -9.56104)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_23" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_24" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 37.9429, 4.1239e-06, -72.81)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_24" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_25" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 35.4165, 4.1239e-06, -69.9521)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_25" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_26" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 10.3424, 4.12343e-06, 61.135)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_26" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_27" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 77.4039, 4.12413e-06, -33.3065)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_27" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_28" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 16.67, 4.12378e-06, -8.81174)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_28" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_29" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -47.2988, 4.1239e-06, 55.3754)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_29" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_30" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 8.53972, 4.12297e-06, 84.9946)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_30" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_31" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 40.6213, 4.12343e-06, -49.9716)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_31" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_32" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -5.28218, 4.1239e-06, -74.758)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_32" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_33" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -68.5181, 4.12459e-06, 23.5975)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_33" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_34" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 35.897, 4.12358e-06, 4.54874)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_34" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_35" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -12.0859, 4.1239e-06, -42.6574)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_35" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_36" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 21.9427, 4.12366e-06, -8.87784)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_36" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_37" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 59.3024, 4.12436e-06, 44.3141)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_37" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_38" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 7.05737, 4.12366e-06, -20.7515)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_38" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_39" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 11.4475, 4.12297e-06, 57.791)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_39" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_40" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 7.51684, 4.12366e-06, -24.0961)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_40" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_41" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 42.1134, 4.12395e-06, -5.64323)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_41" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_42" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 3.55103, 4.12366e-06, 21.8827)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_42" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_43" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 33.7177, 4.1239e-06, -17.6844)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_43" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_44" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -38.7106, 4.12419e-06, 5.7066)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_44" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_45" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -7.52441, 4.12366e-06, 18.5957)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_45" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_46" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -84.4181, 4.12425e-06, -14.2233)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_46" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_47" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 5.58393, 4.1239e-06, 56.5602)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_47" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_48" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 9.17052, 4.12358e-06, -3.35746)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_48" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_49" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 0.258912, 4.1239e-06, 79.0702)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_49" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_50" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 35.1626, 4.12366e-06, 35.1041)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_50" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_51" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 56.4062, 4.1232e-06, 20.4688)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_51" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_52" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 16.0002, 4.1239e-06, -74.091)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_52" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_53" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -37.4774, 4.1239e-06, -53.7048)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_53" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_54" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 19.4867, 4.12343e-06, -39.7381)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_54" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_55" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 76.8663, 4.12285e-06, -9.51539)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_55" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_56" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 41.8473, 4.12343e-06, -45.8559)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_56" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_57" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -86.0127, 4.12436e-06, -10.3339)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_57" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_58" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -26.4191, 4.12366e-06, 34.826)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_58" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_59" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 39.0831, 4.12343e-06, 35.8952)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_59" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_60" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -10.2125, 4.1239e-06, 35.3366)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_60" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_61" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -38.7117, 4.12413e-06, 10.4783)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_61" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_62" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 43.1321, 4.1239e-06, -3.09454)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_62" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_63" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -53.6387, 4.12436e-06, -22.9855)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_63" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_64" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 34.6696, 4.12297e-06, 43.4694)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_64" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_65" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -41.4741, 4.12355e-06, 8.93104)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_65" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_66" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 21.2801, 4.12366e-06, 25.5827)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_66" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_67" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 59.0569, 4.12375e-06, 2.93707)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_67" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_68" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -2.89874, 4.12378e-06, -14.0483)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_68" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_69" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 34.4519, 4.12343e-06, -20.865)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_69" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_70" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -49.0432, 4.12378e-06, 17.3929)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_70" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_71" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -22.0986, 4.1239e-06, 31.0251)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_71" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_72" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 73.5409, 4.12413e-06, -36.6081)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_72" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_73" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -4.41931, 4.12372e-06, -6.04759)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_73" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_74" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 4.97975, 4.12366e-06, -22.4938)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_74" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_75" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -25.0045, 4.12343e-06, 55.9917)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_75" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_76" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -6.0321, 4.12378e-06, -11.4338)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_76" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_77" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -14.0701, 4.12343e-06, 45.4439)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_77" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_78" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -25.7181, 4.1239e-06, 52.9946)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_78" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_79" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 54.8103, 4.12355e-06, 16.2531)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_79" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_80" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 11.9611, 4.1239e-06, -36.3717)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_80" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_81" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 10.3915, 4.12343e-06, 30.8963)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_81" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_82" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -86.72, 4.12343e-06, 20.8082)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_82" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_83" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 38.7028, 4.12297e-06, 47.1199)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_83" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_84" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, 8.15563, 4.12343e-06, 57.2405)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_84" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_85" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -17.7754, 4.12369e-06, 3.26188)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_85" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_86" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -19.9218, 4.12366e-06, -4.85605)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_86" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_87" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -88.2518, 4.1239e-06, 19.086)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_87" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_88" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -14.09, 4.12363e-06, -4.5316)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_88" instance=ExtResource("6_jpu4a")]
-
-[node name="ScatteredPoint_89" type="Node3D" parent="Main/ScatteredPoints"]
-transform = Transform3D(1, 3.49942e-13, 0, -3.09974e-12, 1, 0, 0, 0, 1, -2.78895, 4.12372e-06, -4.27003)
-
-[node name="Preview" parent="Main/ScatteredPoints/ScatteredPoint_89" instance=ExtResource("6_jpu4a")]
+flock_max_neighbors = 15
+flock_separation_weight = 30.4
+flock_alignment_weight = 4.0
+flock_cohesion_weight = 2.0
+inner_radius = 5.0
+outer_radius = 15.0
+min_force_multiplier = 0.1
+spawn_interval = 0.046
+initial_spawn_delay = 1.0
+points_per_respawn = 150
+spawn_radius = 125.0
+min_spawn_distance = 3.0
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -835,6 +389,31 @@ horizontal_alignment = 1
 vertical_alignment = 1
 justification_flags = 1
 
+[node name="FPS" type="Label" parent="MainHUD/PanelCtrl"]
+light_mask = 0
+material = SubResource("CanvasItemMaterial_7s0d6")
+layout_direction = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -1.037
+anchor_top = 0.022
+anchor_right = -1.037
+anchor_bottom = 0.022
+offset_left = -96.054
+offset_top = 20.04
+offset_right = 449.946
+offset_bottom = 105.04
+grow_horizontal = 2
+scale = Vector2(0.35, 0.35)
+size_flags_vertical = 0
+theme_override_constants/shadow_outline_size = 5
+text = "FPS"
+label_settings = SubResource("LabelSettings_vkafs")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 1
+script = ExtResource("8_scswu")
+
 [node name="LabelKills" type="Label" parent="MainHUD/PanelCtrl"]
 z_as_relative = false
 texture_filter = 2
@@ -843,10 +422,10 @@ layout_mode = 1
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -172.319
-offset_top = 14.2952
-offset_right = 38.6812
-offset_bottom = 161.139
+offset_left = -210.0
+offset_top = 14.0
+offset_right = 1.00018
+offset_bottom = 160.844
 grow_horizontal = 0
 rotation = 0.0168936
 scale = Vector2(0.585275, 0.585275)
@@ -883,9 +462,10 @@ light_color = Color(0.997864, 1, 0.960938, 1)
 light_energy = 1.25
 light_bake_mode = 0
 shadow_enabled = true
+shadow_opacity = 0.6
 shadow_blur = 0.44
 directional_shadow_mode = 0
 directional_shadow_split_1 = 0.416
-directional_shadow_fade_start = 0.402
-directional_shadow_max_distance = 150.0
+directional_shadow_fade_start = 0.67
+directional_shadow_max_distance = 179.1
 sky_mode = 1

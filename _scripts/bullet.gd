@@ -99,6 +99,7 @@ func apply_hit_to_enemy(enemy: Node):
 		if parent_point and is_instance_valid(parent_point):
 			var flocking_manager = parent_point.get_parent()
 			if flocking_manager and flocking_manager.has_method("apply_point_knockback"):
+				# print("Applying knockback to enemy:", enemy, "with force:", knockback_force)
 				flocking_manager.apply_point_knockback(parent_point, hit_direction, knockback_force)
 
 func _on_body_entered(body: Node3D) -> void:

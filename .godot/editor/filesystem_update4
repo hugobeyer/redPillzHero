@@ -10,6 +10,7 @@ res://_materials/gr.tres
 res://_resources/fonts/font_health_overhead.tres
 res://addons/pillzgame/scenes/flocking_ring.tres
 res://_scenes/weapons/grenade_explode.tres
+res://_shaders/grwarp.gdshader
 res://_scenes/player.tscn
 res://_scenes/bullet.tscn
 res://_scenes/enemy_types/grunt/enemy.tscn
@@ -20,4 +21,8 @@ res://_scenes/env/wall.tscn
 res://_scenes/weapon.tscn
 res://_scenes/weapons/grenade.tscn
 res://_scenes/weapons/grenade_explode.tscn
-res://_shaders/grwarp.gdshader
+res://_pfx/default_enemy_die_fx.tscn
+res://_scenes/enemy_features/melee.tscn
+res://_materials/sw.tres
+res://_animations/melee_swing.tres
+res://_animations/enemy_animation_library.tres
