@@ -1,21 +1,22 @@
-[gd_scene load_steps=18 format=3 uid="uid://cqhe3y3sj4vb3"]
+[gd_scene load_steps=14 format=3 uid="uid://cqhe3y3sj4vb3"]
 
 [ext_resource type="Script" path="res://_scripts/Player.gd" id="1_7wjim"]
 [ext_resource type="Shader" path="res://_shaders/custom/custom_frag_actors.gdshader" id="2_cmorj"]
 [ext_resource type="PackedScene" uid="uid://b4uuwqe6deuv8" path="res://_scenes/weapon.tscn" id="3_v7pw0"]
 [ext_resource type="Script" path="res://_scripts/camera.gd" id="4_pg2h6"]
-[ext_resource type="Script" path="res://_scenes/grenade_toss.gd" id="5_0snai"]
+[ext_resource type="Script" path="res://_scripts/grenade_toss.gd" id="5_0snai"]
 [ext_resource type="PackedScene" uid="uid://d3iotrkckue1d" path="res://_scenes/weapons/grenade.tscn" id="6_gbdp8"]
+[ext_resource type="PackedScene" uid="uid://cyw5sexd8rqxc" path="res://addons/pillzgame/scenes/flocking_ring.tscn" id="7_gbdp8"]
 
-[sub_resource type="Gradient" id="Gradient_2b6n3"]
-offsets = PackedFloat32Array(0, 0.262561, 0.518639, 0.753647, 1)
-colors = PackedColorArray(0.476563, 0.476563, 0.476563, 1, 0.873732, 0.67957, 0.491382, 1, 1, 0.74411, 0.496094, 1, 0.866153, 0.675696, 0.491099, 1, 0.476563, 0.476563, 0.476563, 1)
+[sub_resource type="Gradient" id="Gradient_0snai"]
+resource_local_to_scene = true
+interpolation_mode = 2
+offsets = PackedFloat32Array(0, 0.203869, 0.791667, 1)
+colors = PackedColorArray(0.667969, 0.667969, 0.667969, 1, 1, 1, 1, 1, 0.999783, 0.999783, 0.999783, 1, 0.648438, 0.648438, 0.648438, 1)
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_oaafo"]
-gradient = SubResource("Gradient_2b6n3")
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_gbdp8"]
+gradient = SubResource("Gradient_0snai")
 width = 128
-height = 13
-repeat = 2
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_cmorj"]
 render_priority = 0
@@ -45,79 +46,45 @@ shader_parameter/fresnel_offset = 0.25
 radial_segments = 9
 rings = 4
 
-[sub_resource type="Gradient" id="Gradient_cmr4j"]
-interpolation_mode = 1
-offsets = PackedFloat32Array(0.0545809, 0.378168, 0.452242, 0.515648, 0.634873, 0.743666, 0.758285, 0.795827, 0.827124, 0.888227, 0.937407)
-colors = PackedColorArray(1, 0.932333, 0.86, 0, 1, 0.932333, 0.86, 0, 0.833333, 0, 1, 0.796078, 0.61746, 0.1804, 0.82, 0.156863, 0.58698, 0.369784, 0.630558, 0.256188, 0.547351, 1, 0, 0.847531, 0.546875, 1, 0, 1, 0.582473, 0.82, 0.1722, 0, 0.68968, 0.2368, 0.74, 1, 0.7275, 0, 0.97, 1, 0.156933, 0.88, 0.132, 0)
-
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_mdq4w"]
-gradient = SubResource("Gradient_cmr4j")
-height = 128
-use_hdr = true
-fill = 1
-fill_from = Vector2(0.5, 0.54)
-fill_to = Vector2(1.085, -0.01)
-repeat = 1
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s7uvh"]
-transparency = 1
-no_depth_test = true
-shading_mode = 0
-specular_mode = 2
-disable_ambient_light = true
-disable_fog = true
-albedo_color = Color(0.128906, 1, 0.83667, 0.25098)
-albedo_texture = SubResource("GradientTexture2D_mdq4w")
-disable_receive_shadows = true
-billboard_keep_scale = true
-grow_amount = -1.35
-point_size = 5.5
-proximity_fade_distance = 0.01
-distance_fade_max_distance = 24.38
-
-[sub_resource type="Curve" id="Curve_qkx6c"]
-bake_resolution = 128
-_data = [Vector2(0, 0), 0.0, 3.08926, 0, 0, Vector2(0.373473, 0.846326), 2.2661, -0.0652022, 1, 0, Vector2(0.565445, 0.663578), 1.74991, 1.74991, 0, 0, Vector2(1, 0.871246), 0.5691, -3.87831, 0, 0]
-point_count = 4
-
-[sub_resource type="RibbonTrailMesh" id="RibbonTrailMesh_oyiho"]
-flip_faces = true
-shape = 0
-size = 2.438
-sections = 10
-section_length = 0.311
-section_segments = 6
-curve = SubResource("Curve_qkx6c")
-
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_qre1v"]
 radius = 0.501
 height = 1.98952
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_cmorj"]
 radius = 0.501
-height = 1.98952
+height = 1.41809
 
 [node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("camera") groups=["player"]]
-collision_mask = 29702
+collision_mask = 29700
 input_ray_pickable = false
 axis_lock_linear_y = true
-floor_max_angle = 0.322886
 script = ExtResource("1_7wjim")
 health = 256.0
 SPEED = 32.0
-ROTATION_SPEED = 12.0
+ROTATION_SPEED = 20.0
+SHOOTING_THRESHOLD = 0.2
 camera = NodePath("GameCamera")
-acceleration = 64.0
-deceleration = 80.0
-air_control = 1.2
+acceleration = 200.0
+deceleration = 100.0
+air_control = 0.5
+knockback_resistance = 0.2
+knockback_recovery_speed = 7.0
 
-[node name="RecoilBar" type="Sprite3D" parent="."]
-transform = Transform3D(1, -5.96629e-10, 0, 3.45608e-10, 1, -4.65661e-10, 0, 0, 1, -0.000349001, 2.81822, 0.000272769)
-modulate = Color(0, 0.578125, 1, 1)
+[node name="GrenadeCooldown" type="Sprite3D" parent="."]
+transform = Transform3D(1, -5.96629e-10, 0, 3.45608e-10, 1, -4.65661e-10, 0, 0, 1, -0.000349001, 2.93873, 0.000272769)
+modulate = Color(0.24408, 0.726563, 0, 1)
 billboard = 1
-texture = SubResource("GradientTexture2D_oaafo")
+texture = SubResource("GradientTexture1D_gbdp8")
 region_enabled = true
-region_rect = Rect2(-3, -3, 135, 19)
+region_rect = Rect2(0, 0, 128, 16)
+
+[node name="HealthBar" type="Sprite3D" parent="."]
+transform = Transform3D(1, -5.96629e-10, 0, 3.45608e-10, 1, -4.65661e-10, 0, 0, 1, -0.000349001, 2.93873, 0.000272769)
+modulate = Color(0.24408, 0.726563, 0, 1)
+billboard = 1
+texture = SubResource("GradientTexture1D_gbdp8")
+region_enabled = true
+region_rect = Rect2(0, 0, 128, 16)
 
 [node name="PlayerMesh" type="MeshInstance3D" parent="."]
 transform = Transform3D(0.999908, -0.0120488, 0.0062203, 0.0120859, 0.999909, -0.00596117, -0.00614791, 0.0060358, 0.999963, -0.001, 1, -0.003)
@@ -126,30 +93,19 @@ instance_shader_parameters/alpha = 0.0
 mesh = SubResource("CapsuleMesh_ayx0v")
 skeleton = NodePath("")
 
-[node name="Decal" type="MeshInstance3D" parent="PlayerMesh"]
-transform = Transform3D(1, 1.25729e-08, 2.09911e-09, -7.40329e-09, -5.54137e-08, -1, -1.86265e-09, 1, -4.79631e-08, -0.0133698, -0.859876, 1.38757)
-visible = false
-layers = 2
-material_override = SubResource("StandardMaterial3D_s7uvh")
-cast_shadow = 0
-gi_mode = 0
-mesh = SubResource("RibbonTrailMesh_oyiho")
-skeleton = NodePath("")
-
 [node name="Weapon" parent="." node_paths=PackedStringArray("camera_node") instance=ExtResource("3_v7pw0")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.001, 0.381)
-fire_rate = 0.07
-bullet_speed = 47.0
-bullet_damage = 34.51
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.13251, 1.45692)
+fire_rate = 0.075
+bullet_speed = 40.0
+bullet_damage = 10.0
 spread_count_bullet = 3
-spread_count_angle = 5.0
-spread_count_randomize_angle = 25.0
-max_recoil = 7.0
-recoil_increase_duration = 4.0
-recoil_noise_speed = 2.87
-recoil_linear_damp = 0.01
-recoil_angle_damp = 0.01
-recoil_mouse_up_recovery_time = 1.0001
+spread_count_angle = 15.0
+spread_count_randomize_angle = 15.0
+recoil_force = 1.0
+max_recoil = 5.0
+recoil_linear_damp = 0.001
+recoil_angle_damp = 0.001
+recoil_mouse_up_recovery_time = 0.5001
 camera_node = NodePath("../GameCamera")
 enable_debug_visualization = false
 enable_recoil_debug = false
@@ -157,36 +113,32 @@ enable_recovery_debug = false
 enable_recoil_increase_debug = false
 enable_recoil_recovery_debug = false
 enable_recoil_noise_debug = false
-recoil_noise_intensity = 5.28
-recoil_snap_speed = 5.365
-recoil_randomness = 0.005
+recoil_noise_intensity = 10.0
 
 [node name="Muzzle" type="Node3D" parent="Weapon"]
-transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0, 1.07434)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.40135)
 
 [node name="Marker3D" type="Marker3D" parent="Weapon/Muzzle"]
 gizmo_extents = 1.0
 
 [node name="GameCamera" type="Camera3D" parent="." groups=["cameragame"]]
-transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 155, 64, 64)
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 24, 55, 12)
 top_level = true
 cull_mask = 1
 current = true
-fov = 22.5
+fov = 23.0
 far = 1000.0
 script = ExtResource("4_pg2h6")
-camera_offset = Vector3(50.49, 59.31, 35.67)
-max_offset = 127.595
-attraction_strength = 0.83
-damping = 0.61
-blend_factor = 0.54
-look_adjust_strength = 0.11
-enemies_average_smoothing = 0.67
-player_y_offset = 0.0
-shake_decay = 0.895
-shake_max_offset = 2.217
-shake_falloff_time = 0.1
-smoothness = 512.0
+camera_offset = Vector3(32, 73.035, 42)
+max_offset = 100.0
+attraction_strength = 0.63
+damping = 0.8
+blend_factor = 0.52
+look_adjust_strength = 0.19
+enemies_average_smoothing = 0.75
+player_y_offset = 4.3
+shake_max_offset = 2.0
+recoil_shake_intensity = 0.5
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 physics_interpolation_mode = 1
@@ -195,12 +147,14 @@ shape = SubResource("CapsuleShape3D_qre1v")
 
 [node name="CollisionShape3D2" type="CollisionShape3D" parent="."]
 physics_interpolation_mode = 1
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1, 0.565278)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 1.13673, 1.13941)
 shape = SubResource("CapsuleShape3D_cmorj")
 
 [node name="Grenade" type="Node3D" parent="."]
-transform = Transform3D(-0.999984, 0.00503802, 0.002482, 0.00183996, 0.711424, -0.70276, -0.00530626, -0.702745, -0.711422, 0.113922, 2.06937, -0.990084)
+transform = Transform3D(-1, 7.77552e-08, 3.99608e-08, 0, 0.457098, -0.889416, -8.74228e-08, -0.889416, -0.457098, -6.01776e-08, 1.71212, -0.119955)
 script = ExtResource("5_0snai")
 grenade_scene = ExtResource("6_gbdp8")
-toss_strength = 3000.0
-cooldown_time = 0.1
+toss_strength = 2500.0
+cooldown_time = 0.5
+
+[node name="FlockingRing" parent="." instance=ExtResource("7_gbdp8")]

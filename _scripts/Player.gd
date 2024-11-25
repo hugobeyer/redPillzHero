@@ -21,6 +21,12 @@ var has_left_deadzone: bool = false
 # Current movement velocity (separate from gravity)
 var movement_velocity: Vector3 = Vector3.ZERO
 
+@export var use_mouse_aim: bool = true
+@export var knockback_resistance: float = 0.5
+@export var knockback_recovery_speed: float = 15.0  # Increased recovery speed
+
+var knockback_velocity: Vector3 = Vector3.ZERO
+
 func _ready():
     thumbstick = get_node("../../MainHUD/ControllerCanvas/MovementJoystick")
     if not thumbstick:
@@ -44,7 +50,18 @@ func _physics_process(delta):
     if not is_on_floor():
         velocity.y -= gravity * delta
     elif velocity.y < 0:
-        velocity.y = 0  # Reset vertical velocity when on ground
+        velocity.y = 0
+    
+    # Handle knockback recovery
+    if knockback_velocity.length() > 0:
+        # Add knockback to movement instead of overriding
+        velocity += knockback_velocity * delta  # Multiply by delta for frame-rate independence
+        # Gradually reduce knockback (faster reduction)
+        knockback_velocity = knockback_velocity.move_toward(Vector3.ZERO, knockback_recovery_speed * delta * knockback_velocity.length())
+        
+        # If knockback is very small, clear it
+        if knockback_velocity.length() < 0.1:
+            knockback_velocity = Vector3.ZERO
     
     move_and_slide()
 
@@ -93,12 +110,34 @@ func handle_movement(delta: float):
     velocity.z = movement_velocity.z
 
 func handle_rotation(delta: float):
-    if input_vector.length() > 0:
-        var cam_basis = camera.global_transform.basis
-        var aim_direction = (cam_basis * Vector3(input_vector.x, 0, input_vector.y)).normalized()
-        var target_rotation = atan2(aim_direction.x, aim_direction.z)
-        var new_rotation = lerp_angle(rotation.y, target_rotation, ROTATION_SPEED * delta)
-        rotation.y = new_rotation
+    if use_mouse_aim:
+        _handle_mouse_aim()
+    else:
+        # Original thumbstick rotation
+        if input_vector.length() > 0:
+            var cam_basis = camera.global_transform.basis
+            var aim_direction = (cam_basis * Vector3(input_vector.x, 0, input_vector.y)).normalized()
+            var target_rotation = atan2(aim_direction.x, aim_direction.z)
+            var new_rotation = lerp_angle(rotation.y, target_rotation, ROTATION_SPEED * delta)
+            rotation.y = new_rotation
+
+func _handle_mouse_aim():
+    var mouse_pos = get_viewport().get_mouse_position()
+    
+    if camera:
+        var from = camera.project_ray_origin(mouse_pos)
+        var to = from + camera.project_ray_normal(mouse_pos) * 1000
+        
+        var plane = Plane(Vector3.UP, global_position.y)
+        var hit_point = plane.intersects_ray(from, to)
+        
+        if hit_point:
+            # Calculate direction to target
+            var direction = (hit_point - global_position).normalized()
+            # Calculate the angle in the XZ plane
+            var target_rotation = atan2(direction.x, direction.z)
+            # Smoothly rotate to the target angle
+            rotation.y = lerp_angle(rotation.y, target_rotation, ROTATION_SPEED * get_process_delta_time())
 
 func start_shooting():
     if not is_shooting and Weapon:
@@ -112,6 +151,10 @@ func stop_shooting():
         Weapon.trigger_released()
 
 func _on_thumbstick_trigger(stick_vector: Vector2, _elapsed: float):
+    # Skip thumbstick shooting logic if using mouse
+    if use_mouse_aim:
+        return
+        
     input_vector = stick_vector
     if input_vector.length() > thumbstick.deadzone_radius_percentage:
         has_left_deadzone = true
@@ -124,14 +167,26 @@ func _on_thumbstick_trigger(stick_vector: Vector2, _elapsed: float):
         stop_shooting()
 
 func _on_thumbstick_pressed(_event):
+    if use_mouse_aim:
+        return
     has_left_deadzone = false
 
 func _on_thumbstick_released(_position: Vector2, _elapsed: float) -> void:
+    if use_mouse_aim:
+        return
     input_vector = Vector2.ZERO
     stop_shooting()
     has_left_deadzone = false
 
 func _input(event):
+    if use_mouse_aim:
+        if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+            if event.pressed:
+                start_shooting()
+            else:
+                stop_shooting()
+    
+    # Keep your existing fire action
     if event.is_action_pressed("fire"):
         if Weapon and Weapon.has_method("shoot2"):
             Weapon.shoot2()
@@ -141,8 +196,12 @@ func _on_Weapon_fired(recoil_force_forward: Vector3) -> void:
     velocity += recoil_force_forward * Weapon.get_recoil_value()
 
 func get_shoot_direction() -> Vector2:
-    # Get the direction from the thumbstick
-    return input_vector.normalized()
+    if use_mouse_aim:
+        # Get forward direction when using mouse
+        return Vector2(-global_transform.basis.z.x, -global_transform.basis.z.z).normalized()
+    else:
+        # Original thumbstick direction
+        return input_vector.normalized()
 
 func handle_recoil(delta: float):
     if Weapon:
@@ -151,3 +210,18 @@ func handle_recoil(delta: float):
 func start_recoil_recovery():
     if Weapon:
         Weapon.start_recoil_recovery()
+
+func apply_knockback(knockback: Vector3) -> void:
+    # print("Player received knockback: ", knockback)
+    
+    # Reduce knockback based on resistance
+    knockback *= (1.0 - knockback_resistance)
+    
+    # Set the initial knockback (make it stronger initially)
+    knockback_velocity = knockback * 2.0  # Multiply for stronger initial impulse
+
+func take_damage(amount: float) -> void:
+    health -= amount
+    if health <= 0:
+        # Handle death
+        pass

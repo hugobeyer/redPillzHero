@@ -3,16 +3,16 @@ extends Label
 var kills: int = 0
 
 func _ready():
-	print("Kill counter ready")  # Debug
+	# print("Kill counter ready")  # Debug
 	text = "0"
 	
 	# Connect to GameEvents
 	GameEvents.enemy_killed.connect(_on_enemy_killed)
 
 func _on_enemy_killed(_enemy = null):
-	print("Previous kills: ", kills)  # Debug
+	# print("Previous kills: ", kills)  # Debug
 	kills += 1
-	print("New kills: ", kills)  # Debug
+	# print("New kills: ", kills)  # Debug
 	text = str(kills)
 	
 	var tween = create_tween()

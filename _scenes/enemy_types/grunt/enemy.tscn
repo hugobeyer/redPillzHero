@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://b438ssjn22xfs"]
+[gd_scene load_steps=21 format=3 uid="uid://b438ssjn22xfs"]
 
 [ext_resource type="Shader" path="res://_shaders/custom/custom_frag_actors.gdshader" id="1_7w157"]
 [ext_resource type="Script" path="res://_scripts/enemy_pillz.gd" id="1_fsbj1"]
@@ -8,6 +8,7 @@
 [ext_resource type="PackedScene" uid="uid://dkdkucw2l03dw" path="res://_scenes/enemy_features/enemy_effects.tscn" id="5_s7aba"]
 [ext_resource type="Script" path="res://_resources/ui/health_bar_3d.gd" id="6_4ttvg"]
 [ext_resource type="PackedScene" uid="uid://dwpsppfskic5x" path="res://_scenes/enemy_features/melee.tscn" id="8_gkdcr"]
+[ext_resource type="Shader" uid="uid://cj56yf8aifbws" path="res://_shaders/uji/enemy_health.tres" id="9_qfs1a"]
 
 [sub_resource type="Gradient" id="Gradient_7w157"]
 resource_local_to_scene = true
@@ -51,29 +52,29 @@ point_size = 31.5
 
 [sub_resource type="QuadMesh" id="QuadMesh_4ttvg"]
 
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_fsbj1"]
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_qfs1a"]
 render_priority = 0
 shader = ExtResource("1_7w157")
-shader_parameter/color_top = Color(0.214218, 0.381162, 0.542969, 1)
-shader_parameter/color_bottom = Color(0.632813, 0.613037, 0.613037, 1)
+shader_parameter/color_top = Color(0.128876, 0.329507, 0.804688, 1)
+shader_parameter/color_bottom = Color(0.726563, 0.726563, 0.726563, 1)
 shader_parameter/specular_color = Color(1, 1, 1, 1)
 shader_parameter/fresnel_color = Color(0, 0.222656, 0.207001, 1)
 shader_parameter/vertex_color_mix = 0.0
 shader_parameter/blend_mode = 0
 shader_parameter/gradient_rotation_mode = 1
-shader_parameter/gradient_offset = 0.0630001
+shader_parameter/gradient_offset = 0.0800001
 shader_parameter/gradient_smoothness = 0.0
-shader_parameter/diffuse_contrast = 0.93
-shader_parameter/diffuse_wrap = 2.0
-shader_parameter/diffuse_offset = -0.103
-shader_parameter/specular_intensity = 2.0
-shader_parameter/specular_size = 0.077
-shader_parameter/specular_smoothness = 0.384
-shader_parameter/specular_offset = -0.069
-shader_parameter/fresnel_power = 1.0
-shader_parameter/fresnel_intensity = 1.0
-shader_parameter/fresnel_contrast = 1.0
-shader_parameter/fresnel_offset = 4.75e-08
+shader_parameter/diffuse_contrast = 0.31
+shader_parameter/diffuse_wrap = 0.885
+shader_parameter/diffuse_offset = -0.67
+shader_parameter/specular_intensity = 0.695
+shader_parameter/specular_size = 0.05
+shader_parameter/specular_smoothness = 0.628
+shader_parameter/specular_offset = 0.55
+shader_parameter/fresnel_power = 0.215
+shader_parameter/fresnel_intensity = 1.053
+shader_parameter/fresnel_contrast = 1.76
+shader_parameter/fresnel_offset = -0.504
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_s7aba"]
 radial_segments = 20
@@ -81,20 +82,25 @@ rings = 5
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7w157"]
 
-[sub_resource type="Gradient" id="Gradient_ld7nr"]
-offsets = PackedFloat32Array(0)
-colors = PackedColorArray(0, 0, 0, 1)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r6b7y"]
+render_priority = 0
+shader = ExtResource("9_qfs1a")
+shader_parameter/Color = Color(1, 1, 1, 1)
+shader_parameter/Color2 = Color(0.101563, 1, 0, 1)
+shader_parameter/Color3 = Color(1, 0, 0, 1)
+shader_parameter/FloatParameter = 0.405
+shader_parameter/FloatParameter2 = 0.991
+shader_parameter/FloatParameter3 = 1.325
 
-[sub_resource type="GradientTexture2D" id="GradientTexture2D_oiro4"]
-gradient = SubResource("Gradient_ld7nr")
-width = 128
-height = 60
+[sub_resource type="QuadMesh" id="QuadMesh_cou12"]
+size = Vector2(2.5, 2.5)
 
 [node name="Enemy" type="Area3D" groups=["enemies"]]
 collision_layer = 2
-collision_mask = 241
+collision_mask = 245
 script = ExtResource("1_fsbj1")
-max_health = 150.0
+max_health = 200.0
+damage = 32.0
 death_effect_scene = ExtResource("2_66fd8")
 
 [node name="pivot" parent="." instance=ExtResource("2_ntddm")]
@@ -103,13 +109,14 @@ visible = false
 
 [node name="radius_vis" type="MeshInstance3D" parent="."]
 transform = Transform3D(2, 0, 0, 0, -8.74228e-08, 2, 0, -2, -8.74228e-08, 0, 0.176774, -5.19646e-09)
+visible = false
 material_override = SubResource("StandardMaterial3D_s7aba")
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("QuadMesh_4ttvg")
 
 [node name="WobbleEffect" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.5, 0)
 script = ExtResource("3_s7aba")
 spring_stiffness = 64.0
 spring_damping = 6.29
@@ -118,22 +125,20 @@ hit_force = 32.0
 
 [node name="CharacterMesh" type="MeshInstance3D" parent="WobbleEffect"]
 process_physics_priority = 1
-transform = Transform3D(1, -0.000834305, -0.000164741, 0.000834375, 1, 0.000450322, 0.000164345, -0.000450478, 1, 0.000240929, 0.711221, 0.000130088)
-material_override = SubResource("ShaderMaterial_fsbj1")
-instance_shader_parameters/alpha = 0.0
-instance_shader_parameters/lerp_color = Color(1, 0.984802, 0.0273438, 1)
-instance_shader_parameters/lerp_displace_normal = 4.75e-08
-instance_shader_parameters/lerp_wave = 0.0
-instance_shader_parameters/lerp_wave_contrast = 1.0
-instance_shader_parameters/lerp_wave_freq = 2.0
-instance_shader_parameters/lerp_wave_offset = 12.0
-instance_shader_parameters/lerp_wave_type = 2
-instance_shader_parameters/wave_range_lerp = -0.529
+transform = Transform3D(1, -0.000834305, -0.000164741, 0.000834375, 1, 0.000450322, 0.000164345, -0.000450478, 1, 0, 0.5, 0)
+material_override = SubResource("ShaderMaterial_qfs1a")
 mesh = SubResource("CapsuleMesh_s7aba")
 skeleton = NodePath("")
 
+[node name="MeleeWeapon" parent="WobbleEffect/CharacterMesh" instance=ExtResource("8_gkdcr")]
+transform = Transform3D(0.999999, 0.000834378, 0.000164365, -0.0008343, 0.999999, -0.000450459, -0.000164721, 0.00045034, 1, -0.000529543, -0.345877, -0.000285811)
+detection_radius = 7.0
+attack_radius = 4.0
+hit_window_start = 0.25
+hit_window_end = 0.4
+
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.16929, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 shape = SubResource("CapsuleShape3D_7w157")
 
 [node name="EnemyEffects" parent="." instance=ExtResource("5_s7aba")]
@@ -141,33 +146,10 @@ flash_duration = 1.0
 flash_offset = 12.0
 flash_off_color = Color(1, 0, 0, 0)
 
-[node name="HealthBar" type="Sprite3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.549, 0)
+[node name="HealthCircle" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.15, 0)
+material_override = SubResource("ShaderMaterial_r6b7y")
 cast_shadow = 0
-gi_mode = 0
-modulate = Color(0.14902, 1, 0, 1)
-billboard = 1
-transparent = false
-double_sided = false
-texture_filter = 0
-texture = SubResource("GradientTexture2D_oiro4")
-region_rect = Rect2(0, 0, 120, 50)
+instance_shader_parameters/health_parm = 1.0
+mesh = SubResource("QuadMesh_cou12")
 script = ExtResource("6_4ttvg")
-color0 = Color(0.875, 1, 0, 1)
-bar_width_px = 120
-bar_height_px = 32
-shake_amount = 1.32
-
-[node name="Back" type="Sprite3D" parent="HealthBar"]
-cast_shadow = 0
-gi_mode = 0
-modulate = Color(0.14902, 1, 0, 1)
-billboard = 1
-transparent = false
-double_sided = false
-texture_filter = 0
-render_priority = -1
-texture = SubResource("GradientTexture2D_oiro4")
-region_rect = Rect2(0, 0, 120, 50)
-
-[node name="MeleeWeapon" parent="." instance=ExtResource("8_gkdcr")]

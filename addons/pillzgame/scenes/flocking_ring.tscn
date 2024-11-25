@@ -3,13 +3,14 @@
 [sub_resource type="Gradient" id="Gradient_20tc1"]
 resource_local_to_scene = true
 interpolation_mode = 2
-offsets = PackedFloat32Array(0.466421, 0.580497, 0.608096, 0.616452, 0.638256, 0.656095, 0.682854, 0.689792, 0.725)
-colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 0.113725, 1, 1, 1, 0.462745, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0.320313, 1, 0, 1, 0.283333, 1, 1, 1, 1, 0, 1, 1, 1, 0)
+offsets = PackedFloat32Array(0.337637, 0.556107, 0.57001, 0.608739, 0.625621, 0.658391, 0.673287)
+colors = PackedColorArray(1, 1, 1, 0, 1, 0.98, 0.993667, 0.235294, 1, 1, 1, 0, 1, 0.466667, 0, 0, 1, 0.46875, 0, 1, 1, 0.46875, 0, 1, 1, 0.466667, 0, 0)
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_ntddm"]
 gradient = SubResource("Gradient_20tc1")
 width = 256
 height = 256
+use_hdr = true
 fill = 1
 fill_from = Vector2(0.5, 0.5)
 
@@ -22,7 +23,7 @@ gradient = SubResource("Gradient_3t6g7")
 width = 256
 height = 256
 fill = 1
-fill_from = Vector2(0.5, 0.667)
+fill_from = Vector2(0.5, -0.032)
 fill_to = Vector2(1.02, 2.635)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_iny4y"]
@@ -34,18 +35,20 @@ specular_mode = 2
 disable_ambient_light = true
 disable_fog = true
 albedo_texture = SubResource("GradientTexture2D_ntddm")
+detail_enabled = true
 detail_mask = SubResource("GradientTexture2D_ol5bk")
 detail_blend_mode = 2
 disable_receive_shadows = true
 point_size = 31.5
 
-[sub_resource type="QuadMesh" id="QuadMesh_oowot"]
+[sub_resource type="QuadMesh" id="QuadMesh_20tc1"]
+size = Vector2(3, 3)
 
 [node name="FlockingRing" type="Node3D"]
 
 [node name="radius_vis" type="MeshInstance3D" parent="."]
-transform = Transform3D(2, 0, 0, 0, -8.74228e-08, 2, 0, -2, -8.74228e-08, 0, 0.1, 0)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 0.1, 0)
 material_override = SubResource("StandardMaterial3D_iny4y")
 cast_shadow = 0
 gi_mode = 0
-mesh = SubResource("QuadMesh_oowot")
+mesh = SubResource("QuadMesh_20tc1")

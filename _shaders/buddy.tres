@@ -1,0 +1,152 @@
+[gd_resource type="VisualShader" load_steps=14 format=3 uid="uid://becggyb27xu1i"]
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_85fj1"]
+default_input_values = [0, 0.0, 1, 2.0]
+operator = 5
+
+[sub_resource type="VisualShaderNodeFresnel" id="VisualShaderNodeFresnel_w0i20"]
+default_input_values = [2, false, 3, 1.205]
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_skd8k"]
+
+[sub_resource type="VisualShaderNodeFloatFunc" id="VisualShaderNodeFloatFunc_u20c1"]
+function = 0
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_xqsq0"]
+default_input_values = [0, 0.0, 1, 0.2]
+operator = 2
+
+[sub_resource type="VisualShaderNodeFloatFunc" id="VisualShaderNodeFloatFunc_hyeat"]
+function = 18
+
+[sub_resource type="VisualShaderNodeFresnel" id="VisualShaderNodeFresnel_85fj1"]
+default_input_values = [2, true, 3, 15.0]
+
+[sub_resource type="VisualShaderNodeInput" id="VisualShaderNodeInput_w0i20"]
+input_name = "normal"
+
+[sub_resource type="VisualShaderNodeMix" id="VisualShaderNodeMix_slt6q"]
+default_input_values = [0, Vector3(0, 0, 0), 1, Vector3(1, 1, 1), 2, 0.5]
+op_type = 4
+
+[sub_resource type="VisualShaderNodeRotationByAxis" id="VisualShaderNodeRotationByAxis_skd8k"]
+default_input_values = [0, Vector3(0, 0, 0), 1, 0.5, 2, Vector3(2, -1.655, 0.58)]
+
+[sub_resource type="VisualShaderNodeFloatFunc" id="VisualShaderNodeFloatFunc_85fj1"]
+function = 25
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_w0i20"]
+default_input_values = [0, 0.0, 1, -0.035]
+operator = 1
+
+[sub_resource type="VisualShaderNodeFloatOp" id="VisualShaderNodeFloatOp_slt6q"]
+default_input_values = [0, 0.0, 1, 1.645]
+operator = 8
+
+[resource]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_lambert, specular_disabled, unshaded;
+
+
+
+
+void fragment() {
+// Input:3
+	vec3 n_out3p0 = NORMAL;
+
+
+	vec3 n_out6p0;
+	mat4 n_out6p1;
+// RotationByAxis:6
+	float n_in6p1 = 0.50000;
+	vec3 n_in6p2 = vec3(2.00000, -1.65500, 0.58000);
+	{
+		float __angle = n_in6p1;
+		vec3 __axis = normalize(n_in6p2);
+		mat3 __rot_matrix = mat3(
+			vec3( cos(__angle)+__axis.x*__axis.x*(1.0 - cos(__angle)), __axis.x*__axis.y*(1.0-cos(__angle))-__axis.z*sin(__angle), __axis.x*__axis.z*(1.0-cos(__angle))+__axis.y*sin(__angle) ),
+			vec3( __axis.y*__axis.x*(1.0-cos(__angle))+__axis.z*sin(__angle), cos(__angle)+__axis.y*__axis.y*(1.0-cos(__angle)), __axis.y*__axis.z*(1.0-cos(__angle))-__axis.x*sin(__angle) ),
+			vec3( __axis.z*__axis.x*(1.0-cos(__angle))-__axis.y*sin(__angle), __axis.z*__axis.y*(1.0-cos(__angle))+__axis.x*sin(__angle), cos(__angle)+__axis.z*__axis.z*(1.0-cos(__angle)) )
+		);
+		n_out6p0 = n_out3p0 * __rot_matrix;
+	}
+
+
+// Fresnel:2
+	float n_in2p3 = 15.00000;
+	float n_out2p0 = pow(clamp(dot(n_out6p0, VIEW), 0.0, 1.0), n_in2p3);
+
+
+// FloatOp:9
+	float n_in9p1 = 1.64500;
+	float n_out9p0 = atan(n_out2p0, n_in9p1);
+
+
+// FloatOp:8
+	float n_in8p1 = -0.03500;
+	float n_out8p0 = n_out9p0 - n_in8p1;
+
+
+// FloatOp:10
+	float n_in10p1 = 2.00000;
+	float n_out10p0 = pow(n_out8p0, n_in10p1);
+
+
+// Fresnel:11
+	float n_in11p3 = 1.20500;
+	float n_out11p0 = pow(1.0 - clamp(dot(n_out6p0, VIEW), 0.0, 1.0), n_in11p3);
+
+
+// FloatFunc:13
+	float n_out13p0 = sin(n_out11p0);
+
+
+// FloatOp:14
+	float n_in14p1 = 0.20000;
+	float n_out14p0 = n_out13p0 * n_in14p1;
+
+
+// FloatOp:12
+	float n_out12p0 = n_out10p0 + n_out14p0;
+
+
+// FloatFunc:15
+	float n_out15p0 = min(max(n_out12p0, 0.0), 1.0);
+
+
+// Output:0
+	ALPHA = n_out15p0;
+
+
+}
+"
+modes/specular = 2
+flags/unshaded = true
+nodes/fragment/0/position = Vector2(1560, 140)
+nodes/fragment/2/node = SubResource("VisualShaderNodeFresnel_85fj1")
+nodes/fragment/2/position = Vector2(-860, 80)
+nodes/fragment/3/node = SubResource("VisualShaderNodeInput_w0i20")
+nodes/fragment/3/position = Vector2(-1840, 20)
+nodes/fragment/5/node = SubResource("VisualShaderNodeMix_slt6q")
+nodes/fragment/5/position = Vector2(-1060, 260)
+nodes/fragment/6/node = SubResource("VisualShaderNodeRotationByAxis_skd8k")
+nodes/fragment/6/position = Vector2(-1324, -34)
+nodes/fragment/7/node = SubResource("VisualShaderNodeFloatFunc_85fj1")
+nodes/fragment/7/position = Vector2(-320, -160)
+nodes/fragment/8/node = SubResource("VisualShaderNodeFloatOp_w0i20")
+nodes/fragment/8/position = Vector2(-67, 9)
+nodes/fragment/9/node = SubResource("VisualShaderNodeFloatOp_slt6q")
+nodes/fragment/9/position = Vector2(-360, 40)
+nodes/fragment/10/node = SubResource("VisualShaderNodeFloatOp_85fj1")
+nodes/fragment/10/position = Vector2(220, -20)
+nodes/fragment/11/node = SubResource("VisualShaderNodeFresnel_w0i20")
+nodes/fragment/11/position = Vector2(-540, 340)
+nodes/fragment/12/node = SubResource("VisualShaderNodeFloatOp_skd8k")
+nodes/fragment/12/position = Vector2(451.028, 330.969)
+nodes/fragment/13/node = SubResource("VisualShaderNodeFloatFunc_u20c1")
+nodes/fragment/13/position = Vector2(-207.872, 354.069)
+nodes/fragment/14/node = SubResource("VisualShaderNodeFloatOp_xqsq0")
+nodes/fragment/14/position = Vector2(68.2281, 262.769)
+nodes/fragment/15/node = SubResource("VisualShaderNodeFloatFunc_hyeat")
+nodes/fragment/15/position = Vector2(730.018, 306.855)
+nodes/fragment/connections = PackedInt32Array(3, 0, 6, 0, 6, 0, 2, 0, 2, 0, 7, 0, 2, 0, 9, 0, 9, 0, 8, 0, 8, 0, 10, 0, 10, 0, 12, 0, 11, 0, 13, 0, 13, 0, 14, 0, 14, 0, 12, 1, 6, 0, 11, 0, 12, 0, 15, 0, 15, 0, 0, 1)

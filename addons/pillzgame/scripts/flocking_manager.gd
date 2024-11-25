@@ -27,13 +27,14 @@ extends Node3D
 @export_range(0.1, 50.0, 0.1, "or_greater") var flock_cohesion_weight: float = 3.0
 
 @export_group("Flocking Force Range")
-@export var inner_radius: float = 10.0  # Full falloff (minimum force)
-@export var outer_radius: float = 25.0  # Start of falloff (maximum force)
-@export_range(0.0, 1.0) var min_force_multiplier: float = 0.0  # Force at inner radius
+@export var inner_radius: float = 5.0  # Full stop radius
+@export var outer_radius: float = 15.0  # Normal movement radius
+@export_range(0.0, 1.0) var min_force_multiplier: float = 0.0  # No new forces when close
 
 @export_group("Spawn Settings")
 @export var spawn_interval: float = 0.2  # Time between spawns
 @export var initial_spawn_delay: float = 3.0  # Delay before first spawn
+@export var spawn_effect_duration: float = 0.6  # Duration of spawn effect animation
 
 @export_group("Respawn Settings")
 @export var enable_respawn: bool = true
@@ -101,6 +102,11 @@ var spawn_timer: Timer  #KEEP
 
 var remaining_spawns: int = 0
 
+signal wave_started(wave_number: int, total_waves: int)
+signal wave_completed(wave_number: int)
+signal all_waves_completed()
+signal enemy_count_changed(active: int, total: int)
+
 func _ready():
     initialize_noise()
     
@@ -161,13 +167,16 @@ func setup_wave_spawning():
     start_wave()
 
 func start_wave():
+    emit_signal("wave_started", current_wave, max_respawn_cycles)
     active_enemies = points_per_respawn
     remaining_spawns = points_per_respawn
     
     # Clear existing enemies
     for child in get_children():
-        if child.is_in_group("enemy"):
-            child.queue_free()
+        if child is Node3D and child.get_child_count() > 0:
+            var enemy = child.get_child(0)
+            if enemy and enemy.is_in_group("enemies"):
+                child.queue_free()
     
     # Clear all tracking
     velocities.clear()
@@ -180,51 +189,66 @@ func start_wave():
 
 func _on_spawn_timer_timeout():
     if remaining_spawns > 0:
-        if spawn_enemy():  # Only decrease if spawn was successful
-            remaining_spawns -= 1
-        else:
-            print("Failed to spawn enemy. Retrying...")
+        spawn_enemy()
+        remaining_spawns -= 1
     else:
         print("All enemies spawned. Stopping spawn timer.")
         spawn_timer.stop()
 
 func spawn_enemy() -> bool:
-    # Generate spawn position
+    # Get spawn position
     var random_angle = randf() * TAU
     var random_distance = randf_range(min_spawn_distance, spawn_radius)
     var spawn_position = Vector3(
         cos(random_angle) * random_distance,
-        0,
+        fixed_y_position,
         sin(random_angle) * random_distance
     ) + global_position
     
-    # Create a Node3D for flocking
+    # Create the enemy point
     var point = Node3D.new()
-    point.position = spawn_position
     add_child(point)
+    point.global_position = spawn_position
     scattered_points.append(point)
     
-    # Initialize flocking properties for the point
+    # Add spawn effect as child of point
+    if spawn_effect_scene:
+        var effect = spawn_effect_scene.instantiate()
+        point.add_child(effect)
+        effect.position = Vector3.ZERO
+        
+        if effect.has_node("AnimationPlayer"):
+            var anim_player = effect.get_node("AnimationPlayer")
+            anim_player.play("spawn")
+            # Create timer and check if effect still exists
+            get_tree().create_timer(spawn_effect_duration).timeout.connect(
+                func(): 
+                    if is_instance_valid(effect):
+                        effect.queue_free()
+            )
+    
+    # Add the enemy as a child
+    var enemy = flocking_agent.instantiate()
+    point.add_child(enemy)
+    
+    # Setup enemy properties
     var point_id = point.get_instance_id()
     velocities[point_id] = Vector3.RIGHT.rotated(Vector3.UP, randf() * TAU) * max_speed * 0.5
     randomize_point_speeds(point)
     
-    # Add the enemy as a child of the point
-    var enemy = flocking_agent.instantiate()
-    point.add_child(enemy)
-    
     if enemy.has_signal("enemy_killed"):
         enemy.enemy_killed.connect(_on_enemy_killed.bind(point))
     
-    return true  # Successful spawn
+    return true
 
 func _on_enemy_killed(enemy: Node3D, point: Node3D):
     if not is_instance_valid(enemy):
         return
         
     active_enemies = max(0, active_enemies - 1)
+    emit_signal("enemy_count_changed", active_enemies, points_per_respawn)
     
-    # Remove from flocking system properly
+    # Remove from flocking system
     var point_id = point.get_instance_id()
     velocities.erase(point_id)
     point_speeds.erase(point_id)
@@ -232,11 +256,15 @@ func _on_enemy_killed(enemy: Node3D, point: Node3D):
     cached_forces.erase(point_id)
     scattered_points.erase(point)
     
+    # Check if wave is complete
     if active_enemies <= 0 and remaining_spawns <= 0:
+        emit_signal("wave_completed", current_wave)
         if current_wave < max_respawn_cycles:
             current_wave += 1
             spawn_timer.stop()
             call_deferred("start_next_wave")
+        else:
+            emit_signal("all_waves_completed")
 
 func start_next_wave():
     await get_tree().create_timer(respawn_cooldown).timeout
@@ -377,18 +405,24 @@ func calculate_flocking_forces(point: Node3D) -> Vector3:
     
     # Calculate force multiplier based on distance to target
     var force_multiplier: float = 1.0
+    var velocity_multiplier: float = 1.0  # New multiplier for velocity
+    
     if target_node:
         var distance_to_target: float = point.global_position.distance_to(target_node.global_position)
-        print("Distance to target: ", distance_to_target)  # Debug distance
         
         if distance_to_target <= inner_radius:
-            # Inside inner radius - minimum force
-            force_multiplier = min_force_multiplier
+            # Inside inner radius - almost no movement
+            force_multiplier = 0.0  # No new forces
+            velocity_multiplier = 0.1  # Slow existing velocity
         elif distance_to_target < outer_radius:
             # Smooth transition between inner and outer radius
             var t: float = (distance_to_target - inner_radius) / (outer_radius - inner_radius)
-            force_multiplier = smoothstep(min_force_multiplier, 1.0, t)
-            print("Force multiplier: ", force_multiplier)  # Debug multiplier
+            force_multiplier = smoothstep(0.0, 1.0, t)
+            velocity_multiplier = smoothstep(0.1, 1.0, t)
+        
+        # Apply velocity damping
+        if point_id in velocities:
+            velocities[point_id] *= velocity_multiplier
     
     # Use cached neighbors if available
     var nearby_points: Array
@@ -424,7 +458,7 @@ func calculate_flocking_forces(point: Node3D) -> Vector3:
         # Scale ALL forces by the multiplier
         alignment = (alignment * inv_count - velocities[point_id]) * flock_alignment_weight * force_multiplier
         cohesion = ((cohesion * inv_count) - point_pos) * flock_cohesion_weight * force_multiplier
-        separation = separation * inv_count * flock_separation_weight
+        separation = separation * inv_count * flock_separation_weight * force_multiplier
         total_force = separation + alignment + cohesion
     
     return total_force
@@ -457,20 +491,25 @@ func apply_force(point: Node3D, force: Vector3, delta: float):
     var max_speed_for_point = point_speed_data["max_speed"]
     var turn_speed_for_point = point_speed_data["turn_speed"]
     
-    # Apply force to velocity
+    # Apply force to velocity (zero out Y component)
+    force.y = 0
     velocity += force * delta
+    velocity.y = 0
     
     # Limit speed
     if velocity.length() > max_speed_for_point:
         velocity = velocity.normalized() * max_speed_for_point
     
-    # Update position
-    point.global_position += velocity * delta
+    # Update position (maintain fixed Y)
+    var new_position = point.global_position + velocity * delta
+    new_position.y = fixed_y_position
+    point.global_position = new_position
     
-    # Update rotation to face movement direction
+    # Update rotation (only around Y axis)
     if velocity.length() > 0.1:
-        var target_basis = Basis.looking_at(velocity.normalized())
-        point.basis = point.basis.slerp(target_basis, turn_speed_for_point * delta)
+        var look_dir = velocity.normalized()
+        var angle = atan2(look_dir.x, look_dir.z)
+        point.rotation = Vector3(0, angle, 0)
     
     # Store velocity
     velocities[point_id] = velocity

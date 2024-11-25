@@ -31,7 +31,6 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-SignalBus="res://_scripts/signal_bus.gd"
 GameEvents="*res://_scripts/autoload/GameEvents.gd"
 
 [debug]
@@ -42,10 +41,9 @@ shapes/navigation/agent_path_point_size=32.0
 
 [display]
 
-window/size/viewport_width=1920
-window/size/viewport_height=1040
-window/size/initial_position_type=0
-window/size/initial_position=Vector2i(2665, 500)
+window/size/viewport_width=800
+window/size/viewport_height=800
+window/size/initial_position_type=2
 window/size/always_on_top=true
 window/size/extend_to_title=true
 window/stretch/aspect="keep_width"
@@ -60,7 +58,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/pillzgame/plugin.cfg", "res://addons/plugin_refresher/plugin.cfg", "res://addons/thumbstick_plugin/plugin.cfg")
+enabled=PackedStringArray("res://addons/plugin_refresher/plugin.cfg", "res://addons/sprite_painter/plugin.cfg", "res://addons/thumbstick_plugin/plugin.cfg")
 
 [file_customization]
 
@@ -113,6 +111,7 @@ thumbstick=""
 nav=""
 flock_manager=""
 walls=""
+gameroot=""
 
 [importer_defaults]
 
@@ -180,6 +179,7 @@ touch={
 fire={
 "deadzone": 0.5,
 "events": [Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-3,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-3,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194326,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
 shoot={
@@ -196,6 +196,8 @@ toggle_wander={
 toss_grenade={
 "deadzone": 0.2,
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-3,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":71,"key_label":0,"unicode":103,"location":0,"echo":false,"script":null)
+, Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-3,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":32,"key_label":0,"unicode":32,"location":0,"echo":false,"script":null)
+, Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":-3,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":2,"canceled":false,"pressed":false,"double_click":false,"script":null)
 ]
 }
 

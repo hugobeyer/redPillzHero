@@ -131,6 +131,8 @@ var shoot_timer: float = 0.0
 @export_range(0.1, 10.0) var recoil_snap_speed: float = 3.0      # How quickly recoil snaps to new positions
 @export_range(0.0, 1.0) var recoil_randomness: float = 0.4       # Additional random variation
 
+@onready var weapon_muzzle = $WeaponMuzzle
+
 func _ready():
 	if camera_node:
 		if not camera_node:
@@ -172,6 +174,10 @@ func _ready():
 	# 	print("Camera connected successfully")
 	# else:
 	# 	push_error("Camera not found! Check the path!")
+
+	# Hide muzzle initially
+	if weapon_muzzle:
+		weapon_muzzle.visible = false
 
 func create_debug_cylinders():
 	if not enable_debug_visualization:
@@ -436,9 +442,9 @@ func handle_recoil_recovery(delta: float):
 
 func shoot_bullet():
 	var muzzle_transform = muzzle_node.global_transform
-	var shoot_direction = muzzle_transform.basis.z.normalized()
-	shoot_direction.y = 0  # Force initial direction to be horizontal
-	shoot_direction = shoot_direction.normalized()
+	var shoot_direction2 = muzzle_transform.basis.z.normalized()
+	shoot_direction2.y = 0  # Force initial direction to be horizontal
+	shoot_direction2 = shoot_direction2.normalized()
 
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
@@ -457,7 +463,7 @@ func shoot_bullet():
 		var final_spread_angle = spread_angle + random_angle_variation
 		
 		# Only rotate around Y axis for spread
-		var spread_direction = shoot_direction.rotated(Vector3.UP, deg_to_rad(final_spread_angle))
+		var spread_direction = shoot_direction2.rotated(Vector3.UP, deg_to_rad(final_spread_angle))
 		
 		# Ensure spread_direction is horizontal
 		spread_direction.y = 0
@@ -540,10 +546,10 @@ func apply_recoil(direction: Vector3):
 		Weapon_node.rotation.x = initial_Weapon_rotation.x
 		Weapon_node.rotation.z = initial_Weapon_rotation.z
 
-	# Add camera shake
-	if camera:
-		var shake_amount = (recoil_value / max_recoil) * 0.2
-		camera.add_shake(shake_amount)
+	if camera and recoil_value > 0.001:  # Add threshold check
+		var shake_amount = (recoil_value / max_recoil) * 0.05
+		if shake_amount > 0.001:  # Only apply if above threshold
+			camera.add_shake(shake_amount)
 
 func apply_recoil_force(delta: float):
 	# Apply translation recoil to player
@@ -573,12 +579,19 @@ func trigger_pressed(direction: Vector2):
 	is_trigger_pressed = true
 	shoot_direction = direction
 	is_shooting = true
+	# Show muzzle when shooting
+	if weapon_muzzle:
+		weapon_muzzle.visible = true
 
 func trigger_released():
 	is_trigger_pressed = false
 	shoot_direction = Vector2.ZERO
 	is_shooting = false
 	reset_recoil()
+	
+	# Hide muzzle when not shooting
+	if weapon_muzzle:
+		weapon_muzzle.visible = false
 	
 	# Reset camera shake when trigger released
 	if camera:

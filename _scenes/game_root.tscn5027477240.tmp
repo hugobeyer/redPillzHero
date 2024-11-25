@@ -1,0 +1,494 @@
+[gd_scene load_steps=23 format=3 uid="uid://dr0ytgjthjbsx"]
+
+[ext_resource type="PackedScene" uid="uid://clcwdr5begw0g" path="res://_scenes/main.tscn" id="2_3drmh"]
+[ext_resource type="Script" path="res://_scripts/buddy.gd" id="3_li44f"]
+[ext_resource type="PackedScene" uid="uid://cqhe3y3sj4vb3" path="res://_scenes/player.tscn" id="4_2xjta"]
+[ext_resource type="Script" path="res://addons/pillzgame/scripts/flocking_manager.gd" id="4_h5qa2"]
+[ext_resource type="PackedScene" uid="uid://b438ssjn22xfs" path="res://_scenes/enemy_types/grunt/enemy.tscn" id="5_jpu4a"]
+[ext_resource type="Script" path="res://_scripts/fps.gd" id="8_scswu"]
+[ext_resource type="PackedScene" uid="uid://bwr26kclpyg6b" path="res://_scenes/buddy.tscn" id="9_428cj"]
+[ext_resource type="PackedScene" uid="uid://cjh03gwy5bmhx" path="res://_scenes/env/wall.tscn" id="11_scswu"]
+[ext_resource type="Material" uid="uid://d58p32hgp45d" path="res://_materials/gr.tres" id="11_xwy4t"]
+[ext_resource type="FontVariation" uid="uid://cwxu07t5jip7t" path="res://_resources/fonts/font_health_overhead.tres" id="12_ihlwy"]
+[ext_resource type="Script" path="res://_scripts/UI/game_label_kills.gd" id="13_aid0c"]
+[ext_resource type="PackedScene" uid="uid://bc15gesn8lubs" path="res://addons/thumbstick_plugin/plugin/joysticks/normal_joystick.tscn" id="14_wgw40"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_ytlyv"]
+resource_local_to_scene = true
+size = Vector3(256, 10, 256)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_caqoe"]
+size = Vector2(256, 256)
+subdivide_width = 128
+subdivide_depth = 128
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_scswu"]
+vertices = PackedVector3Array(-127.4, 0.4, -95, -97.1, 0.4, -94.7, -97.1, 0.4, -96.5, -96.5, 0.4, -97.1, -94.7, 0.4, -97.1, -95, 0.4, -127.4, -127.4, 0.4, -127.4, 94.9, 0.4, -97.1, 95.2, 0.4, -127.4, 97.6, 0.4, -96.8, 97.9, 0.4, -94.1, 127.3, 0.4, -94.1, 127.3, 0.4, -127.4, -95.3, 0.4, -95.3, -95.3, 0.4, 94.9, 95.8, 0.4, 94.9, 95.8, 0.4, -95.3, -127.4, 0.4, 94.9, -97.1, 0.4, 94.6, 97.9, 0.4, 94, 127.3, 0.4, 94, 97.6, 0.4, 96.7, 95.2, 0.4, 127.3, 127.3, 0.4, 127.3, 95.2, 0.4, 96.7, -96.8, 0.4, 96.7, -127.4, 0.4, 127.3, -94.4, 0.4, 127.3, -94.4, 0.4, 96.7)
+polygons = [PackedInt32Array(1, 0, 2), PackedInt32Array(4, 3, 5), PackedInt32Array(2, 0, 3), PackedInt32Array(3, 0, 6), PackedInt32Array(3, 6, 5), PackedInt32Array(4, 5, 7), PackedInt32Array(7, 5, 8), PackedInt32Array(11, 10, 9), PackedInt32Array(7, 8, 9), PackedInt32Array(9, 8, 12), PackedInt32Array(9, 12, 11), PackedInt32Array(16, 15, 13), PackedInt32Array(13, 15, 14), PackedInt32Array(18, 17, 1), PackedInt32Array(1, 17, 0), PackedInt32Array(10, 11, 19), PackedInt32Array(19, 11, 20), PackedInt32Array(19, 20, 21), PackedInt32Array(21, 20, 23), PackedInt32Array(21, 23, 22), PackedInt32Array(22, 24, 21), PackedInt32Array(18, 25, 17), PackedInt32Array(17, 25, 26), PackedInt32Array(26, 25, 27), PackedInt32Array(25, 28, 27), PackedInt32Array(28, 24, 27), PackedInt32Array(27, 24, 22)]
+geometry_source_geometry_mode = 1
+geometry_source_group_name = &"nav"
+cell_size = 0.3
+cell_height = 0.2
+agent_height = 2.0
+agent_radius = 0.6
+region_min_size = 8.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_feyws"]
+bg_color = Color(0.415638, 0.131704, 0.264798, 1)
+border_width_top = 54
+border_color = Color(0.260123, 0.481062, 0.658436, 1)
+corner_radius_bottom_right = 3
+corner_radius_bottom_left = 11
+corner_detail = 3
+shadow_color = Color(0.055, 0.1375, 0.22, 0.415686)
+shadow_size = 1
+shadow_offset = Vector2(5.761, 5.085)
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_7s0d6"]
+light_mode = 1
+
+[sub_resource type="SystemFont" id="SystemFont_scswu"]
+font_names = PackedStringArray("Consolas", "Monospace")
+generate_mipmaps = true
+allow_system_fallback = false
+subpixel_positioning = 0
+oversampling = 1.0
+
+[sub_resource type="FontVariation" id="FontVariation_oh2c4"]
+base_font = SubResource("SystemFont_scswu")
+spacing_glyph = -1
+spacing_space = 12
+
+[sub_resource type="LabelSettings" id="LabelSettings_vkafs"]
+font = SubResource("FontVariation_oh2c4")
+font_size = 80
+font_color = Color(0.773438, 0.480165, 0.24472, 1)
+outline_color = Color(0.25, 0, 0, 0)
+shadow_size = 0
+shadow_color = Color(0, 0.096, 0.32, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_li44f"]
+font = SubResource("FontVariation_oh2c4")
+font_size = 32
+font_color = Color(0.377655, 0.878906, 0, 1)
+outline_color = Color(0.25, 0, 0, 0)
+shadow_size = 0
+shadow_color = Color(0, 0.096, 0.32, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_uetrx"]
+font = ExtResource("12_ihlwy")
+font_size = 116
+font_color = Color(0.796463, 0.81893, 0.549323, 1)
+outline_size = 4
+outline_color = Color(0.53, 0.1113, 0.1113, 0)
+shadow_size = 0
+shadow_color = Color(0.00569999, 0.0732767, 0.19, 0.490196)
+shadow_offset = Vector2(9, 7)
+
+[node name="GameRoot" type="Node3D"]
+
+[node name="Main" parent="." instance=ExtResource("2_3drmh")]
+
+[node name="Player" parent="Main" instance=ExtResource("4_2xjta")]
+
+[node name="ScatteredPoints" type="Node3D" parent="Main" groups=["enemies", "flock_manager"]]
+script = ExtResource("4_h5qa2")
+flocking_agent = ExtResource("5_jpu4a")
+target_node_path = NodePath("../Player")
+target_weight = 15.0
+max_force = 7.8
+turn_speed = 1.0
+min_speed = 6.0
+max_speed = 20.0
+min_turn_speed = 0.25
+max_turn_speed = 2.0
+flock_min_distance_between_points = 2.2
+flock_min_distance_to_target = 3.0
+flock_neighbor_distance = 8.0
+flock_max_neighbors = 5
+flock_separation_weight = 16.0
+flock_alignment_weight = 6.0
+inner_radius = 2.0
+outer_radius = 20.0
+spawn_interval = 0.05
+initial_spawn_delay = 1.0
+points_per_respawn = 0
+spawn_radius = 64.0
+
+[node name="Buddy" parent="Main" instance=ExtResource("9_428cj")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5.80285, 0)
+script = ExtResource("3_li44f")
+base_speed = 0.29
+hover_radius = 8.0
+max_distance_from_player = 32.0
+min_height = 2.86
+max_height = 14.83
+preferred_height = 9.73
+height_wobble_amount = 1.25
+position_smoothing = 0.195
+rotation_smoothing = 1.785
+time_scale = 4.235
+look_duration = 9.205
+head_turn_speed = 0.001
+max_head_angle = 0.305
+do_loops = null
+noise_influence = 0.925
+noise_speed = 0.01
+second_noise_influence = 0.5
+look_forward_chance = 0.05
+min_look_time = 5.925
+max_look_time = 7.715
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="FloorStatic" type="StaticBody3D" parent="Environment" groups=["nav"]]
+collision_layer = 4
+collision_mask = 0
+input_ray_pickable = false
+axis_lock_linear_x = true
+axis_lock_linear_y = true
+axis_lock_linear_z = true
+axis_lock_angular_x = true
+axis_lock_angular_y = true
+axis_lock_angular_z = true
+
+[node name="CollisionPolygon3D" type="CollisionShape3D" parent="Environment/FloorStatic" groups=["nav"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
+shape = SubResource("BoxShape3D_ytlyv")
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Environment" groups=["nav"]]
+material_override = ExtResource("11_xwy4t")
+mesh = SubResource("PlaneMesh_caqoe")
+skeleton = NodePath("")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="Environment"]
+navigation_mesh = SubResource("NavigationMesh_scswu")
+
+[node name="WallColliders" type="Node3D" parent="Environment"]
+
+[node name="Wall" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, -96)
+collision_mask = 4115
+
+[node name="Wall2" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -96)
+collision_mask = 4115
+
+[node name="Wall3" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, -96)
+collision_mask = 4115
+
+[node name="Wall4" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, -96)
+collision_mask = 4115
+
+[node name="Wall5" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56, 0, -96)
+collision_mask = 4115
+
+[node name="Wall11" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 0, -96)
+collision_mask = 4115
+
+[node name="Wall12" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 0, -96)
+collision_mask = 4115
+
+[node name="Wall6" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 0, -96)
+collision_mask = 4115
+
+[node name="Wall7" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72, 0, -96)
+collision_mask = 4115
+
+[node name="Wall8" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56, 0, -96)
+collision_mask = 4115
+
+[node name="Wall9" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, -96)
+collision_mask = 4115
+
+[node name="Wall10" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, -96)
+collision_mask = 4115
+
+[node name="Wall13" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 0, 96)
+collision_mask = 4115
+
+[node name="Wall14" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, 96)
+collision_mask = 4115
+
+[node name="Wall15" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 24, 0, 96)
+collision_mask = 4115
+
+[node name="Wall16" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 40, 0, 96)
+collision_mask = 4115
+
+[node name="Wall17" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 56, 0, 96)
+collision_mask = 4115
+
+[node name="Wall18" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, 0, 96)
+collision_mask = 4115
+
+[node name="Wall19" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 88, 0, 96)
+collision_mask = 4115
+
+[node name="Wall20" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -88, 0, 96)
+collision_mask = 4115
+
+[node name="Wall21" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -72, 0, 96)
+collision_mask = 4115
+
+[node name="Wall22" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -56, 0, 96)
+collision_mask = 4115
+
+[node name="Wall23" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -40, 0, 96)
+collision_mask = 4115
+
+[node name="Wall24" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -24, 0, 96)
+collision_mask = 4115
+
+[node name="Wall25" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, 8)
+collision_mask = 4115
+
+[node name="Wall26" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, -8)
+collision_mask = 4115
+
+[node name="Wall27" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, -24)
+collision_mask = 4115
+
+[node name="Wall28" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, -40)
+collision_mask = 4115
+
+[node name="Wall29" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, -56)
+collision_mask = 4115
+
+[node name="Wall30" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, -72)
+collision_mask = 4115
+
+[node name="Wall31" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, -88)
+collision_mask = 4115
+
+[node name="Wall32" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, 88)
+collision_mask = 4115
+
+[node name="Wall33" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, 72)
+collision_mask = 4115
+
+[node name="Wall34" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, 56)
+collision_mask = 4115
+
+[node name="Wall35" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, 40)
+collision_mask = 4115
+
+[node name="Wall36" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 97, 0, 24)
+collision_mask = 4115
+
+[node name="Wall37" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, 8)
+collision_mask = 4115
+
+[node name="Wall38" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, -8)
+collision_mask = 4115
+
+[node name="Wall39" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, -24)
+collision_mask = 4115
+
+[node name="Wall40" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, -40)
+collision_mask = 4115
+
+[node name="Wall41" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, -56)
+collision_mask = 4115
+
+[node name="Wall42" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, -72)
+collision_mask = 4115
+
+[node name="Wall43" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, -88)
+collision_mask = 4115
+
+[node name="Wall44" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, 88)
+collision_mask = 4115
+
+[node name="Wall45" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, 72)
+collision_mask = 4115
+
+[node name="Wall46" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, 56)
+collision_mask = 4115
+
+[node name="Wall47" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, 40)
+collision_mask = 4115
+
+[node name="Wall48" parent="Environment/WallColliders" instance=ExtResource("11_scswu")]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -96, 0, 24)
+collision_mask = 4115
+
+[node name="MainHUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+metadata/_edit_use_anchors_ = true
+
+[node name="PanelCtrl" type="Control" parent="MainHUD"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -458.0
+offset_bottom = 180.0
+grow_horizontal = 0
+
+[node name="Panel" type="Panel" parent="MainHUD/PanelCtrl"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -162.841
+offset_top = 59.7037
+offset_right = 36.1586
+offset_bottom = 136.704
+grow_horizontal = 0
+rotation = -0.204204
+scale = Vector2(0.891339, 0.789322)
+theme_override_styles/panel = SubResource("StyleBoxFlat_feyws")
+
+[node name="Based" type="Label" parent="MainHUD/PanelCtrl"]
+light_mask = 0
+material = SubResource("CanvasItemMaterial_7s0d6")
+layout_direction = 1
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -123.592
+offset_top = 95.8622
+offset_right = 86.4077
+offset_bottom = 180.862
+grow_horizontal = 0
+rotation = -0.151205
+scale = Vector2(0.362416, 0.362416)
+size_flags_vertical = 0
+theme_override_constants/shadow_outline_size = 5
+text = "PiLLeD!"
+label_settings = SubResource("LabelSettings_vkafs")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 1
+
+[node name="FPS" type="Label" parent="MainHUD/PanelCtrl"]
+light_mask = 0
+material = SubResource("CanvasItemMaterial_7s0d6")
+layout_direction = 1
+layout_mode = 1
+anchors_preset = -1
+anchor_left = -1.0
+anchor_right = -1.0
+offset_left = -176.0
+offset_top = 20.0
+offset_right = 828.0
+offset_bottom = 180.0
+grow_horizontal = 2
+scale = Vector2(0.35, 0.35)
+size_flags_vertical = 0
+theme_override_constants/shadow_outline_size = 5
+text = "FPS"
+label_settings = SubResource("LabelSettings_li44f")
+horizontal_alignment = 1
+justification_flags = 1
+script = ExtResource("8_scswu")
+
+[node name="LabelKills" type="Label" parent="MainHUD/PanelCtrl"]
+z_as_relative = false
+texture_filter = 2
+texture_repeat = 1
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -210.0
+offset_top = 14.0
+offset_right = 1.00018
+offset_bottom = 160.844
+grow_horizontal = 0
+rotation = 0.0168936
+scale = Vector2(0.585275, 0.585275)
+size_flags_horizontal = 8
+size_flags_vertical = 0
+localize_numeral_system = false
+text = "367"
+label_settings = SubResource("LabelSettings_uetrx")
+horizontal_alignment = 1
+script = ExtResource("13_aid0c")
+
+[node name="ControllerCanvas" type="CanvasLayer" parent="MainHUD" groups=["thumbstick"]]
+
+[node name="MovementJoystick" parent="MainHUD/ControllerCanvas" groups=["thumbstick"] instance=ExtResource("14_wgw40")]
+anchors_preset = -1
+anchor_top = 0.236364
+grow_horizontal = 1
+grow_vertical = 0
+_base_color = Color(1, 1, 1, 0.513726)
+_normal_bg_tint = Color(1, 1, 1, 0.372549)
+_normal_handle_tint = Color(1, 1, 1, 0.513726)
+_pressed_bg_tint = Color(1, 1, 1, 0.32549)
+_pressed_handle_tint = Color(0.329412, 0.709804, 0.909804, 0.658824)
+_disabled_bg_tint = Color(0.6, 0.6, 0.6, 0)
+_disabled_handle_tint = Color(0.6, 0.6, 0.6, 0)
+_on_trigger_method_name = "_on_trigger"
+_on_pressed_method_name = "_on_pressed"
+_on_released_method_name = "_on_released"
+metadata/_edit_use_anchors_ = true
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.660862, 0.629584, 0.408516, 0.138163, -0.637075, 0.758318, 0.737681, -0.444701, -0.508004, 10, 15, 14)
+light_color = Color(0.997864, 1, 0.960938, 1)
+light_energy = 1.25
+light_bake_mode = 0
+shadow_enabled = true
+shadow_opacity = 0.6
+shadow_blur = 0.44
+directional_shadow_mode = 0
+directional_shadow_split_1 = 0.416
+directional_shadow_fade_start = 0.67
+directional_shadow_max_distance = 179.1
+sky_mode = 1

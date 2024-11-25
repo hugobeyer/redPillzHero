@@ -5,6 +5,7 @@ extends Area3D
 @export var knockback: float = 1.0
 @export var max_speed: float = 50.0
 @export_range(0.0, 1.0) var damping: float = 0.02
+@export var hit_effect: HitEffect
 
 var bullet_owner: Node3D = null
 var time_alive: float = 0.0
@@ -14,7 +15,13 @@ var velocity: Vector3 = Vector3.ZERO
 var direction: Vector3
 var speed: float = 30.0
 
+@onready var hit_effect_instance = get_tree().get_root().find_child("HitEffect", true, false)
+
 func _ready():
+	print("Hit Effect found:", hit_effect_instance != null)
+	if hit_effect_instance:
+		print("Hit Effect path:", hit_effect_instance.get_path())
+	
 	connect("body_entered", Callable(self, "_on_body_entered"))
 	connect("area_entered", Callable(self, "_on_area_entered"))
 	
@@ -70,22 +77,35 @@ func perform_raycast():
 				break
 
 func find_enemy_node(node: Node) -> Node:
-	var enemies = get_tree().get_nodes_in_group("enemies")
-	
+	print("Searching for enemy in: ", node.name)  # Debug
 	if node.is_in_group("enemies"):
+		print("Found enemy directly")  # Debug
 		return node
 	
 	var parent = node.get_parent()
 	while parent:
 		if parent.is_in_group("enemies"):
+			print("Found enemy in parent")  # Debug
 			return parent
 		parent = parent.get_parent()
 	
+	print("No enemy found")  # Debug
 	return null
 
 func apply_hit_to_enemy(enemy: Node):
+	print("\n=== BULLET HIT DEBUG ===")
+	print("Hit Effect node exists:", hit_effect_instance != null)
+	print("Hit Effect node path:", hit_effect_instance.get_path() if hit_effect_instance else "none")
+	print("Current position:", global_position)
+	print("Hit direction:", velocity.normalized())
+	
 	var hit_direction = velocity.normalized()
-	hit_direction.y = 0  # Ensure knockback is horizontal
+	hit_direction.y = 0
+	
+	if hit_effect_instance:
+		print("Attempting to spawn effect...")
+		var effect = hit_effect_instance.spawn_from_hit(global_position, hit_direction)
+		print("Effect result:", effect != null)
 	
 	# Calculate knockback force based on velocity and knockback multiplier
 	var knockback_force = velocity.length() * knockback
@@ -103,17 +123,22 @@ func apply_hit_to_enemy(enemy: Node):
 				flocking_manager.apply_point_knockback(parent_point, hit_direction, knockback_force)
 
 func _on_body_entered(body: Node3D) -> void:
+	print("Body entered: ", body.name)  # Debug
 	if body == bullet_owner:
+		print("Hit bullet owner, ignoring")  # Debug
 		return
 	
 	var enemy = find_enemy_node(body)
 	if enemy:
+		print("Found enemy, applying hit")  # Debug
 		apply_hit_to_enemy(enemy)
 	
 	queue_free()
 
 func _on_area_entered(area: Area3D) -> void:
+	print("Area entered: ", area.name)  # Debug
 	if area.is_in_group("enemies"):
+		print("Found enemy area, applying hit")  # Debug
 		apply_hit_to_enemy(area)
 		queue_free()
 

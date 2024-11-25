@@ -11,11 +11,11 @@ extends Camera3D
 
 # Camera Shake Parameters
 @export_group("Camera Shake")
-@export var shake_decay: float = 0.85
-@export var shake_max_offset: float = 2.0
-@export var shake_max_roll: float = 8.0
-@export_range(0, 5) var recoil_shake_intensity: float = 0.6
-@export_range(0.1, 5.0) var shake_falloff_time: float = 0.5  # Time in seconds to decay
+@export var shake_decay: float = 0.95
+@export var shake_max_offset: float = 0.5
+@export var shake_max_roll: float = 3.0
+@export_range(0, 5) var recoil_shake_intensity: float = 0.3
+@export_range(0.1, 5.0) var shake_falloff_time: float = 0.3
 
 var camera_velocity: Vector3 = Vector3.ZERO
 var smoothed_enemies_average: Vector3 = Vector3.ZERO
@@ -88,34 +88,39 @@ func apply_camera_movement(target_position: Vector3, delta: float):
 	global_position += camera_velocity * delta
 
 func add_shake(strength: float):
-	target_shake_strength = min(target_shake_strength + strength, 1.0)
+	# Only add shake if strength is significant
+	if strength > 0.001:  # Add minimum threshold
+		target_shake_strength = min(target_shake_strength + strength, 1.0)
 
 func apply_camera_shake(delta: float):
-	# Smoothly lerp current shake to target
-	shake_strength = lerp(shake_strength, target_shake_strength, shake_lerp_speed * delta)
-	
-	if shake_strength > 0.001:
-		noise_pos += delta * 100.0
+	# Only process shake if it's significant
+	if target_shake_strength > 0.001:  # Add minimum threshold
+		shake_strength = lerp(shake_strength, target_shake_strength, shake_lerp_speed * delta)
 		
-		# Calculate shake offset
-		var shake_x = noise.get_noise_2d(noise_pos, 0.0) * shake_strength * shake_max_offset
-		var shake_y = noise.get_noise_2d(noise_pos, 100.0) * shake_strength * shake_max_offset
-		shake_offset = Vector3(shake_x, shake_y, 0)
-		
-		# Calculate shake rotation
-		shake_rotation = noise.get_noise_2d(noise_pos, 200.0) * shake_strength * shake_max_roll
-		
-		# Apply shake
-		h_offset = shake_offset.x
-		v_offset = shake_offset.y
-		rotation_degrees.z = shake_rotation
-		
-		# Use falloff_time to calculate decay rate
-		var decay_rate = 1.0 / shake_falloff_time
-		target_shake_strength = lerp(target_shake_strength, 0.0, decay_rate * delta)
-		
-		# Force reset when very small
-		if target_shake_strength < 0.001:
+		if shake_strength > 0.001:  # Check if shake is still significant
+			noise_pos += delta * 100.0
+			
+			# Calculate shake offset
+			var shake_x = noise.get_noise_2d(noise_pos, 0.0) * shake_strength * shake_max_offset
+			var shake_y = noise.get_noise_2d(noise_pos, 100.0) * shake_strength * shake_max_offset
+			shake_offset = Vector3(shake_x, shake_y, 0)
+			
+			# Calculate shake rotation
+			shake_rotation = noise.get_noise_2d(noise_pos, 200.0) * shake_strength * shake_max_roll
+			
+			# Apply shake
+			h_offset = shake_offset.x
+			v_offset = shake_offset.y
+			rotation_degrees.z = shake_rotation
+			
+			# Use falloff_time to calculate decay rate
+			var decay_rate = 1.0 / shake_falloff_time
+			target_shake_strength = lerp(target_shake_strength, 0.0, decay_rate * delta)
+			
+			# Force reset when very small
+			if target_shake_strength < 0.001:
+				reset_shake()
+		else:
 			reset_shake()
 	else:
 		reset_shake()

@@ -10,10 +10,10 @@ extends Area3D
 @onready var mesh_instance = $WobbleEffect/CharacterMesh
 @onready var wobble_effect = $WobbleEffect
 @onready var effects: EnemyEffects = $EnemyEffects
-@onready var health_bar: Sprite3D = $HealthBar
+@onready var health_circle: MeshInstance3D = $HealthCircle
 @onready var parent_point = get_parent()
 @onready var flocking_manager = parent_point.get_parent()
-@onready var melee_weapon = $MeleeWeapon  # Reference to the melee scene
+@onready var melee_weapon = $WobbleEffect/CharacterMesh/MeleeWeapon  # Reference to the melee scene
 
 var _health: float
 var _time_alive: float = 0
@@ -25,7 +25,7 @@ func _ready():
     if not Engine.is_editor_hint():
         add_to_group("enemies")
         _health = max_health
-        update_health_bar()
+        update_health_circle()
         connect("enemy_killed", Callable(self, "_on_enemy_killed"))
 
 func _process(delta):
@@ -38,7 +38,7 @@ func hit(direction: Vector3, hit_damage: float, knockback_force: float = 0.0):
         return
         
     _health -= hit_damage
-    update_health_bar()
+    update_health_circle()
     
     if knockback_force > 0:
         _knockback_velocity = direction * knockback_force
@@ -98,11 +98,11 @@ func die():
         parent_point.queue_free()
     queue_free()
 
-func update_health_bar():
-    if health_bar:
+func update_health_circle():
+    if health_circle:
         var health_percent = _health / max_health
-        health_bar.set_progress(health_percent, true)
-        health_bar.visible = true
+        health_circle.set_progress(health_percent, true)
+        health_circle.visible = true
 
 func _on_enemy_killed(_enemy):
     pass
